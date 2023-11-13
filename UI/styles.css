@@ -1,43 +1,91 @@
- 
-Body {  
-  font-family: Calibri, Helvetica, sans-serif;  
-  background-color: white;  
-}  
-button {   
-       background-color: lightblue;   
-       width: 100%;  
-        color: blue;   
-        padding: 15px;   
-        margin: 10px 0px;   
-        border: none;   
-        cursor: pointer;   
-         }   
- form {   
-        border: 3px solid blue;   
-    }   
- input[type=text], input[type=password] {   
-        width: 100%;   
-        margin: 8px 0;  
-        padding: 12px 20px;   
-        display: inline-block;   
-        border: 2px solid blue;   
-        box-sizing: border-box;   
-    }  
- button:hover {   
-        opacity: 0.7;   
-    }   
+  
+  Body {  
+    font-family: Calibri, Helvetica, sans-serif;  
+    background-color: white;  
+  }  
+  button {   
+    background-color: lightblue;   
+    width: 100%;  
+    color: blue;   
+    padding: 15px;   
+    margin: 10px 0px;   
+    border: none;   
+    cursor: pointer;   
+  }   
+
+  form {   
+    border: 3px solid blue;   
+  }   
+  
+  input[type=text], input[type=password] {   
+    width: 100%;   
+    margin: 8px 0;  
+    padding: 12px 20px;   
+    display: inline-block;   
+    border: 2px solid blue;   
+    box-sizing: border-box;   
+  }  
+
+  button:hover {   
+    opacity: 0.7;   
+  }   
+
   .cancelbtn {   
-        width: auto;   
-        padding: 10px 18px;  
-        margin: 10px 5px;  
-    }   
-        
+    width: auto;   
+    padding: 10px 18px;  
+    margin: 10px 5px;  
+  }   
+          
   /* .checkbox {
     padding-right: 20;
   } */
-     
- .container {   
-        padding: 25px;   
-        background-color: white;  
-    }   
+      
+  .container {   
+    padding: 25px;   
+    background-color: white;  
+  }   
 
+  p {
+    font-family: Verdana, sans-serif;
+    font-size: 14px;
+  }
+
+  a, li a {
+    color: #000000
+  }
+
+  #header h1.textlogo {
+    font-family: Roboto New, monospace;
+    font-size: 40px;
+    text-align: left;
+    content: "Network Inventory";
+  }
+
+  #nav ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    gap: 10px;
+  }
+
+  #nav li {
+    flex-grow: 1;
+    text-align: center;
+  }
+
+  #nav a {
+    background-color: rgb(109, 68, 212);
+    padding: 15px;
+    font-family: Verdana, sans-serif;
+    font-size: 14px;
+    font-variant: small-caps;
+    text-decoration: none;
+  }
+
+  #nav a:hover {
+    background-color: #47249f;
+    color: #FFFFFF;
+    padding: 10px;
+    text-decoration: overline;
+    font-weight: bold;
+  }
