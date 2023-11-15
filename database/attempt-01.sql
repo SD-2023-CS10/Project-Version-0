@@ -41,7 +41,7 @@ CREATE TABLE Server (
     ip_address BIGINT UNSIGNED,
     ip_version ENUM('IPv4', 'IPv6'),
     location_id INT UNSIGNED NOT NULL,
-    CHECK (ip_address > 4294967295 OR ip_version='IPv4'),
+    CHECK (ip_address < 4294967296 OR ip_version='IPv6'),
     UNIQUE (ip_address, ip_version),
     FOREIGN KEY (location_id) REFERENCES Location(id)
 );
