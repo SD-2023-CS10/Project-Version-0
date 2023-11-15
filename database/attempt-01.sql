@@ -75,7 +75,7 @@ CREATE TABLE Inv_Item (
     dept VARCHAR(255),
     space VARCHAR(255),
     date_last_ordered DATE,
-    purchase_price DECIMAL(13, 4), -- GAP guideline
+    purchase_price DECIMAL(13, 4), -- GAAP guideline
     warranty_expires DATE,
     item_condition VARCHAR(255), -- larger? enum?
     quantity INT UNSIGNED,
