@@ -1,0 +1,534 @@
+'''
+main()
+'''
+
+import mysql.connector as mc
+from config import config
+
+CLIENT = "MedCorp"
+
+# TODO: validate data, data validation rules
+
+class DBAPI:
+    
+    def __enter__(self):
+
+        class Connector:
+
+            def __init__(self):
+                usr, pwd, hst, dab = self._read_config_info(config)
+                self.con, self.rs = self._establish_connection(usr, pwd, hst, dab)
+
+            '''
+            Reads config info from imported config dict. Returns a tuple of relavent info.
+            '''
+            def _read_config_info(config_dict):
+                # try: 
+                usr = config_dict['user']
+                pwd = config_dict['pass']
+                hst = config_dict['host']
+                dab = config_dict['db']
+                return usr, pwd, hst, dab
+                # except Exception as e:
+                #     print(e)
+                #     exit()
+            
+            '''
+            Establishes the connection to the database given the config information.
+            Returns a reference to the connection and cursor/result set.
+            '''
+            def _establish_connection(usr, pwd, hst, dab):
+                try:
+                    con = mc.connect(user=usr,password=pwd, host=hst, database=dab)
+                except mc.Error as err:
+                    print(err)
+                    con.close()
+                    exit()
+                try:
+                    rs = con.cursor()
+                except mc.Error as err:
+                    self.close()
+                    raise err
+                return con, rs
+
+            def create_user(self, usr, psw):
+                query = "INSERT INTO User VALUES (%s, %s, %s);"
+                try:
+                    rs.execute(query, (CLIENT, usr, psw))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def update_user(self, usr, new_usr=None, new_psw=None):
+                new_usr = new_usr if new_usr is not None else usr
+                update_psw = new_psw is not None
+
+                if update_psw:
+                    try:
+                        if update_psw:
+                            query = "UPDATE User SET user_name = %s, psw_hash_salted = %s " \
+                                    "WHERE client = %s AND user_name = %s;"
+                            rs.execute(query, (new_usr, new_psw, CLIENT, usr))
+                        else:
+                            query = "UPDATE User SET user_name = %s WHERE client = %s AND user_name = %s;"
+                            rs.execute(query, (new_usr, CLIENT, usr))
+                        con.commit()
+                        rs.reset()
+                    except mysql_connector_Error as err:
+                        self.close()
+                        raise err
+
+            def create_item(self):
+                query = "INSERT INTO Inv_Item (client) VALUES (%s);"
+                try:
+                    rs.execute(query, (CLIENT))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+                query = "SELECT MAX(item_id) FROM Inv_Item;"
+                try:
+                    rs.execute(query)
+                    for (m) in rs:
+                        item_id = m
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+                return item_id
+
+            def create_server(self, name=None, ip_addr=None, ip_v=None, lid=None):
+                query = "INSERT INTO Server () VALUES ();"
+                try:
+                    rs.execute(query)
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+                query = "SELECT MAX(id) FROM Server;"
+                try:
+                    rs.execute(query)
+                    for (m) in rs:
+                        server_id = m
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+                self.update_server(server_id, name=name, ip_addr=ip_addr, ip_v=ip_v, lid=lid)
+
+                return server_id
+
+            def update_server(self, sid, name=None, ip_addr=None, ip_v=None, lid=None):
+                params = []
+                query = "UPDATE Server SET "
+                if name is not None:
+                    query += "name = %s, "
+                    params.append(name)
+                if ip_addr is not None:
+                    query += "ip_address = %s, "
+                    params.append(ip_addr)
+                if ip_v is not None:
+                    query += "ip_version = %s, "
+                    params.append(ip_v)
+                if lid is not None:
+                    query += "location_id = %s, "
+                    params.append(lid)
+                query = query[:-2] + ' '
+                query += "WHERE sid = %s;"
+                params.append(sid)
+
+                try:
+                    rs.execute(query, params)
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def create_vender(self, email, poc=None, baa=None, date=None):
+                query = "INSERT INTO Vender (email) VALUES (%s);"
+                try:
+                    rs.execute(query, tuple(email))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                self.update_vender(email, poc=poc, baa=baa)
+
+            def update_vender(self, email, new_email=None, poc=None, baa=None):
+                params = []
+                query = "UPDATE Vender SET "
+                if new_email is not None:
+                    query += "email = %s, "
+                    params.append(new_email)
+                if poc is not None:
+                    query += "poc = %s, "
+                    params.append(poc)
+                if baa is not None:
+                    query += "baa = %s, "
+                    params.append(baa)
+                query = query[:-2] + ' '
+                query += "WHERE email = %s;"
+                params.append(email)
+
+                try:
+                    rs.execute(query, params)
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def create_locataion(self, cloud=None, details=None, protection=None):
+                query = "INSERT INTO Location () VALUES ();"
+                try:
+                    rs.execute(query)
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+                query = "SELECT MAX(id) FROM Location;"
+                try:
+                    rs.execute(query)
+                    for (m) in rs:
+                        lid = m
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+                self.update_location(lid, cloud=cloud, details=details, protection=protection)
+
+                return lid
+
+            def update_location(self, lid, cloud=None, details=None, protection=None):
+                params = []
+                query = "UPDATE Location SET "
+                if cloud is not None:
+                    query += "cloud_prem = %s, "
+                    params.append(cloud)
+                if details is not None:
+                    query += "details = %s, "
+                    params.append(details)
+                if protection is not None:
+                    query += "protection = %s, "
+                    params.append(protection)
+                query = query[:-2] + ' '
+                query += "WHERE lid = %s;"
+                params.append(lid)
+
+                try:
+                    rs.execute(query, params)
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_name(self, n, iid):
+                query = "UPDATE Inv_Item SET name = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (n, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_type(self, t, iid):
+                query = "UPDATE Inv_Item SET type = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (t, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_version(self, v, iid):
+                query = "UPDATE Inv_Item SET version = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (v, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_os(self, os, iid):
+                query = "UPDATE Inv_Item SET os = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (os, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_os_version(self, v, iid):
+                query = "UPDATE Inv_Item SET os_version = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (v, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_vender(self, e, iid):
+                query = "UPDATE Inv_Item SET vender = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (v, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_auto_log_off_freq(self, f, iid):
+                query = "UPDATE Inv_Item SET auto_log_off_freq = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (f, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_server(self, sid, iid):
+                query = "UPDATE Inv_Item SET server = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (s, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_ephi(self, ephi, iid):
+                query = "UPDATE Inv_Item SET ephi = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (ephi, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_ephi_encrypted(self, e, iid):
+                query = "UPDATE Inv_Item SET ephi_encrypted = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (e, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_ephi_encr_method(self, m, iid):
+                query = "UPDATE Inv_Item SET ephi_encr_method = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (m, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_ephi_encr_tested(self, t, iid):
+                query = "UPDATE Inv_Item SET ephi_encr_tested = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (t, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_interfaces_with(self, i, iid):
+                query = "UPDATE Inv_Item SET interfaces_with = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (i, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_user_auth_method(self, m, iid):
+                query = "UPDATE Inv_Item SET user_auth_method = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (m, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_app_auth_method(self, m, iid):
+                query = "UPDATE Inv_Item SET app_auth_method = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (m, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_psw_min_length(self, l, iid):
+                query = "UPDATE Inv_Item SET psw_min_len = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (l, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_psw_change_freq(self, f, iid):
+                query = "UPDATE Inv_Item SET psw_change_freq = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (f, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_dept(self, d, iid):
+                query = "UPDATE Inv_Item SET dept = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (d, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_space(self, s, iid):
+                query = "UPDATE Inv_Item SET space = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (s, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_date_last_ordered(self, d, iid):
+                query = "UPDATE Inv_Item SET date_last_ordered = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (d, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_purchase_price(self, p, iid):
+                query = "UPDATE Inv_Item SET purchase_price = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (p, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_warranty_expires(self, d, iid):
+                query = "UPDATE Inv_Item SET warranty_expires = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (d, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_item_condition(self, c, iid):
+                query = "UPDATE Inv_Item SET item_condition = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (c, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_quantity(self, n, iid):
+                query = "UPDATE Inv_Item SET quantity = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (n, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_asset_value(self, v, iid):
+                query = "UPDATE Inv_Item SET assset_value = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (v, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_model_num(self, n, iid):
+                query = "UPDATE Inv_Item SET model_num = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (n, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_notes(self, n, iid):
+                query = "UPDATE Inv_Item SET notes = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (n, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_link(self, l, iid):
+                query = "UPDATE Inv_Item SET link = %s WHERE item_id = %s;"
+                try:
+                    rs.execute(query, (l, iid))
+                    con.commit()
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def close():
+                self.rs.close()
+                self.con.close()
+
+        self.api_obj = Connector()
+        return self.api_obj
+
+    def __exit__(exc_type, exc_val, exc_tb):
+        self.api_obj.close()
+
+def main():
+    pass
+
+if __name__ == '__main__':
+    # main()
+    pass
