@@ -18,11 +18,12 @@ class DBAPI:
             def __init__(self):
                 usr, pwd, hst, dab = self._read_config_info(config)
                 self.con, self.rs = self._establish_connection(usr, pwd, hst, dab)
+                CLIENT = self._validate_varchar(CLIENT)
 
             '''
             Reads config info from imported config dict. Returns a tuple of relavent info.
             '''
-            def _read_config_info(config_dict):
+            def _read_config_info(self, config_dict):
                 # try: 
                 usr = config_dict['user']
                 pwd = config_dict['pass']
@@ -37,7 +38,7 @@ class DBAPI:
             Establishes the connection to the database given the config information.
             Returns a reference to the connection and cursor/result set.
             '''
-            def _establish_connection(usr, pwd, hst, dab):
+            def _establish_connection(self, usr, pwd, hst, dab):
                 try:
                     con = mc.connect(user=usr,password=pwd, host=hst, database=dab)
                 except mc.Error as err:
@@ -51,10 +52,105 @@ class DBAPI:
                     raise err
                 return con, rs
 
+            def _validate_varchar(self, s, l=255):
+                s = str(s)
+                if len(s) > l:
+                    raise ValueError("String \"" + s + "\" too large for VARCHAR size " + l)
+                return s
+
+            def _validate_int(self, i, signed=False, size="INT"):
+                i = int(i)
+                if not signed and size=="INT":
+                    if 0 <= i and i < 2**32:
+                        return i
+                    else:
+                        raise ValueError("Int " + i + " too large for type UNSIGNED INT")
+                if not signed and size=="BIGINT":
+                    if 0 <= i and i < 2**64:
+                        return i
+                    else:
+                        raise ValueError("Int " + i + " too large for type UNSIGNED BIGINT")
+                else:
+                    raise NotImplementedError("_validate_int does not support params, signed=" + signed + ", size=\"" + size + "\"")
+
+            def _validate_bool(self, b):
+                return bool(b)
+
+            def _validate_date(self, d):
+                try:
+                    d = str(d)
+                except:
+                    raise TypeError("Date, " + d + ", should be castable to string")
+
+                try:
+                    arr = [int(n) for n in d.split('-')]
+                except:
+                    raise TypeError("Date, " + d + ", must be in format 'YYYY-MM-DD'")
+                
+                if arr[0] < 1000 or arr[0] > 9999:
+                    raise ValueError("Date, " + d + ", must have year 1000 <= y <= 9999")
+                if arr[1] < 1 or arr[1] > 12:
+                    raise ValueError("Date, " + d + ", must have month 01 <= y <= 12")
+                if arr[2] < 1 or arr[2] > 31:
+                    raise ValueError("Date, " + d + ", must have day 01 <= y <= 31")
+
+                if arr[1] in {4, 6, 9, 11} and arr[2] == 31:
+                    raise ValueError("Date, " + d + ", does not allow day " + arr[2] + " for month " + arr[1])
+                elif arr[1] == 2 and arr[2] > 28:
+                    raise ValueError("Date, " + d + ", does not allow day " + arr[2] + " for month " + arr[1])
+                    
+                return d
+
+            def _validate_cloud_prem(self, v):
+                v = str(v)
+                if v != "Cloud" or v != "On-Premise":
+                    raise TypeError("cloud_prem needs to be of value \"Cloud\" or \"On-Premise\"")
+                return v
+
+            def _validate_text(self, t, size="MEDIUMTEXT"):
+                t = str(t)
+                if size=="MEDIUMTEXT":
+                    if len(t) < 2**24:
+                        return t
+                    else:
+                        raise ValueError("TEXT " + t + " too large for type MEDIUMTEXT")
+                else:
+                    raise NotImplementedError("_validate_text does not support params, size=\"" + size + "\"")
+
+            def _validate_ip_address(self, addr, version):
+                version = str(version)
+                if version != "IPv4" or version != "IPv6":
+                    raise TypeError("ip_version requires value of \"IPv4\" or \"IPv6\"")
+                if version == "IPv4":
+                    try:
+                        addr = self._validate_int(addr)
+                    except ValueError:
+                        raise ValueError("IPv4 requires unsigned address < 2^32 (" + addr + " given)")
+                else: # version == "IPv6"
+                    try:
+                        addr = self._validate_int(addr, size="BIGINT")
+                    except ValueError:
+                        raise ValueError("IPv6 requires unsigned address < 2^64 (" + addr + " given)")
+                return addr, version
+
+            def _validate_decimal(self, d, m=13, n=4):
+                d = str(d)
+                arr = d.split('.')
+                if len(arr) > 2:
+                    raise ValueError("Decimal can take at most 1 '.' char")
+                if len(d) > m + 1:
+                    raise ValueError("Unsupported amount of precision for decimal, " + d + ", with precision, " + m)
+                if len(arr[1]) > 4:
+                    raise ValueError("Decimal only supports at most " + n + " digits past the decimal based on passed _validate_decimal params")
+                return d
+
             def create_user(self, usr, psw):
                 query = "INSERT INTO User VALUES (%s, %s, %s);"
+                params = [CLIENT, usr, psw]
+                for i in range(len(params)):
+                    params[i] = self._validate_varchar(params[i])
                 try:
-                    rs.execute(query, (CLIENT, usr, psw))
+                    rs.execute(query, tuple(params))
                     con.commit()
                     rs.reset()
                 except mysql_connector_Error as err:
@@ -64,6 +160,8 @@ class DBAPI:
             def update_user(self, usr, new_usr=None, new_psw=None):
                 new_usr = new_usr if new_usr is not None else usr
                 update_psw = new_psw is not None
+
+                # TODO: Follow new format!
 
                 if update_psw:
                     try:
@@ -103,6 +201,8 @@ class DBAPI:
                 return item_id
 
             def create_server(self, name=None, ip_addr=None, ip_v=None, lid=None):
+
+
                 query = "INSERT INTO Server () VALUES ();"
                 try:
                     rs.execute(query)
