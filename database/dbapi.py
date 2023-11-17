@@ -7,8 +7,6 @@ from config import config
 
 CLIENT = "MedCorp"
 
-# TODO: validate data, data validation rules
-
 class DBAPI:
     
     def __enter__(self):
