@@ -161,7 +161,9 @@ class DBAPI:
                 new_usr = new_usr if new_usr is not None else usr
                 update_psw = new_psw is not None
 
-                # TODO: Follow new format!
+                usr = self._validate_varchar(usr)
+                new_usr = self._validate_varchar(new_usr) if new_usr is not None else None
+                new_psw = self._validate_varchar(new_psw) if new_psw is not None else None
 
                 if update_psw:
                     try:
@@ -202,6 +204,9 @@ class DBAPI:
 
             def create_server(self, name=None, ip_addr=None, ip_v=None, lid=None):
 
+                name = self._validate_varchar(name) if name is not None else None
+                # TODO Validate IP Address
+                lid = self._validate_int(lid) if lid is not None else None
 
                 query = "INSERT INTO Server () VALUES ();"
                 try:
@@ -230,15 +235,19 @@ class DBAPI:
                 params = []
                 query = "UPDATE Server SET "
                 if name is not None:
+                    name = self._validate_varchar(name)
                     query += "name = %s, "
                     params.append(name)
                 if ip_addr is not None:
+                    # TODO: Validate IP Addr
                     query += "ip_address = %s, "
                     params.append(ip_addr)
                 if ip_v is not None:
+                    # TODO: Validate IP Addr
                     query += "ip_version = %s, "
                     params.append(ip_v)
                 if lid is not None:
+                    lid = self._validate_int(lid)
                     query += "location_id = %s, "
                     params.append(lid)
                 query = query[:-2] + ' '
@@ -246,7 +255,7 @@ class DBAPI:
                 params.append(sid)
 
                 try:
-                    rs.execute(query, params)
+                    rs.execute(query, tuple(params))
                     con.commit()
                     rs.reset()
                 except mysql_connector_Error as err:
@@ -254,6 +263,11 @@ class DBAPI:
                     raise err
 
             def create_vender(self, email, poc=None, baa=None, date=None):
+                email = self._validate_varchar(email)
+                poc = self._validate_varchar(poc) if poc is not None else None
+                baa = self._validate_bool(baa) if baa is not None else None
+                date = self._validate_date(date) if date is not None else None
+
                 query = "INSERT INTO Vender (email) VALUES (%s);"
                 try:
                     rs.execute(query, tuple(email))
@@ -265,15 +279,19 @@ class DBAPI:
                 self.update_vender(email, poc=poc, baa=baa)
 
             def update_vender(self, email, new_email=None, poc=None, baa=None):
+                email = self._validate_varchar(email)
                 params = []
                 query = "UPDATE Vender SET "
                 if new_email is not None:
+                    new_email = self._validate_varchar(new_email)
                     query += "email = %s, "
                     params.append(new_email)
                 if poc is not None:
+                    poc = self._validate_varchar(poc)
                     query += "poc = %s, "
                     params.append(poc)
                 if baa is not None:
+                    baa = self._validate_bool(baa)
                     query += "baa = %s, "
                     params.append(baa)
                 query = query[:-2] + ' '
@@ -281,7 +299,7 @@ class DBAPI:
                 params.append(email)
 
                 try:
-                    rs.execute(query, params)
+                    rs.execute(query, tuple(params))
                     con.commit()
                     rs.reset()
                 except mysql_connector_Error as err:
@@ -289,6 +307,10 @@ class DBAPI:
                     raise err
 
             def create_locataion(self, cloud=None, details=None, protection=None):
+                cloud = self._validate_cloud_prem(cloud) if cloud is not None else None
+                details = self._validate_varchar(details) if details is not None else None
+                protection = self._validate_text(protection) if protection is not None else None
+
                 query = "INSERT INTO Location () VALUES ();"
                 try:
                     rs.execute(query)
@@ -316,12 +338,15 @@ class DBAPI:
                 params = []
                 query = "UPDATE Location SET "
                 if cloud is not None:
+                    cloud = self._validate_cloud_prem(cloud)
                     query += "cloud_prem = %s, "
                     params.append(cloud)
                 if details is not None:
+                    details = self._validate_varchar(details)
                     query += "details = %s, "
                     params.append(details)
                 if protection is not None:
+                    protection = self._validate_text(protection)
                     query += "protection = %s, "
                     params.append(protection)
                 query = query[:-2] + ' '
@@ -329,7 +354,7 @@ class DBAPI:
                 params.append(lid)
 
                 try:
-                    rs.execute(query, params)
+                    rs.execute(query, tuple(params))
                     con.commit()
                     rs.reset()
                 except mysql_connector_Error as err:
@@ -337,6 +362,9 @@ class DBAPI:
                     raise err
 
             def set_name(self, n, iid):
+                n = self._validate_varchar(n)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET name = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (n, iid))
@@ -347,6 +375,9 @@ class DBAPI:
                     raise err
 
             def set_type(self, t, iid):
+                t = self._validate_varchar(t)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET type = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (t, iid))
@@ -357,6 +388,9 @@ class DBAPI:
                     raise err
 
             def set_version(self, v, iid):
+                v = self._validate_varchar(v)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET version = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (v, iid))
@@ -367,6 +401,9 @@ class DBAPI:
                     raise err
 
             def set_os(self, os, iid):
+                os = self._validate_varchar(os)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET os = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (os, iid))
@@ -377,6 +414,9 @@ class DBAPI:
                     raise err
 
             def set_os_version(self, v, iid):
+                v = self._validate_varchar(v)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET os_version = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (v, iid))
@@ -387,6 +427,9 @@ class DBAPI:
                     raise err
 
             def set_vender(self, e, iid):
+                e = self._validate_varchar(e)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET vender = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (v, iid))
@@ -397,6 +440,9 @@ class DBAPI:
                     raise err
 
             def set_auto_log_off_freq(self, f, iid):
+                ifid = self._validate_int(f)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET auto_log_off_freq = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (f, iid))
@@ -407,6 +453,9 @@ class DBAPI:
                     raise err
 
             def set_server(self, sid, iid):
+                sid = self._validate_int(sid) # TODO: validate valid server id number (less than max, also included in rs)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET server = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (s, iid))
@@ -417,6 +466,9 @@ class DBAPI:
                     raise err
 
             def set_ephi(self, ephi, iid):
+                ephi = self._validate_bool(ephi)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET ephi = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (ephi, iid))
@@ -427,6 +479,9 @@ class DBAPI:
                     raise err
 
             def set_ephi_encrypted(self, e, iid):
+                e = self._validate_bool(e)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET ephi_encrypted = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (e, iid))
@@ -437,6 +492,9 @@ class DBAPI:
                     raise err
 
             def set_ephi_encr_method(self, m, iid):
+                m = self._validate_varchar(m)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET ephi_encr_method = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (m, iid))
@@ -447,6 +505,9 @@ class DBAPI:
                     raise err
 
             def set_ephi_encr_tested(self, t, iid):
+                t = self._validate_bool(t)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET ephi_encr_tested = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (t, iid))
@@ -457,6 +518,9 @@ class DBAPI:
                     raise err
 
             def set_interfaces_with(self, i, iid):
+                t = self._validate_text(t)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET interfaces_with = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (i, iid))
@@ -467,6 +531,9 @@ class DBAPI:
                     raise err
 
             def set_user_auth_method(self, m, iid):
+                m = self._validate_varchar(m)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET user_auth_method = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (m, iid))
@@ -477,6 +544,9 @@ class DBAPI:
                     raise err
 
             def set_app_auth_method(self, m, iid):
+                m = self._validate_varchar(m)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET app_auth_method = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (m, iid))
@@ -487,6 +557,9 @@ class DBAPI:
                     raise err
 
             def set_psw_min_length(self, l, iid):
+                l = self._validate_int(l)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET psw_min_len = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (l, iid))
@@ -497,6 +570,9 @@ class DBAPI:
                     raise err
 
             def set_psw_change_freq(self, f, iid):
+                f = self._validate_int(f)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET psw_change_freq = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (f, iid))
@@ -507,6 +583,9 @@ class DBAPI:
                     raise err
 
             def set_dept(self, d, iid):
+                d = self._validate_varchar(d)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET dept = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (d, iid))
@@ -517,6 +596,9 @@ class DBAPI:
                     raise err
 
             def set_space(self, s, iid):
+                s = self._validate_varchar(s)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET space = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (s, iid))
@@ -527,6 +609,9 @@ class DBAPI:
                     raise err
 
             def set_date_last_ordered(self, d, iid):
+                d = self._validate_date(d)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET date_last_ordered = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (d, iid))
@@ -537,6 +622,9 @@ class DBAPI:
                     raise err
 
             def set_purchase_price(self, p, iid):
+                p = self._validate_decimal(p)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET purchase_price = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (p, iid))
@@ -547,6 +635,9 @@ class DBAPI:
                     raise err
 
             def set_warranty_expires(self, d, iid):
+                d = self._validate_date(d)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET warranty_expires = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (d, iid))
@@ -557,6 +648,9 @@ class DBAPI:
                     raise err
 
             def set_item_condition(self, c, iid):
+                c = self._validate_varchar(c)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET item_condition = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (c, iid))
@@ -567,6 +661,9 @@ class DBAPI:
                     raise err
 
             def set_quantity(self, n, iid):
+                n = self._validate_int(n)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET quantity = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (n, iid))
@@ -577,6 +674,9 @@ class DBAPI:
                     raise err
 
             def set_asset_value(self, v, iid):
+                v = self._validate_decimal(v)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET assset_value = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (v, iid))
@@ -587,6 +687,9 @@ class DBAPI:
                     raise err
 
             def set_model_num(self, n, iid):
+                n = self._validate_varchar(n)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET model_num = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (n, iid))
@@ -597,6 +700,9 @@ class DBAPI:
                     raise err
 
             def set_notes(self, n, iid):
+                n = self._validate_text(n)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET notes = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (n, iid))
@@ -607,6 +713,9 @@ class DBAPI:
                     raise err
 
             def set_link(self, l, iid):
+                l = self._validate_varchar(l)
+                iid = self._validate_int(iid)
+
                 query = "UPDATE Inv_Item SET link = %s WHERE item_id = %s;"
                 try:
                     rs.execute(query, (l, iid))
