@@ -62,8 +62,8 @@ if __name__ == "__main__":
     nmap = Nmap()
     
     dest_filename = "test_results.json" # "scan_results.json"
-    start_ip = "172.23.96.1"
-    end_ip = "172.23.96.1"
+    start_ip = "10.0.2.15"
+    end_ip = "10.0.2.15"
     
     start_ip = ipaddress.IPv4Address(start_ip)
     end_ip = ipaddress.IPv4Address(end_ip)
