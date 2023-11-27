@@ -11,6 +11,7 @@ from scapy.all import ARP, Ether, srp
 from pysnmp.hlapi import * # pip install pysnmp
 import threading
 from threading import Thread
+import ssl
 
 def get_default_gateway():
     gateways = netifaces.gateways()
@@ -81,7 +82,6 @@ def get_public_ip():
 
 def get_location(server_ip):
     response = requests.get(f'https://ipapi.co/{server_ip}/json/').json()
-    print(response)
     city = response.get("city")
     region = response.get("region")
     country = response.get("country_name")
@@ -132,6 +132,15 @@ def scan_uphosts(host):
     print("Device Type: " + device_type)  
     
     return cur_device_name, os_name, os_gen, os_family, device_type
+
+def get_server_encryption_type(hostname):
+    try:
+        context = ssl.create_default_context()
+        with context.wrap_socket(socket.socket(), server_hostname=hostname) as s:
+            s.connect((hostname, 443))  # Port for HTTPS connections
+            return s.version()
+    except Exception as e:
+        return f"Error: {str(e)}"
    
 
 if __name__ == "__main__":
@@ -146,18 +155,8 @@ if __name__ == "__main__":
     subnet = get_network_subnet(gateway_ip)
     up_hosts, macs_lst = get_hosts_up(subnet)
     num_devices = len(up_hosts)
-    
-    print(f"\nServer Gateway IP: {gateway_ip}")
-    print(f"Network Subnet: {subnet}")
-    print(f"Number of Connections: {num_devices}")
-    
-    if not server_name.startswith("Error"):
-        print(f"Server name for {gateway_ip} is: {server_name}")
-    else:
-        print(f"No hostname found on gateway: {gateway_ip}")
-    if country != "": 
-        print(f"Server Location: {city}, {region} in {country}\n")
-    
+    encryption = get_server_encryption_type(gateway_ip)
+        
     class ScannerThread(Thread):
         def __init__(self, argument):
             Thread.__init__(self)
@@ -183,11 +182,26 @@ if __name__ == "__main__":
             os_gens.append(os_gen)
             os_families.append(os_family)
             device_types.append(device_type)
-            
-            print(device_name, os_name, os_gen, os_family, device_type)
     except Exception as e:
         print("Unable to find OS.")
     
+    print(f"\nServer Gateway IP: {gateway_ip}")
+    print(f"Network Subnet: {subnet}")
+    print(f"Number of Connections: {num_devices}")
+    
+    if not server_name.startswith("Error"):
+        print(f"Server name: {server_name}")
+    else:
+        server_name = "N/A"
+        print(f"No server hostname found.")
+    if country != "": 
+        print(f"Server Location: {city}, {region} in {country}")
+    if not encryption.startswith("Error"):
+        print(f"Encryption Type: {encryption}\n")
+    else:
+        encryption = "N/A"
+        print("No server encryption type found.\n")
+        
     print("\nSummary:")
     print(up_hosts)
     print(device_names)
