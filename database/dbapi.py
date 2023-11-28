@@ -451,7 +451,21 @@ class DBAPI:
                     raise err
 
             def set_server(self, sid, iid):
-                sid = self._validate_int(sid) # TODO: validate valid server id number (less than max, also included in rs)
+                sid = self._validate_int(sid)
+
+                query = "SELECT id FROM Server WHERE id=%s;"
+                try:
+                    rs.execute(query, tuple(sid))
+                    for (m) in rs:
+                        server_id = m
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+                if sid != m:
+                    raise ValueError("Attempting to set server id field of item to nonexistent server id value")
+
                 iid = self._validate_int(iid)
 
                 query = "UPDATE Inv_Item SET server = %s WHERE item_id = %s;"
