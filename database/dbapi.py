@@ -115,7 +115,7 @@ class DBAPI:
                 else:
                     raise NotImplementedError("_validate_text does not support params, size=\"" + size + "\"")
 
-            def _validate_ip_address(self, addr, version):
+            def _validate_ip_address(self, addr, version): # TODO
                 version = str(version)
                 if version != "IPv4" or version != "IPv6":
                     raise TypeError("ip_version requires value of \"IPv4\" or \"IPv6\"")
@@ -246,8 +246,23 @@ class DBAPI:
                     params.append(ip_v)
                 if lid is not None:
                     lid = self._validate_int(lid)
+
+                    query = "SELECT id FROM Location WHERE id=%s;"
+                    try:
+                        rs.execute(query, tuple(lid))
+                        for (m) in rs:
+                            server_id = m
+                        rs.reset()
+                    except mysql_connector_Error as err:
+                        self.close()
+                        raise err
+
+                    if lid != m:
+                        raise ValueError("Attempting to set location id field of server to nonexistent location id value")
+
                     query += "location_id = %s, "
                     params.append(lid)
+                    
                 query = query[:-2] + ' '
                 query += "WHERE sid = %s;"
                 params.append(sid)
@@ -451,7 +466,21 @@ class DBAPI:
                     raise err
 
             def set_server(self, sid, iid):
-                sid = self._validate_int(sid) # TODO: validate valid server id number (less than max, also included in rs)
+                sid = self._validate_int(sid)
+
+                query = "SELECT id FROM Server WHERE id=%s;"
+                try:
+                    rs.execute(query, tuple(sid))
+                    for (m) in rs:
+                        server_id = m
+                    rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+                if sid != m:
+                    raise ValueError("Attempting to set server id field of item to nonexistent server id value")
+
                 iid = self._validate_int(iid)
 
                 query = "UPDATE Inv_Item SET server = %s WHERE item_id = %s;"
