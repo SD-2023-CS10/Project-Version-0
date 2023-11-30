@@ -317,7 +317,7 @@ if __name__ == "__main__":
         encryption = "N/A"
         print("No server encryption type found.\n")
 
-    device_names, os_names, os_families, device_types = fetch_host_stats(up_hosts) # scan device and software details
+    device_names, os_names, os_gens, os_families, device_types = fetch_host_stats(up_hosts) # scan device and software details
     port_ids_lst, services_lst, service_products_lst, service_versions_lst = fetch_ports_stats(up_hosts) # scan ports on hosts
     
     print("\nSummary:"); print(up_hosts); print(device_names); print(os_names); print(os_families)
