@@ -3,7 +3,7 @@ main()
 '''
 
 import mysql.connector as mc
-from config import config
+from database.config import config
 
 CLIENT = "MedCorp"
 
@@ -15,7 +15,7 @@ class DBAPI:
 
             def __init__(self):
                 usr, pwd, hst, dab = self._read_config_info(config)
-                self.con, self.rs = self._establish_connection(usr, pwd, hst, dab)
+                self._establish_connection(usr, pwd, hst, dab)
                 CLIENT = self._validate_varchar(CLIENT)
 
             '''
@@ -28,27 +28,18 @@ class DBAPI:
                 hst = config_dict['host']
                 dab = config_dict['db']
                 return usr, pwd, hst, dab
-                # except Exception as e:
-                #     print(e)
-                #     exit()
             
             '''
             Establishes the connection to the database given the config information.
             Returns a reference to the connection and cursor/result set.
             '''
             def _establish_connection(self, usr, pwd, hst, dab):
+                self.con = mc.connect(user=usr,password=pwd, host=hst, database=dab)
                 try:
-                    con = mc.connect(user=usr,password=pwd, host=hst, database=dab)
+                    self.rs = con.cursor()
                 except mc.Error as err:
-                    print(err)
-                    con.close()
-                    exit()
-                try:
-                    rs = con.cursor()
-                except mc.Error as err:
-                    self.close()
+                    self.con.close()
                     raise err
-                return con, rs
 
             def _validate_varchar(self, s, l=255):
                 s = str(s)
@@ -755,7 +746,7 @@ class DBAPI:
                     self.close()
                     raise err
 
-            def close():
+            def close(self):
                 self.rs.close()
                 self.con.close()
 
