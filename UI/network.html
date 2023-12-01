@@ -1,21 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <link rel="stylesheet" href="styles.css">
- </head>
-<body>
-    <div id="header">
-        <h1 class="textlogo">Network Inventory</h1>
-    </div>
-    <div id="nav">
-        <ul>
-            <li><a href="index.html">Computers</a></li>
-            <li><a href="network.html">Network</a></li>
-            <li><a href="settings.html">Settings</a></li>
-            <li><a href="download.html">Download</a></li>
-          </ul>
-    </div>
-</body>
+<title>Inventory</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="styling\homepage.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+  body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+</style>
+</head>
+<body class="light-grey content" style="max-width:1600px">
 
+<!-- Sidebar/menu -->
+<nav class="sidebar collapse blue animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+  <div class="container">
+    <a href="index.html" onclick="w3_close()" class="hide-large right jumbo padding hover-grey" title="close menu">
+      <i class="fa fa-remove"></i>
+    </a>
+        <img src="resources\logo.png" alt="logo" style="width: 250px;">
+     </a>
+    <h4><b>Network Inventory</b></h4>
+  </div>
+  <div class="section bottombar"></div>
+  <div class="bar-block">
+    <a href="index.html" onclick="w3_close()" class="bar-item button padding"></i>HOME</a> 
+    <a href="network.html" onclick="w3_close()" class="bar-item button padding grey text-black"></i>NETWORK</a> 
+    <a href="settings.html" onclick="w3_close()" class="bar-item button padding"></i>SETTINGS</a>
+    <a href="download.html" onclick="w3_close()" class="bar-item button padding"></i>DOWNLOAD</a>
+  </div>
+</nav>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="overlay hide-large animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- PAGE CONTENT! -->
+<div class="main" style="margin-left:300px">
+
+  <!-- Header -->
+  <header id="MedCorp System Inventory">
+    <span class="button hide-large xxlarge hover-text-grey" onclick="w3_open()"><i class="fa fa-bars"></i></span>
+    <div class="container">
+      <h1><b>MedCorp System Inventory</b><button class="button margin-right right green large">SAVE</button></h1>
+      <div class="section bottombar padding-16">
+        <a href="index.html"><button class="button black">System/Devices</button></a>
+        <a href="server-tab.html"><button class="button white"></i>Server Info</button></a>
+        <a href="ephi-tab.html"><button class="button white hide-small"></i>ePHI</button></a>
+        <a href="authentication-tab.html"><button class="button white hide-small"></i>Authentication Methods</button></a>
+      </div>
+      <div class="inputbar">
+        <input type="text" placeholder="Search Filter..">
+      </div>
+    </div>
+  </header>
+
+  <!-- First Grid-->
+  <div class="row-padding">
+    <div class="container left">
+      <h4><b>Scan</b></h4>
+      <p>Frodo felt a strange certainty that in this matter Gandalf was right. His guess had been good. The Riders were looking for a hobbit, and they were far afield from the Shire; but he felt it was not he that they were seeking. They were looking for something that belonged to him and his enemy. No doubt they thought that he was just such another as the creature Gollum. He could see them clearly, riding like the wind in the moonlight, but now they were far ahead. Suddenly he knew in his heart that they were silently commanding him to wait. That he must wait. He cowered into the shadow of a large boulder, and waited.</p>
+      <hr>
+    </div>
+    <div class="container">
+      <div class = "button left xxlarge">
+        <i class="fa fa-solid fa-plus left"></i>
+      </div>
+      <div class="inputbar">
+        <input class= "left" type="text" placeholder="Add Device..">
+      </div>
+    </div>
+  </div>
+
+  <div class="container padding-large" style="margin-bottom:32px">
+    <div class="row-padding" style="margin:0 -16px">
+      </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="container padding-64 dark-grey bottom">
+  
+    <div class="third">
+    </div>
+
+    <div class="third">
+    </div>
+
+    <div class="third">
+    </div>
+
+  </footer>
+  
+  <div class="black center padding-24 bottom">
+
+<!-- End page content -->
+</div>
+
+<script>
+// Script to open and close sidebar
+function w3_open() {
+    document.getElementById("mySidebar").style.display = "block";
+    document.getElementById("myOverlay").style.display = "block";
+}
+ 
+function w3_close() {
+    document.getElementById("mySidebar").style.display = "none";
+    document.getElementById("myOverlay").style.display = "none";
+}
+</script>
+
+</body>
 </html>
