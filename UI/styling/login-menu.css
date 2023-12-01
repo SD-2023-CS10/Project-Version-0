@@ -129,3 +129,16 @@ body {
 .form__link:hover {
   text-decoration: underline;
 }
+
+#container {
+  display: flex;
+  flex-direction: row;
+  /* gap: 15px; */
+}
+/* / need to make two child / */
+#container #main {
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-basis: 70%;
+  /* / flex: 0 1 70%; / */
+}
