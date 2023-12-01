@@ -239,11 +239,11 @@ class DBAPI:
                     query += "name = %s, "
                     params.append(name)
                 if ip_addr is not None:
-                    # TODO: Validate IP Addr
+                    ip_addr, _ = self._validate_ip_address(ip_addr, ip_v)
                     query += "ip_address = %s, "
                     params.append(ip_addr)
                 if ip_v is not None:
-                    # TODO: Validate IP Addr
+                    _, ip_v = self._validate_ip_address(ip_addr, ip_v)
                     query += "ip_version = %s, "
                     params.append(ip_v)
                 if lid is not None:
