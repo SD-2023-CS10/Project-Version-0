@@ -205,7 +205,7 @@ class DBAPI:
             def create_server(self, name=None, ip_addr=None, ip_v=None, lid=None):
 
                 name = self._validate_varchar(name) if name is not None else None
-                # TODO Validate IP Address
+                ip_addr, ip_v = self._validate_ip_address(ip_addr, ip_v)
                 lid = self._validate_int(lid) if lid is not None else None
 
                 query = "INSERT INTO Server () VALUES ();"
