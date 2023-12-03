@@ -14,6 +14,7 @@ from pysnmp.hlapi import * # pip install pysnmp
 import threading
 from threading import Thread
 import ssl
+import time
 
 '''
 ScannerThread class runs scan_uphosts() and retrieves result with multithreading.
@@ -280,10 +281,10 @@ def fetch_ports_stats(up_hosts):
         print("Unable to get discoverable ports")
     return port_ids_lst, services_lst, service_products_lst, service_versions_lst
 
-def get_os_and_open_ports(up_hosts):
+def get_os_and_open_ports(host):
     try:
-        os_details = []; ports = []; protocols = []; statuses = []; services = []
-        print("\n",host)
+        device_types = []; os_details = []; ports = []; protocols = []; statuses = []; services = []
+        print("\n" + host)
         result = subprocess.run(['nmap', '-O', '-T4', host], capture_output=True, text=True, timeout=20) 
         output = result.stdout
         # Parse nmap output to extract OS information and open ports
@@ -292,23 +293,30 @@ def get_os_and_open_ports(up_hosts):
         os_info = os_match.group(1) if os_match else "N/A"
         print(os_info)
         os_details.append(os_info)
+        device_pattern = r"Device type: (.+)"
+        device_match = re.search(device_pattern, output)
+        device_info = device_match.group(1) if device_match else "N/A"
+        print(device_info)
+        device_types.append(device_info)
+        
         # Parse nmap output to extract open ports
         port_info_pattern = r"(\d+)/(\w+)\s+(\w+)\s+(\w+)"
         port_matches = re.findall(port_info_pattern, output)
         
         for match in port_matches:
-            port = match[0]
+            port = match[0] if match[0] != "" else "N/A"
             ports.append(port)
-            protocol = match[1]
+            protocol = match[1] if match[1] != "" else "N/A"
             protocols.append(protocol)
-            status = match[2]
+            status = match[2] if match[2] != "" else "N/A"
             statuses.append(status)
-            service = match[3]
+            service = match[3] if match[3] != "" else "N/A"
             services.append(service)
             print(f"Port: {port}, Protocol: {protocol}, Status: {status}, Service: {service}")
         
     except subprocess.TimeoutExpired:
         print(f"Timeout occurred scanning {host}")
+        device_types.append("N/A")
         os_details.append("N/A")
         ports.append("N/A")
         protocols.append("N/A")
@@ -316,12 +324,13 @@ def get_os_and_open_ports(up_hosts):
         services.append("N/A")
     except Exception as e:
         print(f"Error retrieving OS information and open ports: {e}")
+        device_types.append("N/A")
         os_details.append("N/A")
         ports.append("N/A")
         protocols.append("N/A")
         statuses.append("N/A")
         services.append("N/A")
-    return os_details, ports, protocols, statuses, services
+    return device_types, os_details, ports, protocols, statuses, services
     
 '''
 Main Program Driver
@@ -332,7 +341,7 @@ if __name__ == "__main__":
     # Ensure Internet Connectivity
     try:
         target_host = socket.gethostname()
-        print(target_host)
+        print("Target Hostname: " + target_host)
         gateway_ip = get_default_gateway()
         print(f"\nServer Gateway IP: {gateway_ip}")
         subnet = get_network_subnet(gateway_ip)
@@ -358,33 +367,37 @@ if __name__ == "__main__":
     
     # os_names, os_gens, os_families, device_types = fetch_host_stats(up_hosts) # scan device and software details
     # port_ids_lst, services_lst, service_products_lst, service_versions_lst = fetch_ports_stats(up_hosts) # scan ports on hosts
-    os_lst = []; port_ids_lst = []; protocols_lst = []; status_lst = []; services_lst = []
+    device_types = []; os_lst = []; port_ids_lst = []; protocols_lst = []; status_lst = []; services_lst = []
     for host in up_hosts:
-        os_details, ports, protocols, statuses, services = get_os_and_open_ports(host)
+        start_time = time.time()
+        device_type, os_details, ports, protocols, statuses, services = get_os_and_open_ports(host)
+        device_types.append(device_type)
         os_lst.append(os_details)
         port_ids_lst.append(ports)
         protocols_lst.append(protocols)
         status_lst.append(statuses)
         services_lst.append(services)
-        print()
+        end_time = time.time()
+        print(f"Executed in {end_time - start_time} seconds.")
+    print(device_types)
     print(os_lst)
     print(port_ids_lst)
     print(protocols_lst)
     print(status_lst)
     print(services_lst)
-    print("\nSummary:"); # print(up_hosts); print(macs_lst); print(os_names); print(os_families)
+    print("\nSummary:"); 
+    # print(up_hosts); print(macs_lst); print(os_names); print(os_families)
     # print(device_types); print(port_ids_lst); print(services_lst); print(service_products_lst)
     # print(service_versions_lst);
     
     for i in range(len(up_hosts)):
         print("Host: " + up_hosts[i])
         print("MAC Address: " + macs_lst[i])
-        
-        for j in range(len(port_ids_lst)):
-            print("Operating System Name: " + ", ".join(os_lst[i]))
-            print("Port ID: " + ", ".join(port_ids_lst[j]))
-            print("Protocol: " + ", ".join(protocols_lst[j]))
-            print("Status: " + ", ".join(status_lst[j]))
-            print("Service: " + ", ".join(services_lst[j]))
+        print("Device Type: " + ", ".join(device_types[i]))
+        print("Operating System Name: " + ", ".join(os_lst[i]))
+        print("Port ID: " + ", ".join(port_ids_lst[i]))
+        print("Protocol: " + ", ".join(protocols_lst[i]))
+        print("Status: " + ", ".join(status_lst[i]))
+        print("Service: " + ", ".join(services_lst[i]))
         print()
         
