@@ -115,20 +115,23 @@ class DBAPI:
                 else:
                     raise NotImplementedError("_validate_text does not support params, size=\"" + size + "\"")
 
-            def _validate_ip_address(self, addr, version): # TODO
-                version = str(version)
-                if version != "IPv4" or version != "IPv6":
+            def _validate_ip_address(self, addr, version):
+                version = str(version) if verison is not None else None
+                if version != "IPv4" or version != "IPv6" or version is not None:
                     raise TypeError("ip_version requires value of \"IPv4\" or \"IPv6\"")
                 if version == "IPv4":
                     try:
-                        addr = self._validate_int(addr)
+                        addr = self._validate_int(addr) if addr is not None else None
                     except ValueError:
                         raise ValueError("IPv4 requires unsigned address < 2^32 (" + addr + " given)")
-                else: # version == "IPv6"
+                else: # version == "IPv6" or version is None
                     try:
-                        addr = self._validate_int(addr, size="BIGINT")
+                        addr = self._validate_int(addr, size="BIGINT") if addr is not None else None
                     except ValueError:
-                        raise ValueError("IPv6 requires unsigned address < 2^64 (" + addr + " given)")
+                        if version == "IPv6":
+                            raise ValueError("IPv6 requires unsigned address < 2^64 (" + addr + " given)")
+                        else:
+                            raise ValueError("IP address requires unsigned address < 2^64 (" + addr + " given)")
                 return addr, version
 
             def _validate_decimal(self, d, m=13, n=4):
@@ -205,7 +208,7 @@ class DBAPI:
             def create_server(self, name=None, ip_addr=None, ip_v=None, lid=None):
 
                 name = self._validate_varchar(name) if name is not None else None
-                # TODO Validate IP Address
+                ip_addr, ip_v = self._validate_ip_address(ip_addr, ip_v)
                 lid = self._validate_int(lid) if lid is not None else None
 
                 query = "INSERT INTO Server () VALUES ();"
@@ -239,11 +242,11 @@ class DBAPI:
                     query += "name = %s, "
                     params.append(name)
                 if ip_addr is not None:
-                    # TODO: Validate IP Addr
+                    ip_addr, _ = self._validate_ip_address(ip_addr, ip_v)
                     query += "ip_address = %s, "
                     params.append(ip_addr)
                 if ip_v is not None:
-                    # TODO: Validate IP Addr
+                    _, ip_v = self._validate_ip_address(ip_addr, ip_v)
                     query += "ip_version = %s, "
                     params.append(ip_v)
                 if lid is not None:
