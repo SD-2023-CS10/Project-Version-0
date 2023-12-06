@@ -15,7 +15,7 @@ CREATE TABLE Client (
 CREATE TABLE User (
     client VARCHAR(255) NOT NULL,
     user_name VARCHAR(255) NOT NULL,
-    psw_hash_salted INT NOT NULL,
+    psw_hash_salted INT UNSIGNED NOT NULL,
     PRIMARY KEY (client, user_name),
     FOREIGN KEY (client) REFERENCES Client(name)
 );
@@ -41,7 +41,7 @@ CREATE TABLE Server (
     ip_address BIGINT UNSIGNED,
     ip_version ENUM('IPv4', 'IPv6'),
     location_id INT UNSIGNED NOT NULL,
-    CHECK (ip_address > 4294967295 OR ip_version='IPv4'),
+    CHECK (ip_address < 4294967296 OR ip_version='IPv6'),
     UNIQUE (ip_address, ip_version),
     FOREIGN KEY (location_id) REFERENCES Location(id)
 );
@@ -75,7 +75,7 @@ CREATE TABLE Inv_Item (
     dept VARCHAR(255),
     space VARCHAR(255),
     date_last_ordered DATE,
-    purchase_price DECIMAL(13, 4), -- GAP guideline
+    purchase_price DECIMAL(13, 4), -- GAAP guideline
     warranty_expires DATE,
     item_condition VARCHAR(255), -- larger? enum?
     quantity INT UNSIGNED,

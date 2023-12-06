@@ -25,10 +25,10 @@
   </div>
   <div class="section bottombar"></div>
   <div class="bar-block">
-    <a href="index.html" onclick="w3_close()" class="bar-item button padding"></i>HOME</a> 
-    <a href="network.html" onclick="w3_close()" class="bar-item button padding"></i>NETWORK</a> 
-    <a href="settings.html" onclick="w3_close()" class="bar-item button padding grey text-black"></i>SETTINGS</a>
-    <a href="download.html" onclick="w3_close()" class="bar-item button padding"></i>DOWNLOAD</a>
+    <a href="index.html" onclick="w3_close()" class="bar-item button padding grey text-black"><i class="fa fa-solid fa-house-user"></i> HOME</a> 
+    <a href="network.html" onclick="w3_close()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a> 
+    <a href="settings.html" onclick="w3_close()" class="bar-item button padding"><i class="fa fa-solid fa-gear"></i>  SETTINGS</a>
+    <a href="download.html" onclick="w3_close()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i>  DOWNLOAD</a>
   </div>
 </nav>
 
@@ -42,12 +42,13 @@
   <header id="MedCorp System Inventory">
     <span class="button hide-large xxlarge hover-text-grey" onclick="w3_open()"><i class="fa fa-bars"></i></span>
     <div class="container">
-      <h1><b>MedCorp System Inventory</b><button class="button margin-right right green large">SAVE</button></h1>
+      <h1><b>MedCorp System Inventory</b><button class="button margin-right right green large">SAVE <i class="fa fa-solid fa-upload large"></i></button></h1>
       <div class="section bottombar padding-16">
         <a href="index.html"><button class="button black">System/Devices</button></a>
         <a href="server-tab.html"><button class="button white"></i>Server Info</button></a>
         <a href="ephi-tab.html"><button class="button white hide-small"></i>ePHI</button></a>
         <a href="authentication-tab.html"><button class="button white hide-small"></i>Authentication Methods</button></a>
+        <a href="asset-info-tab.html"><button class="button white hide-small"></i>Asset Information</button></a>
       </div>
       <div class="inputbar">
         <input type="text" placeholder="Search Filter..">
@@ -58,8 +59,62 @@
   <!-- First Grid-->
   <div class="row-padding">
     <div class="container left">
-      <h4><b>Scan</b></h4>
-      <p>Frodo felt a strange certainty that in this matter Gandalf was right. His guess had been good. The Riders were looking for a hobbit, and they were far afield from the Shire; but he felt it was not he that they were seeking. They were looking for something that belonged to him and his enemy. No doubt they thought that he was just such another as the creature Gollum. He could see them clearly, riding like the wind in the moonlight, but now they were far ahead. Suddenly he knew in his heart that they were silently commanding him to wait. That he must wait. He cowered into the shadow of a large boulder, and waited.</p>
+      <h4><b>Asset Information</b></h4>
+      <font size="4" face = "Courier New">
+        <table BORDER=1 width="100%">
+            <thead>
+              <td>DEPARTMENT</td>
+              <td>SPACE (LOCATION)</td>
+              <td>DATE OF LAST ORDER</td>
+              <td>VENDOR</td>
+              <td>PURCHASE PRICE PER ITEM</td>
+              <td>WARRANTY EXPIRY DATE</td>
+              <td>CONDITION</td>
+              <td>QUANTITY</td>
+              <td>ASSET VALUE</td>
+              <td>TOTAL VALUE</td>
+              <td>MODEL</td>
+              <td>VENDOR NO.</td>
+              <td>REMARKS</td>    
+              <td>PHOTOGRAPH/LINK</td>
+                
+            </thead>
+            <tr>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+            </tr>
+            <tr>
+              <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+          </tr>
+
+
+        </table>
+    </font>   
       <hr>
     </div>
     <div class="container">
