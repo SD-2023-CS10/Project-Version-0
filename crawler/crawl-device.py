@@ -17,18 +17,7 @@ import ssl
 import time
 
 '''
-ScannerThread class runs scan_uphosts() and retrieves result with multithreading.
-'''
-class ScannerThread(Thread):
-        def __init__(self, argument):
-            Thread.__init__(self)
-            self.argument = argument
-            self.result = None
-        def run(self):
-            self.result = scan_uphosts(self.argument) # store output from function
-
-'''
-ServiceThread class runs get_services() and retrieves result with multithreading.
+ServiceThread class runs get_os_and_open_ports() and retrieves result with multithreading.
 '''
 class ServiceThread(Thread):
     def __init__(self, argument):
@@ -36,7 +25,7 @@ class ServiceThread(Thread):
         self.argument = argument
         self.result = None
     def run(self):
-        self.result = get_services(self.argument)
+        self.result = get_os_and_open_ports(self.argument)
 
 '''
 Function: get_default_gateway()
@@ -159,55 +148,6 @@ def get_location(server_ip):
     return city, region, country
 
 '''
-Function: get_services
-Args: ip_address
-Finds ports that are discoverable / exploitable
-Returns ports and service details using nmap_version_detection()
-'''
-def get_services(ip_address):
-    nmap = Nmap()
-    try:
-        results = nmap.nmap_version_detection(ip_address)
-        port_ids = []
-        services = []
-        service_products = []
-        service_versions = []
-        
-        if ip_address in results:
-            ports = results[ip_address]['ports']
-            for port in ports:
-                service = port['service']
-                port_id = port['portid']
-                port_ids.append(port_id)
-                service_name = service.get('name', 'N/A')
-                services.append(service_name)
-                service_product = service.get('product', 'N/A')
-                service_products.append(service_product)
-                service_version = service.get('version', 'N/A') # grab version if applicable, else N/A
-                service_versions.append(service_version)
-            return port_ids, services, service_products, service_versions
-        else:
-            print("No information found for the given IP address.")
-    except Exception as e:
-        print(f"Error: {e}")
-    return [], [], [], []
-
-'''
-Function: scan_hosts()
-Args: host address
-Fetches cur_device_name, os_name, os_gen, os_family, device_type for host using helper functions.
-'''
-def scan_uphosts(host):
-    json_results, parsed_obj, stats = get_OS(nmap, host) # conduct OS detection scan
-    os_name, os_gen, os_family, device_type = parse_OS_output(stats)
-    print(f"\nDevice IP: {host}")
-    print("Operating System Name: " + os_name)
-    print("Operating System Generation: " + os_gen)
-    print("Operating System Family: " + os_family)
-    print("Device Type: " + device_type)  
-    return os_name, os_gen, os_family, device_type
-
-'''
 Function: server_encryption_type()
 Args: hostname
 Connect through HTTPS on device or server 
@@ -223,115 +163,77 @@ def get_server_encryption_type(hostname):
         return f"Error: {str(e)}"
 
 '''
-Function: fetch_host_stats()
-Args: up_hosts
-Create a ScannerThread to execute tasks
-Returns list of device_names, os_names, os_families, and device_types.
+Function: append_NA()
+Args: ports, statuses, services, service_versions
+Adds N/A to lists provided
+Returns modified lists from input
 '''
-def fetch_host_stats(up_hosts):
-    # Scan device and software details
-    threads = []; os_names = []; os_gens = []; os_families = []; device_types = []
-    for host in up_hosts:
-        thread = ScannerThread(host)
-        thread.start()
-        print("Started scanning " + host + "...")
-        threads.append(thread)
-    for thread in threads:
-        thread.join()
-    try:
-        for thread in threads:
-            os_name, os_gen, os_family, device_type = thread.result
-            os_names.append(os_name)
-            os_gens.append(os_gen)
-            os_families.append(os_family)
-            device_types.append(device_type)
-    except Exception as e:
-        print("Unable to find OS.")
-    return os_names, os_gens, os_families, device_types
+def append_NA(ports, protocols, statuses, services, service_versions):
+    ports.append("N/A")
+    protocols.append("N/A")
+    statuses.append("N/A")
+    services.append("N/A")
+    service_versions.append("N/A")
+    return ports, protocols, statuses, services, service_versions
 
 '''
-Function: fetch_ports_stats()
-Args: up_hosts
-Create a ServiceThread to execute tasks
-Returns list of port_ids, services, service products, and service versions.
+Function: get_os_and_open_ports()
+Args: host IP
+Performs subprocess nmap scan for TCP fingerprinting of an OS. 
+Creates lists that collect attributes and 
 '''
-def fetch_ports_stats(up_hosts):
-    # Port scan and services on device
-    port_ids_lst = []; services_lst = []; service_products_lst = []; service_versions_lst = []
-    threads = []
-    print("Started port scan...")
-    for host in up_hosts:
-        thread = ServiceThread(host)
-        thread.start()
-        threads.append(thread)
-    for thread in threads:
-        thread.join()
-    try:
-        for thread in threads:
-            port_ids, services, service_products, service_versions = thread.result 
-            port_ids_lst.append(port_ids)
-            services_lst.append(services)
-            service_products_lst.append(service_products)
-            service_versions_lst.append(service_versions)
-            
-            print(f"\nPort Scan on {host}:")
-            for i in range(len(port_ids)):
-                print(f"\t{i}. Port: {port_ids[i]}\n\t   Service Name: {services[i]}\n\t   Product: {service_products[i]}\n\t   Version: {service_versions[i]}")
-    except Exception as e:
-        print("Unable to get discoverable ports")
-    return port_ids_lst, services_lst, service_products_lst, service_versions_lst
-
 def get_os_and_open_ports(host):
+    device_types = []; os_details = []; ports = []; protocols = []; statuses = []; services = []; service_versions = []
     try:
-        device_types = []; os_details = []; ports = []; protocols = []; statuses = []; services = []
         print("\n" + host)
-        result = subprocess.run(['nmap', '-O', '-T4', host], capture_output=True, text=True, timeout=20) 
+        result = subprocess.run(['nmap', '-O', '-T4', '-sV', '-v', host], capture_output=True, text=True, timeout=190)
         output = result.stdout
-        # Parse nmap output to extract OS information and open ports
+        print(output)
         os_info_pattern = r"OS details: (.+)"
         os_match = re.search(os_info_pattern, output)
         os_info = os_match.group(1) if os_match else "N/A"
-        print(os_info)
         os_details.append(os_info)
-        device_pattern = r"Device type: (.+)"
+        
+        device_pattern = r"Device type: (.+)" # Search for keywords in output
         device_match = re.search(device_pattern, output)
         device_info = device_match.group(1) if device_match else "N/A"
-        print(device_info)
         device_types.append(device_info)
-        
-        # Parse nmap output to extract open ports
-        port_info_pattern = r"(\d+)/(\w+)\s+(\w+)\s+(\w+)"
+        port_info_pattern = r"(\d+)/(\w+)\s+(\w+)\s+(.+?)\s*(?:\n|$)" # Parse nmap output to extract open ports and service versions
         port_matches = re.findall(port_info_pattern, output)
-        
+        if (len(port_matches) == 0):
+            append_NA(ports, protocols, statuses, services, service_versions)
         for match in port_matches:
-            port = match[0] if match[0] != "" else "N/A"
+            port = match[0] if match[0] != [] and match[0] != "" else "N/A"
             ports.append(port)
-            protocol = match[1] if match[1] != "" else "N/A"
+            protocol = match[1] if match[1] != [] and match[1] != "" else "N/A"
             protocols.append(protocol)
-            status = match[2] if match[2] != "" else "N/A"
+            status = match[2] if match[2] != [] and match[2] != "" else "N/A"
             statuses.append(status)
-            service = match[3] if match[3] != "" else "N/A"
-            services.append(service)
-            print(f"Port: {port}, Protocol: {protocol}, Status: {status}, Service: {service}")
-        
+            split_string = match[3].split()
+
+            if len(split_string) >= 2:
+                split_string = [elem for elem in split_string if elem.strip()]
+                service = split_string[0]
+                version = ' '.join(split_string[1:])
+                print(f"Service: {service}, Version: {version}")
+                services.append(service.strip()) if service.strip() != "" else "N/A"
+                service_versions.append(version.strip()) if version.strip() != "" else service_versions.append("N/A")
+                print(f"Port: {port}, Protocol: {protocol}, Status: {status}, Service: {service.strip()}, Version: {version.strip()}")
+            else:
+                services.append("N/A")
+                service_versions.append("N/A")
     except subprocess.TimeoutExpired:
         print(f"Timeout occurred scanning {host}")
         device_types.append("N/A")
         os_details.append("N/A")
-        ports.append("N/A")
-        protocols.append("N/A")
-        statuses.append("N/A")
-        services.append("N/A")
+        append_NA(ports, protocols, statuses, services, service_versions)
     except Exception as e:
         print(f"Error retrieving OS information and open ports: {e}")
         device_types.append("N/A")
         os_details.append("N/A")
-        ports.append("N/A")
-        protocols.append("N/A")
-        statuses.append("N/A")
-        services.append("N/A")
-    return device_types, os_details, ports, protocols, statuses, services
-    
+        append_NA(ports, protocols, statuses, services, service_versions)
+    return device_types, os_details, ports, protocols, statuses, services, service_versions
+
 '''
 Main Program Driver
 '''
@@ -367,29 +269,23 @@ if __name__ == "__main__":
     
     # os_names, os_gens, os_families, device_types = fetch_host_stats(up_hosts) # scan device and software details
     # port_ids_lst, services_lst, service_products_lst, service_versions_lst = fetch_ports_stats(up_hosts) # scan ports on hosts
-    device_types = []; os_lst = []; port_ids_lst = []; protocols_lst = []; status_lst = []; services_lst = []
+
+    device_types = []; os_lst = []; port_ids_lst = []; protocols_lst = []; status_lst = []; services_lst = []; services_versions_lst = []
     for host in up_hosts:
         start_time = time.time()
-        device_type, os_details, ports, protocols, statuses, services = get_os_and_open_ports(host)
+        device_type, os_details, ports, protocols, statuses, services, service_versions = get_os_and_open_ports(host)
         device_types.append(device_type)
         os_lst.append(os_details)
         port_ids_lst.append(ports)
         protocols_lst.append(protocols)
         status_lst.append(statuses)
         services_lst.append(services)
+        services_versions_lst.append(service_versions)
         end_time = time.time()
         print(f"Executed in {end_time - start_time} seconds.")
-    print(device_types)
-    print(os_lst)
-    print(port_ids_lst)
-    print(protocols_lst)
-    print(status_lst)
-    print(services_lst)
+    print(port_ids_lst); print(services_lst); print(device_types); print(os_lst); print(port_ids_lst)
+    print(protocols_lst); print(status_lst); print(services_lst); print(services_versions_lst)
     print("\nSummary:"); 
-    # print(up_hosts); print(macs_lst); print(os_names); print(os_families)
-    # print(device_types); print(port_ids_lst); print(services_lst); print(service_products_lst)
-    # print(service_versions_lst);
-    
     for i in range(len(up_hosts)):
         print("Host: " + up_hosts[i])
         print("MAC Address: " + macs_lst[i])
@@ -399,5 +295,10 @@ if __name__ == "__main__":
         print("Protocol: " + ", ".join(protocols_lst[i]))
         print("Status: " + ", ".join(status_lst[i]))
         print("Service: " + ", ".join(services_lst[i]))
+        print("Service Version: " + ", ".join(services_versions_lst[i]))
         print()
-        
+    
+'''
+Add DB <-> Crawler Python API
+'''
+from database.dbapi import DBAPI
