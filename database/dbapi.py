@@ -5,8 +5,6 @@ main()
 import mysql.connector as mc
 from database.config import config
 
-CLIENT = "MedCorp"
-
 class DBAPI:
     
     def __enter__(self):
@@ -16,7 +14,7 @@ class DBAPI:
             def __init__(self):
                 usr, pwd, hst, dab = self._read_config_info(config)
                 self._establish_connection(usr, pwd, hst, dab)
-                CLIENT = self._validate_varchar(CLIENT)
+                self.client = self._validate_varchar("MedCorp") # TODO: fix client -- fetch based on logged in user
 
             '''
             Reads config info from imported config dict. Returns a tuple of relavent info.
