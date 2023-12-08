@@ -3,6 +3,8 @@ main()
 '''
 
 import mysql.connector as mc
+from mysql.connector import Error as mysql_connector_Error
+from mysql.connector import errorcode
 from database.config import config
 
 class DBAPI:
