@@ -133,7 +133,7 @@ class DBAPI:
 
             def create_user(self, usr, psw):
                 query = "INSERT INTO User VALUES (%s, %s, %s);"
-                params = [CLIENT, usr, psw]
+                params = ["MedCorp", usr, psw]
                 for i in range(len(params)):
                     params[i] = self._validate_varchar(params[i])
                 try:
@@ -157,10 +157,10 @@ class DBAPI:
                         if update_psw:
                             query = "UPDATE User SET user_name = %s, psw_hash_salted = %s " \
                                     "WHERE client = %s AND user_name = %s;"
-                            self.rs.execute(query, (new_usr, new_psw, CLIENT, usr))
+                            self.rs.execute(query, (new_usr, new_psw, "MedCorp", usr))
                         else:
                             query = "UPDATE User SET user_name = %s WHERE client = %s AND user_name = %s;"
-                            self.rs.execute(query, (new_usr, CLIENT, usr))
+                            self.rs.execute(query, (new_usr, "MedCorp", usr))
                         self.con.commit()
                         self.rs.reset()
                     except mysql_connector_Error as err:
@@ -171,7 +171,7 @@ class DBAPI:
             def create_item(self):
                 query = "INSERT INTO Inv_Item (client) VALUES (%s);"
                 try:
-                    self.rs.execute(query, (CLIENT))
+                    self.rs.execute(query, ("MedCorp"))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -751,7 +751,7 @@ class DBAPI:
         self.api_obj = Connector()
         return self.api_obj
 
-    def __exit__(exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self.api_obj.close()
 
 def main():
