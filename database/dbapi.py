@@ -36,7 +36,7 @@ class DBAPI:
             def _establish_connection(self, usr, pwd, hst, dab):
                 self.con = mc.connect(user=usr,password=pwd, host=hst, database=dab)
                 try:
-                    self.rs = con.cursor()
+                    self.rs = self.con.cursor()
                 except mc.Error as err:
                     self.con.close()
                     raise err
