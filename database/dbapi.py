@@ -216,7 +216,7 @@ class DBAPI:
                 query = "SELECT MAX(id) FROM Server;"
                 try:
                     self.rs.execute(query)
-                    for (m) in rs:
+                    for (m) in self.rs:
                         server_id = m
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -248,7 +248,7 @@ class DBAPI:
                     query = "SELECT id FROM Location WHERE id=%s;"
                     try:
                         self.rs.execute(query, tuple(lid))
-                        for (m) in rs:
+                        for (m) in self.rs:
                             server_id = m
                         self.rs.reset()
                     except mysql_connector_Error as err:
@@ -335,7 +335,7 @@ class DBAPI:
                 query = "SELECT MAX(id) FROM Location;"
                 try:
                     self.rs.execute(query)
-                    for (m) in rs:
+                    for (m) in self.rs:
                         lid = m
                     self.rs.reset()
                 except mysql_connector_Error as err:
