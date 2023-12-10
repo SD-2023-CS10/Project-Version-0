@@ -110,8 +110,8 @@ class DBAPI:
                     raise NotImplementedError("_validate_text does not support params, size=\"" + size + "\"")
 
             def _validate_ip_address(self, addr, version):
-                version = str(version) if verison is not None else None
-                if version != "IPv4" or version != "IPv6" or version is not None:
+                version = str(version) if version is not None else None
+                if (version != "IPv4" or version != "IPv6") and version is not None:
                     raise TypeError("ip_version requires value of \"IPv4\" or \"IPv6\"")
                 if version == "IPv4":
                     try:
