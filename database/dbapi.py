@@ -48,7 +48,10 @@ class DBAPI:
                 return s
 
             def _validate_int(self, i, signed=False, size="INT"):
-                i = int(i)
+                try:
+                    i = int(i)
+                except ValueError:
+                    raise ValueError(i + " cannot be cast to int")
                 if not signed and size=="INT":
                     if 0 <= i and i < 2**32:
                         return i
@@ -85,7 +88,7 @@ class DBAPI:
 
                 if arr[1] in {4, 6, 9, 11} and arr[2] == 31:
                     raise ValueError("Date, " + d + ", does not allow day " + arr[2] + " for month " + arr[1])
-                elif arr[1] == 2 and arr[2] > 28:
+                elif arr[1] == 2 and not (arr[2] <= 28 or arr[0] % 4 == 0 and arr[2] == 29):
                     raise ValueError("Date, " + d + ", does not allow day " + arr[2] + " for month " + arr[1])
                     
                 return d
@@ -136,8 +139,9 @@ class DBAPI:
             def create_user(self, usr, psw):
                 query = "INSERT INTO User VALUES (%s, %s, %s);"
                 params = ["MedCorp", usr, psw]
-                for i in range(len(params)):
-                    params[i] = self._validate_varchar(params[i])
+                params[0] = self._validate_varchar(params[0])
+                params[1] = self._validate_varchar(params[1])
+                params[2] = self._validate_int(params[2])
                 try:
                     self.rs.execute(query, tuple(params))
                     self.con.commit()
@@ -148,32 +152,30 @@ class DBAPI:
 
             def update_user(self, usr, new_usr=None, new_psw=None):
                 new_usr = new_usr if new_usr is not None else usr
-                update_psw = new_psw is not None
 
                 usr = self._validate_varchar(usr)
-                new_usr = self._validate_varchar(new_usr) if new_usr is not None else None
+                new_usr = self._validate_varchar(new_usr)
                 new_psw = self._validate_varchar(new_psw) if new_psw is not None else None
 
-                if update_psw:
-                    try:
-                        if update_psw:
-                            query = "UPDATE User SET user_name = %s, psw_hash_salted = %s " \
-                                    "WHERE client = %s AND user_name = %s;"
-                            self.rs.execute(query, (new_usr, new_psw, "MedCorp", usr))
-                        else:
-                            query = "UPDATE User SET user_name = %s WHERE client = %s AND user_name = %s;"
-                            self.rs.execute(query, (new_usr, "MedCorp", usr))
-                        self.con.commit()
-                        self.rs.reset()
-                    except mysql_connector_Error as err:
-                        self.close()
-                        raise err
+                try:
+                    if new_psw is not None:
+                        query = "UPDATE User SET user_name = %s, psw_hash_salted = %s " \
+                                "WHERE client = %s AND user_name = %s;"
+                        self.rs.execute(query, (new_usr, new_psw, "MedCorp", usr))
+                    else:
+                        query = "UPDATE User SET user_name = %s WHERE client = %s AND user_name = %s;"
+                        self.rs.execute(query, (new_usr, "MedCorp", usr))
+                    self.con.commit()
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
 
             # Creates an item and returns its ID (Primary Key identifier)
             def create_item(self):
                 query = "INSERT INTO Inv_Item (client) VALUES (%s);"
                 try:
-                    self.rs.execute(query, ("MedCorp"))
+                    self.rs.execute(query, ("MedCorp",))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -183,14 +185,14 @@ class DBAPI:
                 query = "SELECT MAX(item_id) FROM Inv_Item;"
                 try:
                     self.rs.execute(query)
-                    for (m) in rs:
+                    for (m) in self.rs:
                         item_id = m
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
 
-                return item_id
+                return item_id[0]
 
             # Creates an server and returns its ID (Primary Key identifier)
             def create_server(self, name=None, ip_addr=None, ip_v=None, lid=None):
@@ -756,8 +758,6 @@ class DBAPI:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.api_obj.close()
 
-def main():
-    pass
-
 if __name__ == '__main__':
-    main()
+    with DBAPI() as c:
+        print(c.create_item())
