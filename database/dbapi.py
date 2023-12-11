@@ -1,11 +1,11 @@
 '''
-main()
 '''
 
 import mysql.connector as mc
 from mysql.connector import Error as mysql_connector_Error
 from mysql.connector import errorcode
 from database.config import config
+# from config import config # for in-file testing
 
 class DBAPI:
     
@@ -56,12 +56,12 @@ class DBAPI:
                     if 0 <= i and i < 2**32:
                         return i
                     else:
-                        raise ValueError("Int " + i + " too large for type UNSIGNED INT")
+                        raise ValueError("Int " + str(i) + " too large for type UNSIGNED INT")
                 if not signed and size=="BIGINT":
                     if 0 <= i and i < 2**64:
                         return i
                     else:
-                        raise ValueError("Int " + i + " too large for type UNSIGNED BIGINT")
+                        raise ValueError("Int " + str(i) + " too large for type UNSIGNED BIGINT")
                 else:
                     raise NotImplementedError("_validate_int does not support params, signed=" + signed + ", size=\"" + size + "\"")
 
@@ -87,18 +87,18 @@ class DBAPI:
                     raise ValueError("Date, " + d + ", must have day 01 <= y <= 31")
 
                 if arr[1] in {4, 6, 9, 11} and arr[2] == 31:
-                    raise ValueError("Date, " + d + ", does not allow day " + arr[2] + " for month " + arr[1])
+                    raise ValueError("Date, " + d + ", does not allow day " + str(arr[2]) + " for month " + str(arr[1]))
                 elif arr[1] == 2 and not (arr[2] <= 28 or arr[0] % 4 == 0 and arr[2] == 29):
-                    raise ValueError("Date, " + d + ", does not allow day " + arr[2] + " for month " + arr[1])
+                    raise ValueError("Date, " + d + ", does not allow day " + str(arr[2]) + " for month " + str(arr[1]) + " year " + str(arr[0]))
                     
                 return d
 
             def _validate_cloud_prem(self, v):
                 v = str(v)
-                if v != "Cloud" or v != "On-Premise":
-                    raise TypeError("cloud_prem needs to be of value \"Cloud\" or \"On-Premise\"")
-                return v
-
+                if v == "Cloud" or v == "On-Premise":
+                    return v
+                raise TypeError("cloud_prem needs to be of value \"Cloud\" or \"On-Premise\"")
+            
             def _validate_text(self, t, size="MEDIUMTEXT"):
                 t = str(t)
                 if size=="MEDIUMTEXT":
@@ -110,8 +110,8 @@ class DBAPI:
                     raise NotImplementedError("_validate_text does not support params, size=\"" + size + "\"")
 
             def _validate_ip_address(self, addr, version):
-                version = str(version) if verison is not None else None
-                if version != "IPv4" or version != "IPv6" or version is not None:
+                version = str(version) if version is not None else None
+                if (version != "IPv4" and version != "IPv6") and version is not None:
                     raise TypeError("ip_version requires value of \"IPv4\" or \"IPv6\"")
                 if version == "IPv4":
                     try:
@@ -135,13 +135,31 @@ class DBAPI:
                     raise ValueError("Decimal can take at most 1 '.' char")
                 if len(d) > m + 1:
                     raise ValueError("Unsupported amount of precision for decimal, " + d + ", with precision, " + m)
-                if len(arr[1]) > 4:
+                if len(arr) > 1 and len(arr[1]) > 4:
                     raise ValueError("Decimal only supports at most " + n + " digits past the decimal based on passed _validate_decimal params")
                 return d
 
+            # validates int within this method, too
+            def _validate_item(self, i):
+                i = self._validate_int(i)
+                query = "SELECT MAX(item_id) FROM Inv_Item;"
+                m = None
+                try:
+                    self.rs.execute(query)
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                if m is None or i > m:
+                    raise ValueError("Attempting to update nonexistant item id " + str(i) + " (max item_id is " + str(m) + ")")
+                return i
+
+            # TODO: consider removing
             def create_user(self, usr, psw):
                 query = "INSERT INTO User VALUES (%s, %s, %s);"
-                params = ["MedCorp", usr, psw]
+                params = [self.client, usr, psw]
                 params[0] = self._validate_varchar(params[0])
                 params[1] = self._validate_varchar(params[1])
                 params[2] = self._validate_int(params[2])
@@ -153,6 +171,7 @@ class DBAPI:
                     self.close()
                     raise err
 
+            # TODO: consider limiting to curr user
             def update_user(self, usr, new_usr=None, new_psw=None):
                 new_usr = new_usr if new_usr is not None else usr
 
@@ -160,14 +179,27 @@ class DBAPI:
                 new_usr = self._validate_varchar(new_usr)
                 new_psw = self._validate_varchar(new_psw) if new_psw is not None else None
 
+                query = "SELECT user_name FROM User WHERE user_name = %s AND client = %s;"
+                m = None
+                try:
+                    self.rs.execute(query, (usr, self.client))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                if m is None:
+                    raise ValueError(usr + " not in User table; cannot update none existent user")
+
                 try:
                     if new_psw is not None:
                         query = "UPDATE User SET user_name = %s, psw_hash_salted = %s " \
                                 "WHERE client = %s AND user_name = %s;"
-                        self.rs.execute(query, (new_usr, new_psw, "MedCorp", usr))
+                        self.rs.execute(query, (new_usr, new_psw, self.client, usr))
                     else:
                         query = "UPDATE User SET user_name = %s WHERE client = %s AND user_name = %s;"
-                        self.rs.execute(query, (new_usr, "MedCorp", usr))
+                        self.rs.execute(query, (new_usr, self.client, usr))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -178,7 +210,7 @@ class DBAPI:
             def create_item(self):
                 query = "INSERT INTO Inv_Item (client) VALUES (%s);"
                 try:
-                    self.rs.execute(query, ("MedCorp",))
+                    self.rs.execute(query, (self.client,))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -189,13 +221,13 @@ class DBAPI:
                 try:
                     self.rs.execute(query)
                     for (m) in self.rs:
-                        item_id = m
+                        item_id = m[0]
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
 
-                return item_id[0]
+                return item_id
 
             # Creates an server and returns its ID (Primary Key identifier)
             def create_server(self, name=None, ip_addr=None, ip_v=None, lid=None):
@@ -216,8 +248,8 @@ class DBAPI:
                 query = "SELECT MAX(id) FROM Server;"
                 try:
                     self.rs.execute(query)
-                    for (m) in rs:
-                        server_id = m
+                    for (m) in self.rs:
+                        server_id = m[0]
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
@@ -228,8 +260,24 @@ class DBAPI:
                 return server_id
 
             def update_server(self, sid, name=None, ip_addr=None, ip_v=None, lid=None):
+                sid = self._validate_int(sid)
+
+                query = "SELECT id FROM Server WHERE id = %s;"
+                m = None
+                try:
+                    self.rs.execute(query, (sid,))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                if m is None:
+                    raise ValueError("Attempting to update nonexistant server sid " + str(sid) + " (max sid is " + str(m) + ")")
+
                 params = []
-                query = "UPDATE Server SET "
+                query = "UPDATE Server SET id = %s, "
+                params.append(sid)
                 if name is not None:
                     name = self._validate_varchar(name)
                     query += "name = %s, "
@@ -245,24 +293,24 @@ class DBAPI:
                 if lid is not None:
                     lid = self._validate_int(lid)
 
-                    query = "SELECT id FROM Location WHERE id=%s;"
+                    query_ = "SELECT id FROM Location WHERE id=%s;"
                     try:
-                        self.rs.execute(query, tuple(lid))
-                        for (m) in rs:
-                            server_id = m
+                        self.rs.execute(query_, (lid, ))
+                        for (m) in self.rs:
+                            server_id = m[0]
                         self.rs.reset()
                     except mysql_connector_Error as err:
                         self.close()
                         raise err
 
-                    if lid != m:
+                    if lid > server_id:
                         raise ValueError("Attempting to set location id field of server to nonexistent location id value")
 
                     query += "location_id = %s, "
                     params.append(lid)
                     
                 query = query[:-2] + ' '
-                query += "WHERE sid = %s;"
+                query += "WHERE id = %s;"
                 params.append(sid)
 
                 try:
@@ -279,24 +327,54 @@ class DBAPI:
                 baa = self._validate_bool(baa) if baa is not None else None
                 date = self._validate_date(date) if date is not None else None
 
+                query = "SELECT email FROM Vender WHERE email = %s;"
+                m = None
+                try:
+                    self.rs.execute(query, (email,))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                if m is not None:
+                    raise ValueError(email + " already in table")
+
                 query = "INSERT INTO Vender (email) VALUES (%s);"
                 try:
-                    self.rs.execute(query, tuple(email))
+                    self.rs.execute(query, (email,))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
-                self.update_vender(email, poc=poc, baa=baa)
+                self.update_vender(email, poc=poc, baa=baa, date=date)
 
-            def update_vender(self, email, new_email=None, poc=None, baa=None):
+            def update_vender(self, email, new_email=None, poc=None, baa=None, date=None):
                 email = self._validate_varchar(email)
+
+                query = "SELECT email FROM Vender WHERE email = %s;"
+                m = None
+                try:
+                    self.rs.execute(query, (email,))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                if m is None:
+                    raise ValueError(email + " not in table")
+
                 params = []
                 query = "UPDATE Vender SET "
                 if new_email is not None:
                     new_email = self._validate_varchar(new_email)
                     query += "email = %s, "
                     params.append(new_email)
+                else:
+                    query += "email = %s, "
+                    params.append(email)
                 if poc is not None:
                     poc = self._validate_varchar(poc)
                     query += "poc = %s, "
@@ -305,6 +383,10 @@ class DBAPI:
                     baa = self._validate_bool(baa)
                     query += "baa = %s, "
                     params.append(baa)
+                if date is not None:
+                    date = self._validate_date(date)
+                    query += "date = %s, "
+                    params.append(date)
                 query = query[:-2] + ' '
                 query += "WHERE email = %s;"
                 params.append(email)
@@ -335,8 +417,8 @@ class DBAPI:
                 query = "SELECT MAX(id) FROM Location;"
                 try:
                     self.rs.execute(query)
-                    for (m) in rs:
-                        lid = m
+                    for (m) in self.rs:
+                        lid = m[0]
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
@@ -347,8 +429,24 @@ class DBAPI:
                 return lid
 
             def update_location(self, lid, cloud=None, details=None, protection=None):
+                lid = self._validate_int(lid)
+                
+                query = "SELECT id FROM Location WHERE id = %s;"
+                m = None
+                try:
+                    self.rs.execute(query, (lid,))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                if m is None:
+                    raise ValueError("Attempting to update nonexistant location lid " + str(lid) + " (max lid is " + str(m) + ")")
+               
                 params = []
-                query = "UPDATE Location SET "
+                query = "UPDATE Location SET id = %s, "
+                params.append(lid)
                 if cloud is not None:
                     cloud = self._validate_cloud_prem(cloud)
                     query += "cloud_prem = %s, "
@@ -362,7 +460,7 @@ class DBAPI:
                     query += "protection = %s, "
                     params.append(protection)
                 query = query[:-2] + ' '
-                query += "WHERE lid = %s;"
+                query += "WHERE id = %s;"
                 params.append(lid)
 
                 try:
@@ -375,7 +473,7 @@ class DBAPI:
 
             def set_name(self, n, iid):
                 n = self._validate_varchar(n)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET name = %s WHERE item_id = %s;"
                 try:
@@ -388,7 +486,7 @@ class DBAPI:
 
             def set_type(self, t, iid):
                 t = self._validate_varchar(t)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET type = %s WHERE item_id = %s;"
                 try:
@@ -401,7 +499,7 @@ class DBAPI:
 
             def set_version(self, v, iid):
                 v = self._validate_varchar(v)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET version = %s WHERE item_id = %s;"
                 try:
@@ -414,7 +512,7 @@ class DBAPI:
 
             def set_os(self, os, iid):
                 os = self._validate_varchar(os)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET os = %s WHERE item_id = %s;"
                 try:
@@ -427,7 +525,7 @@ class DBAPI:
 
             def set_os_version(self, v, iid):
                 v = self._validate_varchar(v)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET os_version = %s WHERE item_id = %s;"
                 try:
@@ -440,11 +538,24 @@ class DBAPI:
 
             def set_vender(self, e, iid):
                 e = self._validate_varchar(e)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
+
+                query = "SELECT email FROM Vender WHERE email = %s;"
+                m = None
+                try:
+                    self.rs.execute(query, (e,))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                if m is None:
+                    raise ValueError(e + " not a valid vender")
 
                 query = "UPDATE Inv_Item SET vender = %s WHERE item_id = %s;"
                 try:
-                    self.rs.execute(query, (v, iid))
+                    self.rs.execute(query, (e, iid))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -453,7 +564,7 @@ class DBAPI:
 
             def set_auto_log_off_freq(self, f, iid):
                 ifid = self._validate_int(f)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET auto_log_off_freq = %s WHERE item_id = %s;"
                 try:
@@ -466,25 +577,24 @@ class DBAPI:
 
             def set_server(self, sid, iid):
                 sid = self._validate_int(sid)
+                iid = self._validate_item(iid)
 
                 query = "SELECT id FROM Server WHERE id=%s;"
+                m = None
                 try:
-                    self.rs.execute(query, tuple(sid))
-                    for (m) in rs:
-                        server_id = m
+                    self.rs.execute(query, (sid,))
+                    for (m) in self.rs:
+                        server_id = m[0]
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
-
-                if sid != m:
+                if m is None:
                     raise ValueError("Attempting to set server id field of item to nonexistent server id value")
-
-                iid = self._validate_int(iid)
 
                 query = "UPDATE Inv_Item SET server = %s WHERE item_id = %s;"
                 try:
-                    self.rs.execute(query, (s, iid))
+                    self.rs.execute(query, (sid, iid))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -493,7 +603,7 @@ class DBAPI:
 
             def set_ephi(self, ephi, iid):
                 ephi = self._validate_bool(ephi)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET ephi = %s WHERE item_id = %s;"
                 try:
@@ -506,7 +616,7 @@ class DBAPI:
 
             def set_ephi_encrypted(self, e, iid):
                 e = self._validate_bool(e)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET ephi_encrypted = %s WHERE item_id = %s;"
                 try:
@@ -519,7 +629,7 @@ class DBAPI:
 
             def set_ephi_encr_method(self, m, iid):
                 m = self._validate_varchar(m)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET ephi_encr_method = %s WHERE item_id = %s;"
                 try:
@@ -532,7 +642,7 @@ class DBAPI:
 
             def set_ephi_encr_tested(self, t, iid):
                 t = self._validate_bool(t)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET ephi_encr_tested = %s WHERE item_id = %s;"
                 try:
@@ -543,13 +653,13 @@ class DBAPI:
                     self.close()
                     raise err
 
-            def set_interfaces_with(self, i, iid):
+            def set_interfaces_with(self, t, iid):
                 t = self._validate_text(t)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET interfaces_with = %s WHERE item_id = %s;"
                 try:
-                    self.rs.execute(query, (i, iid))
+                    self.rs.execute(query, (t, iid))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -558,7 +668,7 @@ class DBAPI:
 
             def set_user_auth_method(self, m, iid):
                 m = self._validate_varchar(m)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET user_auth_method = %s WHERE item_id = %s;"
                 try:
@@ -571,7 +681,7 @@ class DBAPI:
 
             def set_app_auth_method(self, m, iid):
                 m = self._validate_varchar(m)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET app_auth_method = %s WHERE item_id = %s;"
                 try:
@@ -584,7 +694,7 @@ class DBAPI:
 
             def set_psw_min_length(self, l, iid):
                 l = self._validate_int(l)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET psw_min_len = %s WHERE item_id = %s;"
                 try:
@@ -597,7 +707,7 @@ class DBAPI:
 
             def set_psw_change_freq(self, f, iid):
                 f = self._validate_int(f)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET psw_change_freq = %s WHERE item_id = %s;"
                 try:
@@ -610,7 +720,7 @@ class DBAPI:
 
             def set_dept(self, d, iid):
                 d = self._validate_varchar(d)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET dept = %s WHERE item_id = %s;"
                 try:
@@ -623,7 +733,7 @@ class DBAPI:
 
             def set_space(self, s, iid):
                 s = self._validate_varchar(s)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET space = %s WHERE item_id = %s;"
                 try:
@@ -636,7 +746,7 @@ class DBAPI:
 
             def set_date_last_ordered(self, d, iid):
                 d = self._validate_date(d)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET date_last_ordered = %s WHERE item_id = %s;"
                 try:
@@ -649,7 +759,7 @@ class DBAPI:
 
             def set_purchase_price(self, p, iid):
                 p = self._validate_decimal(p)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET purchase_price = %s WHERE item_id = %s;"
                 try:
@@ -662,7 +772,7 @@ class DBAPI:
 
             def set_warranty_expires(self, d, iid):
                 d = self._validate_date(d)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET warranty_expires = %s WHERE item_id = %s;"
                 try:
@@ -675,7 +785,7 @@ class DBAPI:
 
             def set_item_condition(self, c, iid):
                 c = self._validate_varchar(c)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET item_condition = %s WHERE item_id = %s;"
                 try:
@@ -688,7 +798,7 @@ class DBAPI:
 
             def set_quantity(self, n, iid):
                 n = self._validate_int(n)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET quantity = %s WHERE item_id = %s;"
                 try:
@@ -701,7 +811,7 @@ class DBAPI:
 
             def set_asset_value(self, v, iid):
                 v = self._validate_decimal(v)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET assset_value = %s WHERE item_id = %s;"
                 try:
@@ -714,7 +824,7 @@ class DBAPI:
 
             def set_model_num(self, n, iid):
                 n = self._validate_varchar(n)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET model_num = %s WHERE item_id = %s;"
                 try:
@@ -727,7 +837,7 @@ class DBAPI:
 
             def set_notes(self, n, iid):
                 n = self._validate_text(n)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET notes = %s WHERE item_id = %s;"
                 try:
@@ -740,7 +850,7 @@ class DBAPI:
 
             def set_link(self, l, iid):
                 l = self._validate_varchar(l)
-                iid = self._validate_int(iid)
+                iid = self._validate_item(iid)
 
                 query = "UPDATE Inv_Item SET link = %s WHERE item_id = %s;"
                 try:
@@ -763,4 +873,4 @@ class DBAPI:
 
 if __name__ == '__main__':
     with DBAPI() as c:
-        print(c.create_item())
+        pass
