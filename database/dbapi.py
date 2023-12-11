@@ -96,10 +96,10 @@ class DBAPI:
 
             def _validate_cloud_prem(self, v):
                 v = str(v)
-                if v != "Cloud" or v != "On-Premise":
-                    raise TypeError("cloud_prem needs to be of value \"Cloud\" or \"On-Premise\"")
-                return v
-
+                if v == "Cloud" or v == "On-Premise":
+                    return v
+                raise TypeError("cloud_prem needs to be of value \"Cloud\" or \"On-Premise\"")
+            
             def _validate_text(self, t, size="MEDIUMTEXT"):
                 t = str(t)
                 if size=="MEDIUMTEXT":
@@ -229,8 +229,10 @@ class DBAPI:
                 return server_id
 
             def update_server(self, sid, name=None, ip_addr=None, ip_v=None, lid=None):
-                
+                sid = self._validate_int(sid)
+
                 query = "SELECT MAX(id) FROM Server;"
+                m = None
                 try:
                     self.rs.execute(query)
                     for (m) in self.rs:
@@ -239,9 +241,7 @@ class DBAPI:
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
-                
-                sid = self._validate_int(sid)
-                if sid > m:
+                if m is None or sid > m:
                     raise ValueError("Attempting to update nonexistant server sid " + str(sid) + " (max sid is " + str(m) + ")")
 
                 params = []
@@ -306,7 +306,6 @@ class DBAPI:
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
-
                 if m is not None:
                     raise ValueError(email + " already in table")
 
@@ -400,8 +399,24 @@ class DBAPI:
                 return lid
 
             def update_location(self, lid, cloud=None, details=None, protection=None):
+                lid = self._validate_int(lid)
+                
+                query = "SELECT MAX(id) FROM Location;"
+                m = None
+                try:
+                    self.rs.execute(query)
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                if m is None or lid > m:
+                    raise ValueError("Attempting to update nonexistant server lid " + str(lid) + " (max lid is " + str(m) + ")")
+               
                 params = []
-                query = "UPDATE Location SET "
+                query = "UPDATE Location SET id = %s, "
+                params.append(lid)
                 if cloud is not None:
                     cloud = self._validate_cloud_prem(cloud)
                     query += "cloud_prem = %s, "
@@ -415,7 +430,7 @@ class DBAPI:
                     query += "protection = %s, "
                     params.append(protection)
                 query = query[:-2] + ' '
-                query += "WHERE lid = %s;"
+                query += "WHERE id = %s;"
                 params.append(lid)
 
                 try:
@@ -816,4 +831,4 @@ class DBAPI:
 
 if __name__ == '__main__':
     with DBAPI() as c:
-        print(c.update_vender("bhuyck@me.5", baa=False, date="2025-07-16"))
+        print(c.update_location(8, protection="clout"))
