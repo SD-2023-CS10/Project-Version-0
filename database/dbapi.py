@@ -1,12 +1,11 @@
 '''
-main()
 '''
 
 import mysql.connector as mc
 from mysql.connector import Error as mysql_connector_Error
 from mysql.connector import errorcode
-# from database.config import config
-from config import config
+from database.config import config
+# from config import config # for in-file testing
 
 class DBAPI:
     
@@ -874,4 +873,4 @@ class DBAPI:
 
 if __name__ == '__main__':
     with DBAPI() as c:
-        print(c.update_location("7"))
+        pass
