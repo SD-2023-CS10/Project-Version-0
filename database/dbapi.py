@@ -157,9 +157,10 @@ class DBAPI:
                     raise ValueError("Attempting to update nonexistant item id " + str(i) + " (max item_id is " + str(m) + ")")
                 return i
 
+            # TODO: consider removing
             def create_user(self, usr, psw):
                 query = "INSERT INTO User VALUES (%s, %s, %s);"
-                params = ["MedCorp", usr, psw]
+                params = [self.client, usr, psw]
                 params[0] = self._validate_varchar(params[0])
                 params[1] = self._validate_varchar(params[1])
                 params[2] = self._validate_int(params[2])
@@ -171,6 +172,7 @@ class DBAPI:
                     self.close()
                     raise err
 
+            # TODO: consider limiting to curr user
             def update_user(self, usr, new_usr=None, new_psw=None):
                 new_usr = new_usr if new_usr is not None else usr
 
@@ -181,7 +183,7 @@ class DBAPI:
                 query = "SELECT user_name FROM User WHERE user_name = %s AND client = %s;"
                 m = None
                 try:
-                    self.rs.execute(query, (usr, "MedCorp"))
+                    self.rs.execute(query, (usr, self.client))
                     for (m) in self.rs:
                         m = m[0]
                     self.rs.reset()
@@ -195,10 +197,10 @@ class DBAPI:
                     if new_psw is not None:
                         query = "UPDATE User SET user_name = %s, psw_hash_salted = %s " \
                                 "WHERE client = %s AND user_name = %s;"
-                        self.rs.execute(query, (new_usr, new_psw, "MedCorp", usr))
+                        self.rs.execute(query, (new_usr, new_psw, self.client, usr))
                     else:
                         query = "UPDATE User SET user_name = %s WHERE client = %s AND user_name = %s;"
-                        self.rs.execute(query, (new_usr, "MedCorp", usr))
+                        self.rs.execute(query, (new_usr, self.client, usr))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -209,7 +211,7 @@ class DBAPI:
             def create_item(self):
                 query = "INSERT INTO Inv_Item (client) VALUES (%s);"
                 try:
-                    self.rs.execute(query, ("MedCorp",))
+                    self.rs.execute(query, (self.client,))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
