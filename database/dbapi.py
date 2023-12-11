@@ -5,7 +5,8 @@ main()
 import mysql.connector as mc
 from mysql.connector import Error as mysql_connector_Error
 from mysql.connector import errorcode
-from database.config import config
+# from database.config import config
+from config import config
 
 class DBAPI:
     
@@ -56,12 +57,12 @@ class DBAPI:
                     if 0 <= i and i < 2**32:
                         return i
                     else:
-                        raise ValueError("Int " + i + " too large for type UNSIGNED INT")
+                        raise ValueError("Int " + str(i) + " too large for type UNSIGNED INT")
                 if not signed and size=="BIGINT":
                     if 0 <= i and i < 2**64:
                         return i
                     else:
-                        raise ValueError("Int " + i + " too large for type UNSIGNED BIGINT")
+                        raise ValueError("Int " + str(i) + " too large for type UNSIGNED BIGINT")
                 else:
                     raise NotImplementedError("_validate_int does not support params, signed=" + signed + ", size=\"" + size + "\"")
 
@@ -111,7 +112,7 @@ class DBAPI:
 
             def _validate_ip_address(self, addr, version):
                 version = str(version) if version is not None else None
-                if (version != "IPv4" or version != "IPv6") and version is not None:
+                if (version != "IPv4" and version != "IPv6") and version is not None:
                     raise TypeError("ip_version requires value of \"IPv4\" or \"IPv6\"")
                 if version == "IPv4":
                     try:
@@ -189,13 +190,13 @@ class DBAPI:
                 try:
                     self.rs.execute(query)
                     for (m) in self.rs:
-                        item_id = m
+                        item_id = m[0]
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
 
-                return item_id[0]
+                return item_id
 
             # Creates an server and returns its ID (Primary Key identifier)
             def create_server(self, name=None, ip_addr=None, ip_v=None, lid=None):
@@ -217,7 +218,7 @@ class DBAPI:
                 try:
                     self.rs.execute(query)
                     for (m) in self.rs:
-                        server_id = m
+                        server_id = m[0]
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
@@ -228,8 +229,24 @@ class DBAPI:
                 return server_id
 
             def update_server(self, sid, name=None, ip_addr=None, ip_v=None, lid=None):
+                
+                query = "SELECT MAX(id) FROM Server;"
+                try:
+                    self.rs.execute(query)
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                
+                sid = self._validate_int(sid)
+                if sid > m:
+                    raise ValueError("Attempting to update nonexistant server sid " + str(sid) + " (max sid is " + str(m) + ")")
+
                 params = []
-                query = "UPDATE Server SET "
+                query = "UPDATE Server SET id = %s, "
+                params.append(sid)
                 if name is not None:
                     name = self._validate_varchar(name)
                     query += "name = %s, "
@@ -245,24 +262,24 @@ class DBAPI:
                 if lid is not None:
                     lid = self._validate_int(lid)
 
-                    query = "SELECT id FROM Location WHERE id=%s;"
+                    query_ = "SELECT id FROM Location WHERE id=%s;"
                     try:
-                        self.rs.execute(query, tuple(lid))
+                        self.rs.execute(query_, (lid, ))
                         for (m) in self.rs:
-                            server_id = m
+                            server_id = m[0]
                         self.rs.reset()
                     except mysql_connector_Error as err:
                         self.close()
                         raise err
 
-                    if lid != m:
+                    if lid > server_id:
                         raise ValueError("Attempting to set location id field of server to nonexistent location id value")
 
                     query += "location_id = %s, "
                     params.append(lid)
                     
                 query = query[:-2] + ' '
-                query += "WHERE sid = %s;"
+                query += "WHERE id = %s;"
                 params.append(sid)
 
                 try:
@@ -281,7 +298,7 @@ class DBAPI:
 
                 query = "INSERT INTO Vender (email) VALUES (%s);"
                 try:
-                    self.rs.execute(query, tuple(email))
+                    self.rs.execute(query, (email,))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -336,7 +353,7 @@ class DBAPI:
                 try:
                     self.rs.execute(query)
                     for (m) in self.rs:
-                        lid = m
+                        lid = m[0]
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
@@ -469,15 +486,15 @@ class DBAPI:
 
                 query = "SELECT id FROM Server WHERE id=%s;"
                 try:
-                    self.rs.execute(query, tuple(sid))
-                    for (m) in rs:
-                        server_id = m
+                    self.rs.execute(query, (sid,))
+                    for (m) in self.rs:
+                        server_id = m[0]
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
 
-                if sid != m:
+                if sid != server_id:
                     raise ValueError("Attempting to set server id field of item to nonexistent server id value")
 
                 iid = self._validate_int(iid)
@@ -763,4 +780,4 @@ class DBAPI:
 
 if __name__ == '__main__':
     with DBAPI() as c:
-        print(c.create_item())
+        print(c.update_server(19, ip_addr=1234,  ip_v="IPv6"))
