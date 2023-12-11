@@ -296,6 +296,20 @@ class DBAPI:
                 baa = self._validate_bool(baa) if baa is not None else None
                 date = self._validate_date(date) if date is not None else None
 
+                query = "SELECT email FROM Vender WHERE email = %s;"
+                m = None
+                try:
+                    self.rs.execute(query, (email,))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+                if m is not None:
+                    raise ValueError(email + " already in table")
+
                 query = "INSERT INTO Vender (email) VALUES (%s);"
                 try:
                     self.rs.execute(query, (email,))
@@ -304,16 +318,34 @@ class DBAPI:
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
-                self.update_vender(email, poc=poc, baa=baa)
+                self.update_vender(email, poc=poc, baa=baa, date=date)
 
-            def update_vender(self, email, new_email=None, poc=None, baa=None):
+            def update_vender(self, email, new_email=None, poc=None, baa=None, date=None):
                 email = self._validate_varchar(email)
+
+                query = "SELECT email FROM Vender WHERE email = %s;"
+                m = None
+                try:
+                    self.rs.execute(query, (email,))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+                if m is None:
+                    raise ValueError(email + " not in table")
+
                 params = []
                 query = "UPDATE Vender SET "
                 if new_email is not None:
                     new_email = self._validate_varchar(new_email)
                     query += "email = %s, "
                     params.append(new_email)
+                else:
+                    query += "email = %s, "
+                    params.append(email)
                 if poc is not None:
                     poc = self._validate_varchar(poc)
                     query += "poc = %s, "
@@ -322,6 +354,10 @@ class DBAPI:
                     baa = self._validate_bool(baa)
                     query += "baa = %s, "
                     params.append(baa)
+                if date is not None:
+                    date = self._validate_date(date)
+                    query += "date = %s, "
+                    params.append(date)
                 query = query[:-2] + ' '
                 query += "WHERE email = %s;"
                 params.append(email)
@@ -780,4 +816,4 @@ class DBAPI:
 
 if __name__ == '__main__':
     with DBAPI() as c:
-        print(c.update_server(19, ip_addr=1234,  ip_v="IPv6"))
+        print(c.update_vender("bhuyck@me.5", baa=False, date="2025-07-16"))
