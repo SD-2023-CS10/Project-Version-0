@@ -36,7 +36,7 @@ To use the database APIs during development, create a config file of the appropr
 For the crawler, this would be database/config.py. In this file, create a dictionary defined as below. All keys and values should be strings.
 
 ```
-access_config = {
+config = {
     'host' : <host>,
     'user' : <username>,
     'pass' : <password>,

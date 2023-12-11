@@ -3,9 +3,9 @@ main()
 '''
 
 import mysql.connector as mc
-from config import config
-
-CLIENT = "MedCorp"
+from mysql.connector import Error as mysql_connector_Error
+from mysql.connector import errorcode
+from database.config import config
 
 class DBAPI:
     
@@ -15,8 +15,8 @@ class DBAPI:
 
             def __init__(self):
                 usr, pwd, hst, dab = self._read_config_info(config)
-                self.con, self.rs = self._establish_connection(usr, pwd, hst, dab)
-                CLIENT = self._validate_varchar(CLIENT)
+                self._establish_connection(usr, pwd, hst, dab)
+                self.client = self._validate_varchar("MedCorp") # TODO: fix client -- fetch based on logged in user
 
             '''
             Reads config info from imported config dict. Returns a tuple of relavent info.
@@ -28,27 +28,18 @@ class DBAPI:
                 hst = config_dict['host']
                 dab = config_dict['db']
                 return usr, pwd, hst, dab
-                # except Exception as e:
-                #     print(e)
-                #     exit()
             
             '''
             Establishes the connection to the database given the config information.
             Returns a reference to the connection and cursor/result set.
             '''
             def _establish_connection(self, usr, pwd, hst, dab):
+                self.con = mc.connect(user=usr,password=pwd, host=hst, database=dab)
                 try:
-                    con = mc.connect(user=usr,password=pwd, host=hst, database=dab)
+                    self.rs = self.con.cursor()
                 except mc.Error as err:
-                    print(err)
-                    con.close()
-                    exit()
-                try:
-                    rs = con.cursor()
-                except mc.Error as err:
-                    self.close()
+                    self.con.close()
                     raise err
-                return con, rs
 
             def _validate_varchar(self, s, l=255):
                 s = str(s)
@@ -57,7 +48,10 @@ class DBAPI:
                 return s
 
             def _validate_int(self, i, signed=False, size="INT"):
-                i = int(i)
+                try:
+                    i = int(i)
+                except ValueError:
+                    raise ValueError(i + " cannot be cast to int")
                 if not signed and size=="INT":
                     if 0 <= i and i < 2**32:
                         return i
@@ -94,7 +88,7 @@ class DBAPI:
 
                 if arr[1] in {4, 6, 9, 11} and arr[2] == 31:
                     raise ValueError("Date, " + d + ", does not allow day " + arr[2] + " for month " + arr[1])
-                elif arr[1] == 2 and arr[2] > 28:
+                elif arr[1] == 2 and not (arr[2] <= 28 or arr[0] % 4 == 0 and arr[2] == 29):
                     raise ValueError("Date, " + d + ", does not allow day " + arr[2] + " for month " + arr[1])
                     
                 return d
@@ -147,62 +141,61 @@ class DBAPI:
 
             def create_user(self, usr, psw):
                 query = "INSERT INTO User VALUES (%s, %s, %s);"
-                params = [CLIENT, usr, psw]
-                for i in range(len(params)):
-                    params[i] = self._validate_varchar(params[i])
+                params = ["MedCorp", usr, psw]
+                params[0] = self._validate_varchar(params[0])
+                params[1] = self._validate_varchar(params[1])
+                params[2] = self._validate_int(params[2])
                 try:
-                    rs.execute(query, tuple(params))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, tuple(params))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
 
             def update_user(self, usr, new_usr=None, new_psw=None):
                 new_usr = new_usr if new_usr is not None else usr
-                update_psw = new_psw is not None
 
                 usr = self._validate_varchar(usr)
-                new_usr = self._validate_varchar(new_usr) if new_usr is not None else None
+                new_usr = self._validate_varchar(new_usr)
                 new_psw = self._validate_varchar(new_psw) if new_psw is not None else None
 
-                if update_psw:
-                    try:
-                        if update_psw:
-                            query = "UPDATE User SET user_name = %s, psw_hash_salted = %s " \
-                                    "WHERE client = %s AND user_name = %s;"
-                            rs.execute(query, (new_usr, new_psw, CLIENT, usr))
-                        else:
-                            query = "UPDATE User SET user_name = %s WHERE client = %s AND user_name = %s;"
-                            rs.execute(query, (new_usr, CLIENT, usr))
-                        con.commit()
-                        rs.reset()
-                    except mysql_connector_Error as err:
-                        self.close()
-                        raise err
+                try:
+                    if new_psw is not None:
+                        query = "UPDATE User SET user_name = %s, psw_hash_salted = %s " \
+                                "WHERE client = %s AND user_name = %s;"
+                        self.rs.execute(query, (new_usr, new_psw, "MedCorp", usr))
+                    else:
+                        query = "UPDATE User SET user_name = %s WHERE client = %s AND user_name = %s;"
+                        self.rs.execute(query, (new_usr, "MedCorp", usr))
+                    self.con.commit()
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
 
             # Creates an item and returns its ID (Primary Key identifier)
             def create_item(self):
                 query = "INSERT INTO Inv_Item (client) VALUES (%s);"
                 try:
-                    rs.execute(query, (CLIENT))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, ("MedCorp",))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
 
                 query = "SELECT MAX(item_id) FROM Inv_Item;"
                 try:
-                    rs.execute(query)
-                    for (m) in rs:
+                    self.rs.execute(query)
+                    for (m) in self.rs:
                         item_id = m
-                    rs.reset()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
 
-                return item_id
+                return item_id[0]
 
             # Creates an server and returns its ID (Primary Key identifier)
             def create_server(self, name=None, ip_addr=None, ip_v=None, lid=None):
@@ -213,19 +206,19 @@ class DBAPI:
 
                 query = "INSERT INTO Server () VALUES ();"
                 try:
-                    rs.execute(query)
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query)
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
 
                 query = "SELECT MAX(id) FROM Server;"
                 try:
-                    rs.execute(query)
+                    self.rs.execute(query)
                     for (m) in rs:
                         server_id = m
-                    rs.reset()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -254,10 +247,10 @@ class DBAPI:
 
                     query = "SELECT id FROM Location WHERE id=%s;"
                     try:
-                        rs.execute(query, tuple(lid))
+                        self.rs.execute(query, tuple(lid))
                         for (m) in rs:
                             server_id = m
-                        rs.reset()
+                        self.rs.reset()
                     except mysql_connector_Error as err:
                         self.close()
                         raise err
@@ -273,9 +266,9 @@ class DBAPI:
                 params.append(sid)
 
                 try:
-                    rs.execute(query, tuple(params))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, tuple(params))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -288,9 +281,9 @@ class DBAPI:
 
                 query = "INSERT INTO Vender (email) VALUES (%s);"
                 try:
-                    rs.execute(query, tuple(email))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, tuple(email))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -317,9 +310,9 @@ class DBAPI:
                 params.append(email)
 
                 try:
-                    rs.execute(query, tuple(params))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, tuple(params))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -332,19 +325,19 @@ class DBAPI:
 
                 query = "INSERT INTO Location () VALUES ();"
                 try:
-                    rs.execute(query)
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query)
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
 
                 query = "SELECT MAX(id) FROM Location;"
                 try:
-                    rs.execute(query)
+                    self.rs.execute(query)
                     for (m) in rs:
                         lid = m
-                    rs.reset()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -373,9 +366,9 @@ class DBAPI:
                 params.append(lid)
 
                 try:
-                    rs.execute(query, tuple(params))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, tuple(params))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -386,9 +379,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET name = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (n, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (n, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -399,9 +392,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET type = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (t, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (t, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -412,9 +405,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET version = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (v, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (v, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -425,9 +418,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET os = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (os, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (os, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -438,9 +431,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET os_version = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (v, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (v, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -451,9 +444,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET vender = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (v, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (v, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -464,9 +457,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET auto_log_off_freq = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (f, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (f, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -476,10 +469,10 @@ class DBAPI:
 
                 query = "SELECT id FROM Server WHERE id=%s;"
                 try:
-                    rs.execute(query, tuple(sid))
+                    self.rs.execute(query, tuple(sid))
                     for (m) in rs:
                         server_id = m
-                    rs.reset()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -491,9 +484,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET server = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (s, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (s, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -504,9 +497,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET ephi = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (ephi, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (ephi, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -517,9 +510,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET ephi_encrypted = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (e, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (e, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -530,9 +523,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET ephi_encr_method = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (m, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (m, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -543,9 +536,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET ephi_encr_tested = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (t, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (t, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -556,9 +549,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET interfaces_with = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (i, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (i, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -569,9 +562,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET user_auth_method = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (m, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (m, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -582,9 +575,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET app_auth_method = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (m, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (m, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -595,9 +588,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET psw_min_len = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (l, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (l, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -608,9 +601,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET psw_change_freq = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (f, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (f, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -621,9 +614,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET dept = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (d, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (d, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -634,9 +627,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET space = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (s, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (s, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -647,9 +640,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET date_last_ordered = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (d, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (d, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -660,9 +653,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET purchase_price = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (p, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (p, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -673,9 +666,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET warranty_expires = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (d, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (d, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -686,9 +679,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET item_condition = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (c, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (c, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -699,9 +692,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET quantity = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (n, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (n, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -712,9 +705,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET assset_value = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (v, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (v, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -725,9 +718,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET model_num = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (n, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (n, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -738,9 +731,9 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET notes = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (n, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (n, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -751,26 +744,23 @@ class DBAPI:
 
                 query = "UPDATE Inv_Item SET link = %s WHERE item_id = %s;"
                 try:
-                    rs.execute(query, (l, iid))
-                    con.commit()
-                    rs.reset()
+                    self.rs.execute(query, (l, iid))
+                    self.con.commit()
+                    self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
 
-            def close():
+            def close(self):
                 self.rs.close()
                 self.con.close()
 
         self.api_obj = Connector()
         return self.api_obj
 
-    def __exit__(exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self.api_obj.close()
 
-def main():
-    pass
-
 if __name__ == '__main__':
-    # main()
-    pass
+    with DBAPI() as c:
+        print(c.create_item())
