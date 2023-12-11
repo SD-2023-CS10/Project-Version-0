@@ -171,7 +171,6 @@ class DBAPI:
                     self.close()
                     raise err
 
-            # TODO: recheck valid user
             def update_user(self, usr, new_usr=None, new_psw=None):
                 new_usr = new_usr if new_usr is not None else usr
 
@@ -179,10 +178,10 @@ class DBAPI:
                 new_usr = self._validate_varchar(new_usr)
                 new_psw = self._validate_varchar(new_psw) if new_psw is not None else None
 
-                query = "SELECT user_name FROM User WHERE user_name = %s;"
+                query = "SELECT user_name FROM User WHERE user_name = %s AND client = %s;"
                 m = None
                 try:
-                    self.rs.execute(query, (usr,))
+                    self.rs.execute(query, (usr, "MedCorp"))
                     for (m) in self.rs:
                         m = m[0]
                     self.rs.reset()
@@ -259,7 +258,6 @@ class DBAPI:
 
                 return server_id
 
-            # TODO: recheck valid sid
             def update_server(self, sid, name=None, ip_addr=None, ip_v=None, lid=None):
                 sid = self._validate_int(sid)
 
@@ -429,7 +427,6 @@ class DBAPI:
 
                 return lid
 
-            # TODO: recheck valid lid
             def update_location(self, lid, cloud=None, details=None, protection=None):
                 lid = self._validate_int(lid)
                 
@@ -444,7 +441,7 @@ class DBAPI:
                     self.close()
                     raise err
                 if m is None:
-                    raise ValueError("Attempting to update nonexistant server lid " + str(lid) + " (max lid is " + str(m) + ")")
+                    raise ValueError("Attempting to update nonexistant location lid " + str(lid) + " (max lid is " + str(m) + ")")
                
                 params = []
                 query = "UPDATE Location SET id = %s, "
@@ -875,4 +872,4 @@ class DBAPI:
 
 if __name__ == '__main__':
     with DBAPI() as c:
-        print(c.set_link("e11", 3))
+        print(c.update_location("7"))
