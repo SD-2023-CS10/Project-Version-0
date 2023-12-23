@@ -95,7 +95,7 @@ class DBAPI:
 
             def _validate_cloud_prem(self, v):
                 v = str(v)
-                if v != "Cloud" or v != "On-Premise":
+                if v != "Cloud" and v != "On-Premise":
                     raise TypeError("cloud_prem needs to be of value \"Cloud\" or \"On-Premise\"")
                 return v
 
@@ -110,8 +110,8 @@ class DBAPI:
                     raise NotImplementedError("_validate_text does not support params, size=\"" + size + "\"")
 
             def _validate_ip_address(self, addr, version):
-                version = str(version) if verison is not None else None
-                if version != "IPv4" or version != "IPv6" or version is not None:
+                version = str(version) if version is not None else None
+                if version != "IPv4" and version != "IPv6" and version is not None:
                     raise TypeError("ip_version requires value of \"IPv4\" or \"IPv6\"")
                 if version == "IPv4":
                     try:
@@ -216,7 +216,7 @@ class DBAPI:
                 query = "SELECT MAX(id) FROM Server;"
                 try:
                     self.rs.execute(query)
-                    for (m) in rs:
+                    for (m) in self.rs:
                         server_id = m
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -244,25 +244,26 @@ class DBAPI:
                     params.append(ip_v)
                 if lid is not None:
                     lid = self._validate_int(lid)
-
-                    query = "SELECT id FROM Location WHERE id=%s;"
+                    print("here")
+                    query_ = "SELECT id FROM Location WHERE id=%s;"
                     try:
-                        self.rs.execute(query, tuple(lid))
-                        for (m) in rs:
+                        self.rs.execute(query_, (lid,))
+                        print("here")
+                        for (m) in self.rs:
                             server_id = m
                         self.rs.reset()
                     except mysql_connector_Error as err:
                         self.close()
                         raise err
 
-                    if lid != m:
+                    if lid != m[0]:
                         raise ValueError("Attempting to set location id field of server to nonexistent location id value")
 
                     query += "location_id = %s, "
                     params.append(lid)
                     
                 query = query[:-2] + ' '
-                query += "WHERE sid = %s;"
+                query += "WHERE id = %s;"
                 params.append(sid)
 
                 try:
@@ -335,19 +336,20 @@ class DBAPI:
                 query = "SELECT MAX(id) FROM Location;"
                 try:
                     self.rs.execute(query)
-                    for (m) in rs:
+                    for (m) in self.rs:
                         lid = m
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
 
-                self.update_location(lid, cloud=cloud, details=details, protection=protection)
+                self.update_location(lid[0], cloud=cloud, details=details, protection=protection)
 
                 return lid
 
             def update_location(self, lid, cloud=None, details=None, protection=None):
                 params = []
+                print(lid); print(cloud); print(details); print(protection)
                 query = "UPDATE Location SET "
                 if cloud is not None:
                     cloud = self._validate_cloud_prem(cloud)
@@ -362,7 +364,7 @@ class DBAPI:
                     query += "protection = %s, "
                     params.append(protection)
                 query = query[:-2] + ' '
-                query += "WHERE lid = %s;"
+                query += "WHERE id = %s;"
                 params.append(lid)
 
                 try:
@@ -470,7 +472,7 @@ class DBAPI:
                 query = "SELECT id FROM Server WHERE id=%s;"
                 try:
                     self.rs.execute(query, tuple(sid))
-                    for (m) in rs:
+                    for (m) in self.rs:
                         server_id = m
                     self.rs.reset()
                 except mysql_connector_Error as err:

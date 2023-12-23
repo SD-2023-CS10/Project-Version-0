@@ -10,34 +10,23 @@ import subprocess
 import re
 import socket
 from scapy.all import ARP, Ether, srp
-from pysnmp.hlapi import * # pip install pysnmp
-import threading
-from threading import Thread
+from pysnmp.hlapi import *
 import ssl
 import time
-
-'''
-ServiceThread class runs get_os_and_open_ports() and retrieves result with multithreading.
-'''
-class ServiceThread(Thread):
-    def __init__(self, argument):
-        Thread.__init__(self)
-        self.argument = argument
-        self.result = None
-    def run(self):
-        self.result = get_os_and_open_ports(self.argument)
+import sys
+import os
 
 '''
 Function: get_default_gateway()
-Args: None
+Args: N/A
 Parses the netifaces.gateways() output to retrieve the default gateway IP.
-Returns IP address if applicable, else None.
+Returns IP address if applicable, else N/A.
 '''  
 def get_default_gateway():
     gateways = netifaces.gateways()
     if 'default' in gateways and netifaces.AF_INET in gateways['default']: # check attributes exist
         return gateways['default'][netifaces.AF_INET][0]
-    return None
+    return "N/A"
 
 '''
 Function: get_network_subnet()
@@ -49,7 +38,7 @@ def get_network_subnet(gateway_ip):
     if gateway_ip:
         gateway_network = ipaddress.ip_interface(f"{gateway_ip}/24")
         return str(gateway_network.network)
-    return None    
+    return "N/A"    
 
 '''
 Function: get_hosts_up()
@@ -74,41 +63,6 @@ def get_hosts_up(subnet):
     return hosts_up, macs_lst
 
 '''
-Function: get_OS()
-Args: nmap, cur_ip
-Requests information from nmap library nmap_os_detection
-Returns parsed json_results, parsed_obj, and stats objects if applicable, else None
-'''
-def get_OS(nmap, cur_ip):
-    scan_dict = nmap.nmap_os_detection(str(cur_ip))
-    json_results = json.dumps(scan_dict, indent=4) # returns type string
-    parsed_obj = json.loads(json_results) # returns a json-object
-    stats = []
-    try: # based on .json output in stats
-        stats = parsed_obj[str(cur_ip)]["osmatch"] if "osmatch" in parsed_obj[str(cur_ip)] else []
-        return json_results, parsed_obj, stats
-    except:
-        print("No known OS information.")
-    return None
-
-'''
-Function: parse_OS_output()
-Args: stats
-Delves into stats json object for values
-Returns os_name, os_gen, os_family, device_type for given IP's stats object
-'''
-def parse_OS_output(stats):
-    if stats != {} and stats != [] and isinstance(stats, list)==True:
-        first_item = stats[0]
-        if isinstance(first_item, dict) and "osclass" in first_item and "name" in first_item:
-            os_name = stats[0]["name"] if "name" in stats[0] else "N/A"
-            os_gen = stats[0]["osclass"]["osgen"] if "osgen" in stats[0]["osclass"] else "N/A"
-            os_family = stats[0]["osclass"]["osfamily"] if "osfamily" in stats[0]["osclass"] else "N/A"
-            device_type = stats[0]["osclass"]["type"] if "type" in stats[0]["osclass"] else "N/A"
-            return os_name, os_gen, os_family, device_type
-    return "N/A", "N/A", "N/A", "N/A"
-
-'''
 Function: get_hostname()
 Args: cur_ip
 Retrieves hostname of given IP
@@ -125,13 +79,17 @@ def get_hostname(cur_ip):
 
 '''
 Function: get_public_ip()
-Args: None
+Args: N/A
 Pings website to get device's public IP
 Returns public IP of device running program.
 '''
 def get_public_ip():
-    response = requests.get('https://api64.ipify.org?format=json').json()
-    public_ip = response["ip"]
+    try:
+        response = requests.get('https://api64.ipify.org?format=json').json()
+        public_ip = response["ip"]
+    except Exception as e:
+        print(f"Ensure administrator privileges and online connectivity. {e}")
+        public_ip = "N/A"
     return public_ip
 
 '''
@@ -141,10 +99,14 @@ Grabs city, region, and country_name after sending request
 Returns device's location attributes
 '''
 def get_location(server_ip):
-    response = requests.get(f'https://ipapi.co/{server_ip}/json/').json()
-    city = response.get("city")
-    region = response.get("region")
-    country = response.get("country_name")
+    try:
+        response = requests.get(f'https://ipapi.co/{server_ip}/json/').json()
+        city = response.get("city")
+        region = response.get("region")
+        country = response.get("country_name")
+    except Exception as e:
+        print(f"Ensure administrator privileges and online connectivity. {e}")
+        city = region = country = "N/A"
     return city, region, country
 
 '''
@@ -179,21 +141,20 @@ def append_NA(ports, protocols, statuses, services, service_versions):
 '''
 Function: get_os_and_open_ports()
 Args: host IP
-Performs subprocess nmap scan for TCP fingerprinting of an OS. 
-Creates lists that collect attributes and 
+Performs subprocess nmap scan for TCP fingerprinting of an OS
+Returns device_types, os_details, ports, protocols, statuses, services, service_versions
 '''
 def get_os_and_open_ports(host):
     device_types = []; os_details = []; ports = []; protocols = []; statuses = []; services = []; service_versions = []
     try:
         print("\n" + host)
-        result = subprocess.run(['nmap', '-O', '-T4', '-sV', '-v', host], capture_output=True, text=True, timeout=190)
+        result = subprocess.run(['nmap', '-O', '-T4', '-sV', '-v', host], capture_output=True, text=True, timeout=190) # Run subprocess scan of nmap
         output = result.stdout
         print(output)
         os_info_pattern = r"OS details: (.+)"
         os_match = re.search(os_info_pattern, output)
         os_info = os_match.group(1) if os_match else "N/A"
         os_details.append(os_info)
-        
         device_pattern = r"Device type: (.+)" # Search for keywords in output
         device_match = re.search(device_pattern, output)
         device_info = device_match.group(1) if device_match else "N/A"
@@ -235,11 +196,32 @@ def get_os_and_open_ports(host):
     return device_types, os_details, ports, protocols, statuses, services, service_versions
 
 '''
-Main Program Driver
+Function: get_server_name()
+Args: host IP
+Performs subprocess nslookup comand, given the crawled device on the network
+Returns server name
 '''
-if __name__ == "__main__":
-    print("Started Crawler...")
-    nmap = Nmap() # Instantiate nmap object
+def get_server_name(host):
+    result = subprocess.run(['nslookup', host], capture_output=True, text=True, timeout=190)
+    if result.returncode == 0:
+        output_lines = result.stdout.splitlines()
+        # Search for the server name in the output
+        for line in output_lines:
+            if "Name:" in line:
+                # Extract the server name using regex
+                server_name = re.search(r'Name:\s+(.*)', line)
+                if server_name:
+                    return server_name.group(1).strip()  # Return the server name without extra spaces
+        else:
+            return "N/A"
+
+'''
+Function: device_stats()
+Args: N/A
+Performs system calls to provide the basic device information on the network
+Returns target_host, gateway_ip, subnet, up_hosts, macs_lst, num_devices, city, region, country, encryption
+'''
+def device_stats():
     # Ensure Internet Connectivity
     try:
         target_host = socket.gethostname()
@@ -254,8 +236,9 @@ if __name__ == "__main__":
         print(f"Number of Connections: {num_devices}")
         public_ip = get_public_ip()
         city, region, country = get_location(public_ip)
+        server_name = get_server_name(public_ip)
         encryption = get_server_encryption_type(gateway_ip)
-        if country != None: 
+        if country != "N/A": 
             print(f"Server Location: {city}, {region} in {country}")
         else:
             print("No server location found.")
@@ -266,11 +249,79 @@ if __name__ == "__main__":
             print("No server encryption type found.")
     except Exception as e:
         print("Check network connection to retrieve statistics.")
-    
-    # os_names, os_gens, os_families, device_types = fetch_host_stats(up_hosts) # scan device and software details
-    # port_ids_lst, services_lst, service_products_lst, service_versions_lst = fetch_ports_stats(up_hosts) # scan ports on hosts
+    return server_name, target_host, gateway_ip, subnet, up_hosts, macs_lst, num_devices, city, region, country, encryption
 
+'''
+Function: print_summary()
+Args: up_hosts, macs_lst, device_types, os_list, port_ids_lst, protocols_lst, status_lst, services_lst, services_versions_lst
+Prints lists to console
+No return value
+'''
+def print_summary(up_hosts, macs_lst, device_types, os_lst, port_ids_lst, protocols_lst, status_lst, services_lst, services_versions_lst):
+    print("\nSummary:")
+    for i in range(len(up_hosts)):
+        print("Host: " + up_hosts[i])
+        print("MAC Address: " + macs_lst[i])
+        print("Device Type: " + ", ".join(device_types[i]))
+        print("Operating System Name: " + ", ".join(os_lst[i]))
+        print("Port ID: " + ", ".join(port_ids_lst[i]))
+        print("Protocol: " + ", ".join(protocols_lst[i]))
+        print("Status: " + ", ".join(status_lst[i]))
+        print("Service: " + ", ".join(services_lst[i]))
+        print("Service Version: " + ", ".join(services_versions_lst[i])) 
+        print()
+
+'''
+Function: database_push()
+Args: up_hosts, device_types, os_lst, city, region, country, encryption, gateway_ip, server_name
+Pushes crawled data to remote AWS server
+Returns no value
+'''
+def database_push(up_hosts, device_types, os_lst, city, region, country, encryption, gateway_ip, server_name):
+    # Add Project parent dir to path
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(current_dir)
+    sys.path.append(parent_dir)
+
+    # Create an instance of DBAPI class 
+    from database.dbapi import DBAPI
+    database = DBAPI()
+
+    with database as db:
+        print("Pushing statistics to database...")
+        try:
+            for i in range(len(up_hosts)):
+                item_id = db.create_item()  # Inserting an item into the Inv_Item table
+                print("Adding Information for ID:", item_id)
+                db.set_name(up_hosts[i], item_id)  # hostname
+                db.set_type(", ".join(device_types[i]), item_id)  # device type
+                db.set_os(", ".join(os_lst[i]), item_id)  # os name
+                db.set_version("N/A", item_id)  # os version
+                
+                # db.set_mac(", ".join(macs_lst[i]), item_id)
+                # db.set_ports(", ".join(port_ids_lst[i]), item_id)
+                # db.set_protocols(", ".join(protocols_lst[i]), item_id)
+                # db.set_statuses(", ".join(status_lst[i]), item_id)
+                # db.set_services(", ".join(services_lst[i]), item_id)
+                # db.set_service_versions(", ".join(service_versions_lst[i]), item_id)
+            location = f"{city} , {region}, {country}"
+            location_id = db.create_locataion("On-Premise", location, encryption)
+            
+            ip_obj = ipaddress.ip_address(gateway_ip)
+            ip_int = int(ip_obj)
+            print(ip_int)
+            server_id = db.create_server(server_name, ip_int, "IPv4", location_id)
+        except Exception as e:
+            print("Error:", e)
+            
+'''
+Main Program Driver
+'''
+if __name__ == "__main__":
+    print("Started Crawler...")
+    nmap = Nmap() # Instantiate nmap object
     device_types = []; os_lst = []; port_ids_lst = []; protocols_lst = []; status_lst = []; services_lst = []; services_versions_lst = []
+    server_name, target_host, gateway_ip, subnet, up_hosts, macs_lst, num_devices, city, region, country, encryption = device_stats()
     for host in up_hosts:
         start_time = time.time()
         device_type, os_details, ports, protocols, statuses, services, service_versions = get_os_and_open_ports(host)
@@ -283,22 +334,6 @@ if __name__ == "__main__":
         services_versions_lst.append(service_versions)
         end_time = time.time()
         print(f"Executed in {end_time - start_time} seconds.")
-    print(port_ids_lst); print(services_lst); print(device_types); print(os_lst); print(port_ids_lst)
-    print(protocols_lst); print(status_lst); print(services_lst); print(services_versions_lst)
-    print("\nSummary:"); 
-    for i in range(len(up_hosts)):
-        print("Host: " + up_hosts[i])
-        print("MAC Address: " + macs_lst[i])
-        print("Device Type: " + ", ".join(device_types[i]))
-        print("Operating System Name: " + ", ".join(os_lst[i]))
-        print("Port ID: " + ", ".join(port_ids_lst[i]))
-        print("Protocol: " + ", ".join(protocols_lst[i]))
-        print("Status: " + ", ".join(status_lst[i]))
-        print("Service: " + ", ".join(services_lst[i]))
-        print("Service Version: " + ", ".join(services_versions_lst[i]))
-        print()
+    print_summary(up_hosts, macs_lst, device_types, os_lst, port_ids_lst, protocols_lst, status_lst, services_lst, services_versions_lst)
+    database_push(up_hosts, device_types, os_lst, city, region, country, encryption, gateway_ip, server_name)
     
-'''
-Add DB <-> Crawler Python API
-'''
-from database.dbapi import DBAPI
