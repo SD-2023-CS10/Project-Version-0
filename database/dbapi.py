@@ -95,6 +95,7 @@ class DBAPI:
 
             def _validate_cloud_prem(self, v):
                 v = str(v)
+
                 if v == "Cloud" or v == "On-Premise":
                     return v
                 raise TypeError("cloud_prem needs to be of value \"Cloud\" or \"On-Premise\"")
@@ -424,7 +425,7 @@ class DBAPI:
                     self.close()
                     raise err
 
-                self.update_location(lid, cloud=cloud, details=details, protection=protection)
+                self.update_location(lid[0], cloud=cloud, details=details, protection=protection)
 
                 return lid
 
