@@ -56,6 +56,13 @@ CREATE TABLE Inv_Item (
     version VARCHAR(255),
     os VARCHAR(255),
     os_version VARCHAR(255),
+
+    mac BIGINT UNSIGNED,
+    ports VARCHAR(255),
+    protocols VARCHAR(255),
+    statuses VARCHAR(255),
+    services VARCHAR(255),
+    services_versions VARCHAR(255),
     
     vender VARCHAR(255),
     auto_log_off_freq INT UNSIGNED,
@@ -83,6 +90,8 @@ CREATE TABLE Inv_Item (
     model_num VARCHAR(255),
     notes MEDIUMTEXT,
     link VARCHAR(255),
+
+    CHECK (mac < 281474976710656), -- 2^48, or 16^12
 
     FOREIGN KEY (client) REFERENCES Client(name),
     FOREIGN KEY (vender) REFERENCES Vender(email),

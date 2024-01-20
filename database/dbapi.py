@@ -537,6 +537,84 @@ class DBAPI:
                     self.close()
                     raise err
 
+            def set_mac(self, m, iid):
+                m = self._validate_int(m, size="BIGINT")
+                iid = self._validate_item(iid)
+
+                query = "UPDATE Inv_Item SET mac = %s WHERE item_id = %s;"
+                try:
+                    self.rs.execute(query, (m, iid))
+                    self.con.commit()
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_ports(self, p, iid):
+                p = self._validate_varchar(p)
+                iid = self._validate_item(iid)
+
+                query = "UPDATE Inv_Item SET ports = %s WHERE item_id = %s;"
+                try:
+                    self.rs.execute(query, (p, iid))
+                    self.con.commit()
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_protocols(self, p, iid):
+                p = self._validate_varchar(p)
+                iid = self._validate_item(iid)
+
+                query = "UPDATE Inv_Item SET protocols = %s WHERE item_id = %s;"
+                try:
+                    self.rs.execute(query, (p, iid))
+                    self.con.commit()
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_statuses(self, s, iid):
+                s = self._validate_varchar(s)
+                iid = self._validate_item(iid)
+
+                query = "UPDATE Inv_Item SET statuses = %s WHERE item_id = %s;"
+                try:
+                    self.rs.execute(query, (s, iid))
+                    self.con.commit()
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_services(self, s, iid):
+                s = self._validate_varchar(s)
+                iid = self._validate_item(iid)
+
+                query = "UPDATE Inv_Item SET services = %s WHERE item_id = %s;"
+                try:
+                    self.rs.execute(query, (s, iid))
+                    self.con.commit()
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
+            def set_services_versions(self, sv, iid):
+                sv = self._validate_varchar(sv)
+                iid = self._validate_item(iid)
+
+                query = "UPDATE Inv_Item SET services_versions = %s WHERE item_id = %s;"
+                try:
+                    self.rs.execute(query, (sv, iid))
+                    self.con.commit()
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+
             def set_vender(self, e, iid):
                 e = self._validate_varchar(e)
                 iid = self._validate_item(iid)
