@@ -424,8 +424,7 @@ class DBAPI:
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
-
-                self.update_location(lid[0], cloud=cloud, details=details, protection=protection)
+                self.update_location(lid, cloud=cloud, details=details, protection=protection)
 
                 return lid
 
