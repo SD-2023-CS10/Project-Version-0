@@ -159,16 +159,13 @@ Returns parsed name and version
 '''
 def split_os_details(os_details):
     # OS details is an re.Match object
-    print(f"DETAILS: {os_details}")
     pattern = r"([a-zA-Z]+(?:\s+[a-zA-Z]+)*)\s*([\d. -]+)"
     
     if os_details:
         os_str = str(os_details.group(1))
         match = re.match(pattern, os_str)
         os_name = match.group(1).strip()
-        print(os_name)
         os_version = match.group(2).strip()
-        print(os_version)
         return os_name, os_version
     else:
         return "N/A", "N/A"
@@ -197,7 +194,7 @@ def find_ports(output, ports, protocols, statuses, services, service_versions):
             split_string = [elem for elem in split_string if elem.strip()]
             service = split_string[0]
             version = ' '.join(split_string[1:])
-            print(f"Service: {service}, Version: {version}")
+            print(f"Service: {service}\nService Version: {version}")
             services.append(service.strip()) if service.strip() != "" else "N/A"
             service_versions.append(version.strip()) if version.strip() != "" else service_versions.append("N/A")
             print(f"Port: {port}, Protocol: {protocol}, Status: {status}, Service: {service.strip()}, Version: {version.strip()}")
@@ -224,8 +221,8 @@ def get_os_and_open_ports(host):
         os_names.append(os_name)
         os_versions.append(os_version)
         
-        print(f"Name: {os_name}")
-        print(f"Version: {os_version}")
+        print(f"OS Name: {os_name}")
+        print(f"OS Version: {os_version}")
         
         device_pattern = r"Device type: (.+)" # Search for keywords in output
         device_match = re.search(device_pattern, output)
@@ -318,10 +315,10 @@ def print_summary(city, region, country, up_hosts, macs_lst, device_types, os_na
         print("Operating System Name: " + ", ".join(os_names[i]))
         print("Operating System Version: " + ", ".join(os_versions[i]))
         print("Port ID: " + ", ".join(port_ids_lst[i]))
-        print("Protocol: " + "".join(protocols_lst[i]))
-        print("Status: " + "".join(status_lst[i]))
-        print("Service: " + "".join(services_lst[i]))
-        print("Service Version: " + "".join(services_versions_lst[i]))
+        print("Protocol: " + ", ".join(protocols_lst[i]))
+        print("Status: " + ", ".join(status_lst[i]))
+        print("Service: " + ", ".join(services_lst[i]))
+        print("Service Version: " + ", ".join(services_versions_lst[i]))
         print()
 
 '''
@@ -355,10 +352,9 @@ def database_push(up_hosts, device_types, os_names, os_versions, city, region, c
                 db.set_name(up_hosts[i], item_id)  # hostname
                 db.set_type(", ".join(device_types[i]), item_id)  # device type
                 db.set_os(", ".join(os_names[i]), item_id)  # os name
-                db.set_version(", ".join(os_versions[i]), item_id)  # os version
+                db.set_os_version(", ".join(os_versions[i]), item_id)  # os version
                 db.set_server(server_id, item_id)
-                # Additional crawled attributes
-                db.set_mac(", ".join(macs_lst[i]), item_id)
+                db.set_mac(int(macs_lst[i]), item_id)
                 db.set_ports(", ".join(port_ids_lst[i]), item_id)
                 db.set_protocols(", ".join(protocols_lst[i]), item_id)
                 db.set_statuses(", ".join(status_lst[i]), item_id)
@@ -392,5 +388,5 @@ if __name__ == "__main__":
         
     print_summary(city, region, country, up_hosts, macs_lst, device_types, os_names, os_versions, port_ids_lst, protocols_lst, status_lst, services_lst, services_versions_lst)
     # TODO: Test database push and update auto-increment to sequentially increment IDs
-    # database_push(up_hosts, device_types, os_names, os_verisons, city, region, country, encryption, gateway_ip, server_name, services_versions_lst)
+    database_push(up_hosts, device_types, os_names, os_versions, city, region, country, encryption, gateway_ip, server_name, services_versions_lst)
     
