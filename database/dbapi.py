@@ -939,6 +939,34 @@ class DBAPI:
                     self.close()
                     raise err
 
+            def export(self):
+                query = "SELECT i.name, i.type, i.version, i.os, i.os_version,\
+                                i.mac, i.ports, i.protocols, i.statuses,\
+                                i.services, i.services_versions, v.poc, v.email,\
+                                v.baa, v.date, i.auto_log_off_freq, s.name,\
+                                s.ip_address, s.ip_version, l.cloud_prem, l.details,\
+                                l.protection, i.ephi, i.ephi_encrypted,\
+                                i.ephi_encr_method, i.ephi_encr_tested,\
+                                i.interfaces_with, i.user_auth_method,\
+                                i.app_auth_method, i.psw_min_len, i.psw_change_freq,\
+                                i.dept, i.space, i.date_last_ordered, i.purchase_price,\
+                                i.warranty_expires, i.item_condition, i.quantity,\
+                                i.assset_value, i.model_num, i.notes, i.link\
+                         FROM Inv_Item as i\
+                            LEFT JOIN Server as s ON s.id = i.server\
+                            LEFT JOIN Location as l ON l.id = s.location_id\
+                            LEFT JOIN Vender as v ON v.email = i.vender\
+                         WHERE i.client = %s;"
+                
+                try:
+                    self.rs.execute(query, (self.client,))
+                    ret = [m for m in self.rs] # could change to generator w/ yield but then opens data integrity errors for returned resultsSE
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                return ret
+
             def close(self):
                 self.rs.close()
                 self.con.close()
