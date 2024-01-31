@@ -26,7 +26,7 @@
     <!-- Sidebar/menu -->
     <nav class="sidebar collapse blue animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
         <div class="container">
-            <a href="index.html" onclick="w3_close()" class="hide-large right jumbo padding hover-grey"
+            <a href="index.php" onclick="w3_close()" class="hide-large right jumbo padding hover-grey"
                 title="close menu">
                 <i class="fa fa-remove"></i>
             </a>
@@ -36,7 +36,7 @@
         </div>
         <div class="section bottombar"></div>
         <div class="bar-block">
-            <a href="index.html" onclick="w3_close()" class="bar-item button padding grey text-black"><i
+            <a href="index.php" onclick="w3_close()" class="bar-item button padding grey text-black"><i
                     class="fa fa-solid fa-house-user"></i> HOME</a>
             <a href="network.html" onclick="w3_close()" class="bar-item button padding"><i
                     class="fa fa-solid fa-wifi"></i> NETWORK</a>
@@ -44,6 +44,8 @@
                     class="fa fa-solid fa-gear"></i> SETTINGS</a>
             <a href="download.html" onclick="w3_close()" class="bar-item button padding"><i
                     class="fa fa-solid fa-download"></i> DOWNLOAD</a>
+            <a href="download.html" onclick="w3_close()" class="bar-item button padding"><i
+                    class="fa fa-solid fa-download"></i> RUN SCAN</a>
         </div>
     </nav>
 
