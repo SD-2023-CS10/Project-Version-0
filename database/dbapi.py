@@ -1103,11 +1103,14 @@ class DBAPI:
 
                 try:
                     self.rs.execute(query, tuple(params))
-                    self.con.commit()
+                    for (m) in self.rs:
+                        m = m[0]
                     self.rs.reset()
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
+
+                return True if m is not None else False
 
             def close(self):
                 self.rs.close()
