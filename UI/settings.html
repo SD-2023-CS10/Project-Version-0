@@ -25,10 +25,11 @@
   </div>
   <div class="section bottombar"></div>
   <div class="bar-block">
-    <a href="index.php" onclick="_close()" class="bar-item button padding grey text-black"><i class="fa fa-solid fa-house-user"></i> HOME</a> 
+    <a href="index.php" onclick="_close()" class="bar-item button padding grey text-black"><i class="fa fa-solid fa-folder"></i> HOME</a> 
     <a href="network.html" onclick="_close()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a> 
     <a href="settings.html" onclick="_close()" class="bar-item button padding"><i class="fa fa-solid fa-gear"></i>  SETTINGS</a>
-    <a href="download.html" onclick="_close()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i>  DOWNLOAD</a>
+    <a href="" onclick="_close()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i>  DOWNLOAD</a>
+    <a href="" onclick="_close()" class="bar-item button padding"><i class="fa fa-solid fa-play"></i>  RUN SCAN</a>
   </div>
 </nav>
 
@@ -47,31 +48,67 @@
   </header>
 
   <!-- First Grid-->
-  <div class="container center" > 
-    <button class="container">
-      <div class="container blue padding-16">
-        <div class="black"></div>
-        <h4>Profile</h4>
+  <body>
+    <div class="container">
+      <div class="row-padding">
+        <h2>Settings</h2>
+          <div class="tab">
+                <button class="tablinks" onclick="opentab(event, 'Profile')">Profile</button>
+                <button class="tablinks" onclick="opentab(event, 'Accessibility')">Accessibility</button>
+                <button class="tablinks" onclick="opentab(event, 'Contact')">Contact</button>
+          </div>
       </div>
-    </button>
-    <button class="container">
-      <div class="container blue padding-16">
-        <div class="black"></div>
-        <h4>Accessibility</h4>
-      </div>
-    </button>
-    <button class="container">
-      <div class="container blue text-white padding-16">
-        <div class="black"></div>
-        <h4>Help</h4>
-      </div>
-    </button>
-  </div>
+      <div class="row-padding right right">
+          <div id="Profile" class="tabcontent">
+            <font size="4" face="Courier New">
+              <table BORDER=1 width="100%">
+                <h4><b>Profile</b></h4>
+                <p>username, email, password, change password, (reach out to medcurity about what information they want to share here)</p>
+                <hr>
+              </table>
+            </font>
+          </div>
 
-  <div class="container padding-large" style="margin-bottom:32px">
-    <div class="row-padding" style="margin:0 -16px">
+          <!-- Accessibility -->
+          <div id="Accessibility" class="tabcontent">
+            <font size="4" face="Courier New">
+              <table BORDER=1 width="100%">
+                <h4><b>Options</b></h4>
+                <p>Change font size, TTS, display size/magnification, contrast/color opts (stretch)</p>
+                <hr>
+              </table>
+            </font>
+          </div>
+
+          <!-- Contact -->
+          <div id="Contact" class="tabcontent">
+            <font size="4" face="Courier New">
+              <table BORDER=1 width="100%">
+                <h4><b>Contact</b></h4>
+                <p>Their specific medcurity contact info (their representative or profile manager) + general medcurity contact, maybe contact text-box?</p>
+                <hr> 
+              </table>
+            </font>
+          </div>
+        </div>
+          <script>
+            function opentab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+                document.getElementById(tabName).style.display = "block";
+                evt.currentTarget.className += " active";
+            }
+          </script>
       </div>
-  </div>
+    </div>
+  </body>
 
   <!-- Footer -->
   <footer class="container padding-64 dark-grey bottom">

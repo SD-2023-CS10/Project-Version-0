@@ -42,9 +42,9 @@
                     class="fa fa-solid fa-wifi"></i> NETWORK</a>
             <a href="settings.html" onclick="w3_close()" class="bar-item button padding"><i
                     class="fa fa-solid fa-gear"></i> SETTINGS</a>
-            <a href="download.html" onclick="w3_close()" class="bar-item button padding"><i
+            <a href="" onclick="w3_close()" class="bar-item button padding"><i
                     class="fa fa-solid fa-download"></i> DOWNLOAD</a>
-            <a href="download.html" onclick="w3_close()" class="bar-item button padding"><i
+            <a href="" onclick="w3_close()" class="bar-item button padding"><i
                     class="fa fa-solid fa-download"></i> RUN SCAN</a>
         </div>
     </nav>
