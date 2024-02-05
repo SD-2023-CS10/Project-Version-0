@@ -7,8 +7,8 @@ INSERT INTO Client VALUES
 INSERT INTO User VALUES
     ("MedCorp", "bhuyck1", 123),
     ("MedCorp", "bhuyck2", 456),
-    ("GonMed", "bhuyck1", 123),
-    ("MedTech", "bhuyck1", 789);
+    ("GonMed", "bhuyck3", 123),
+    ("MedTech", "bhuyck", 789);
 
 INSERT INTO Vender VALUES
     ("Matt M.", "mattm@gmail.com", FALSE, '2023-10-31'),
