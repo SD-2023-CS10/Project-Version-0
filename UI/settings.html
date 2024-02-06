@@ -50,64 +50,27 @@
   <!-- First Grid-->
   <body>
     <div class="container">
-      <div class="row-padding">
-        <h2>Settings</h2>
-          <div class="tab">
-                <button class="tablinks" onclick="opentab(event, 'Profile')">Profile</button>
-                <button class="tablinks" onclick="opentab(event, 'Accessibility')">Accessibility</button>
-                <button class="tablinks" onclick="opentab(event, 'Contact')">Contact</button>
-          </div>
+      <h2>Settings</h2>
+      <div class="list-topics-content row-padding">
+        <ul>
+          <li>
+            <div class="single-list-topics-content">
+              <h2><a href="#">Profile</a></h2>
+            </div>
+          </li>
+          <li>
+            <div class="single-list-topics-content">
+              <h2><a href="#">Accessibility</a></h2>
+            </div>
+          </li>
+          <li>
+            <div class="single-list-topics-content">
+              <h2><a href="#">Contact</a></h2>
+            </div>
+          </li>
+        </ul>
       </div>
-      <div class="row-padding right right">
-          <div id="Profile" class="tabcontent">
-            <font size="4" face="Courier New">
-              <table BORDER=1 width="100%">
-                <h4><b>Profile</b></h4>
-                <p>username, email, password, change password, (reach out to medcurity about what information they want to share here)</p>
-                <hr>
-              </table>
-            </font>
-          </div>
-
-          <!-- Accessibility -->
-          <div id="Accessibility" class="tabcontent">
-            <font size="4" face="Courier New">
-              <table BORDER=1 width="100%">
-                <h4><b>Options</b></h4>
-                <p>Change font size, TTS, display size/magnification, contrast/color opts (stretch)</p>
-                <hr>
-              </table>
-            </font>
-          </div>
-
-          <!-- Contact -->
-          <div id="Contact" class="tabcontent">
-            <font size="4" face="Courier New">
-              <table BORDER=1 width="100%">
-                <h4><b>Contact</b></h4>
-                <p>Their specific medcurity contact info (their representative or profile manager) + general medcurity contact, maybe contact text-box?</p>
-                <hr> 
-              </table>
-            </font>
-          </div>
-        </div>
-          <script>
-            function opentab(evt, tabName) {
-                var i, tabcontent, tablinks;
-                tabcontent = document.getElementsByClassName("tabcontent");
-                for (i = 0; i < tabcontent.length; i++) {
-                    tabcontent[i].style.display = "none";
-                }
-                tablinks = document.getElementsByClassName("tablinks");
-                for (i = 0; i < tablinks.length; i++) {
-                    tablinks[i].className = tablinks[i].className.replace(" active", "");
-                }
-                document.getElementById(tabName).style.display = "block";
-                evt.currentTarget.className += " active";
-            }
-          </script>
-      </div>
-    </div>
+    </div><!--/.container-->
   </body>
 
   <!-- Footer -->

@@ -26,7 +26,7 @@
     <!-- Sidebar/menu -->
     <nav class="sidebar collapse blue animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
         <div class="container">
-            <a href="index.php" onclick="w3_close()" class="hide-large right jumbo padding hover-grey"
+            <a href="index.php" onclick="close()" class="hide-large right jumbo padding hover-grey"
                 title="close menu">
                 <i class="fa fa-remove"></i>
             </a>
@@ -36,21 +36,16 @@
         </div>
         <div class="section bottombar"></div>
         <div class="bar-block">
-            <a href="index.php" onclick="w3_close()" class="bar-item button padding grey text-black"><i
-                    class="fa fa-solid fa-house-user"></i> HOME</a>
-            <a href="network.html" onclick="w3_close()" class="bar-item button padding"><i
-                    class="fa fa-solid fa-wifi"></i> NETWORK</a>
-            <a href="settings.html" onclick="w3_close()" class="bar-item button padding"><i
-                    class="fa fa-solid fa-gear"></i> SETTINGS</a>
-            <a href="" onclick="w3_close()" class="bar-item button padding"><i
-                    class="fa fa-solid fa-download"></i> DOWNLOAD</a>
-            <a href="" onclick="w3_close()" class="bar-item button padding"><i
-                    class="fa fa-solid fa-download"></i> RUN SCAN</a>
+            <a href="index.php" onclick="close()" class="bar-item button padding grey black-text"><i class="fa fa-solid fa-folder"></i> HOME</a> 
+            <a href="network.html" onclick="close()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a>
+            <a href="settings.html" onclick="close()" class="bar-item button padding"><i class="fa fa-solid fa-gear"></i> SETTINGS</a>
+            <a href="" onclick="close()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</a>
+            <a href="" onclick="close()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
         </div>
     </nav>
 
     <!-- Overlay effect when opening sidebar on small screens -->
-    <div class="overlay hide-large animate-opatab" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+    <div class="overlay hide-large animate-opatab" onclick="close()" style="cursor:pointer" title="close side menu"
         id="myOverlay"></div>
 
     <!-- PAGE CONTENT! -->
@@ -58,12 +53,33 @@
 
         <!-- Header -->
         <header id="MedCorp System Inventory">
-            <span class="button hide-large xxlarge hover-text-grey" onclick="w3_open()"><i
+            <span class="button hide-large xxlarge hover-text-grey" onclick="open()"><i
                     class="fa fa-bars"></i></span>
             <div class="container">
-                <h1><b>MedCorp System Inventory</b><button class="button margin-right right green large">SAVE <i
-                            class="fa fa-solid fa-upload large"></i></button></h1>
-
+                <h1><div id="myProgress">
+                <div id="myBar">0%</div></div><b>MedCorp System Inventory</b><button onclick="move()" class="button margin-right right green large">SAVE <i
+                    class="fa fa-solid fa-upload large"></i></button></h1>
+                    <script>
+                        var i = 0;
+                        function move() {
+                        if (i == 0) {
+                            i = 1;
+                            var elem = document.getElementById("myBar");
+                            var width = 10;
+                            var id = setInterval(frame, 10);
+                            function frame() {
+                            if (width >= 100) {
+                                clearInterval(id);
+                                i = 0;
+                            } else {
+                                width++;
+                                elem.style.width = width + "%";
+                                elem.innerHTML = width  + "%";
+                            }
+                            }
+                        }
+                        }
+                    </script>
                 <body>
                     <h2>Homepage</h2>
                     <div class="tab">
@@ -427,8 +443,15 @@
                                     $cn ->close ();
                                 ?>
                             </table>
+                            <div class="container">
+                                <div class="button left xxlarge">
+                                    <i class="fa fa-solid fa-plus left"></i>
+                                </div>
+                                <div class="inputbar">
+                                    <input class="left" type="text" placeholder="Add Device..">
+                                </div>
+                            </div>
                         </font>
-                    </div>
 
                     <script>
                         function opentab(evt, tabName) {
@@ -447,15 +470,6 @@
                     </script>
 
                 </body>
-                <div class="container">
-                    <div class="button left xxlarge">
-                        <i class="fa fa-solid fa-plus left"></i>
-                    </div>
-                    <div class="inputbar">
-                        <input class="left" type="text" placeholder="Add Device..">
-                    </div>
-                </div>
-            </div>
 
             <div class="container padding-large" style="margin-bottom:32px">
                 <div class="row-padding" style="margin:0 -16px">
@@ -483,12 +497,12 @@
 
             <script>
                 // Script to open and close sidebar
-                function w3_open() {
+                function open() {
                     document.getElementById("mySidebar").style.display = "block";
                     document.getElementById("myOverlay").style.display = "block";
                 }
 
-                function w3_close() {
+                function close() {
                     document.getElementById("mySidebar").style.display = "none";
                     document.getElementById("myOverlay").style.display = "none";
                 }
