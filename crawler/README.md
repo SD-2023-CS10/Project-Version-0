@@ -10,7 +10,7 @@ When retrieving sensitive and oftentimes vulnerable data, it is crucial to note 
 
 ## Dependencies
 
-The network crawler agent is defined by the python script `crawl-device.py`.  To run the crawler, ensure the following been successfully installed and/or imported on the host machine.
+The network crawler agent is defined by the python script `crawl-device.py`.  To run the crawler, ensure the following been successfully installed and/or imported on the host machine. 
 * Python3
 * Nmap
 ```
@@ -36,6 +36,17 @@ Compile and run crawler script with `python3` configured on the host machine.
 ```
 python3 crawl-device.py
 ```
+
+## Expected Output
+
+When the script is executed , the terminal will output 
+
+`Started Crawler...` .
+
+Next, information will be displayed for the Target Hostname, Server Gateway IP, Network Subnet, Devices, Number of Connections, Server Location, and available Server Encryption.
+
+As the script progresses, it will output feedback messages to the terminal indicating the ongoing operations.  Note that port-scanning typically consumes the majority of the scan time.
+
 
 ## Troubleshooting
 
