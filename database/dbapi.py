@@ -1134,7 +1134,10 @@ class DBAPI:
                 try:
                     self.rs.execute(query, (self.client,))
                     ret = [m for m in self.rs] # could change to generator w/ yield but then opens data integrity errors for returned resultsSE
-
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                    
                 return ret
 
             def close(self):
