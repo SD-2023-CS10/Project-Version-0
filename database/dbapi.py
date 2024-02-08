@@ -163,7 +163,7 @@ class DBAPI:
                 params = [self.client, usr, psw]
                 params[0] = self._validate_varchar(params[0])
                 params[1] = self._validate_varchar(params[1])
-                params[2] = self._validate_int(params[2])
+                params[2] = self._validate_varchar(params[2])
                 try:
                     self.rs.execute(query, tuple(params))
                     self.con.commit()
