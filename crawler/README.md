@@ -48,6 +48,12 @@ Next, information will be displayed for the Target Hostname, Server Gateway IP, 
 As the script progresses, it will output feedback messages to the terminal indicating the ongoing operations.  Note that port-scanning typically consumes the majority of the scan time.
 
 
+## Handling Duplicate Items
+In conjunction with the DB API located in ../database directory, duplicate items are handled by checking the existence of the item before creating a new item.
+
+If the current entry (regardless of the associated database table) matches an existing entry on every attribute, the crawler will not override the existing entry. If a user adds data to row entries (via UI manual input), the crawler clearly cannot detect this data without pulling from the database.  Thus, in the case a user re-reuns the scan on the same server, items will be added only if it does not match the crawled attributes.  By the API construction, only crawled attributes will be part of the select-from-where query, thus manual input will not be overridden. 
+
+
 ## Troubleshooting
 
 1.  Ensure host machine running script is connected to an online network
