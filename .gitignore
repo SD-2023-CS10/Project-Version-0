@@ -5,3 +5,4 @@ database/project-BrandonHuyck
 crawler/config.ini
 *__pycache__
 UI/config.ini
+csv/outfile.csv
