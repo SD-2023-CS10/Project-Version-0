@@ -2,5 +2,7 @@ database/scan_results.json
 database/config.py
 database/hw3-BrandonHuyck
 database/project-BrandonHuyck
+crawler/config.ini
 *__pycache__
 UI/config.ini
+csv/outfile.csv
