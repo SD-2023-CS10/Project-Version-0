@@ -8,15 +8,32 @@ from database.config import config
 # from config import config # for in-file testing
 
 class DBAPI:
+
+    def __init__(self, as_user):
+        self.as_user = as_user
     
     def __enter__(self):
 
         class Connector:
 
-            def __init__(self):
+            def __init__(self, as_user):
                 usr, pwd, hst, dab = self._read_config_info(config)
                 self._establish_connection(usr, pwd, hst, dab)
-                self.client = self._validate_varchar("MedCorp") # TODO: fix client -- fetch based on logged in user
+                
+                self.as_user = as_user
+
+                query = "SELECT client FROM User WHERE user_name = %s;"
+                try:
+                    self.rs.execute(query, (as_user,))
+                    for (m) in self.rs:
+                        self.client = m[0]
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                except TypeError as e:
+                    self.close()
+                    print("Perhaps username, " + as_user + ", not in DB.")
+                    raise e
 
             '''
             Reads config info from imported config dict. Returns a tuple of relavent info.
@@ -1141,12 +1158,12 @@ class DBAPI:
                 self.rs.close()
                 self.con.close()
 
-        self.api_obj = Connector()
+        self.api_obj = Connector(self.as_user)
         return self.api_obj
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.api_obj.close()
 
 if __name__ == '__main__':
-    with DBAPI() as c:
+    with DBAPI("bhuyck") as c:
         pass
