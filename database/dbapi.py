@@ -345,10 +345,10 @@ class DBAPI:
                 baa = self._validate_bool(baa) if baa is not None else None
                 date = self._validate_date(date) if date is not None else None
 
-                query = "SELECT email FROM Vender WHERE email = %s;"
+                query = "SELECT email FROM Vender WHERE email = %s AND client = %s;"
                 m = None
                 try:
-                    self.rs.execute(query, (email,))
+                    self.rs.execute(query, tuple([email, self.client]))
                     for (m) in self.rs:
                         m = m[0]
                     self.rs.reset()
@@ -358,9 +358,9 @@ class DBAPI:
                 if m is not None:
                     raise ValueError(email + " already in table")
 
-                query = "INSERT INTO Vender (email) VALUES (%s);"
+                query = "INSERT INTO Vender (email, client) VALUES (%s, %s);"
                 try:
-                    self.rs.execute(query, (email,))
+                    self.rs.execute(query, tuple([email, self.client]))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -371,10 +371,10 @@ class DBAPI:
             def update_vender(self, email, new_email=None, poc=None, baa=None, date=None):
                 email = self._validate_varchar(email)
 
-                query = "SELECT email FROM Vender WHERE email = %s;"
+                query = "SELECT email FROM Vender WHERE email = %s AND client = %s;"
                 m = None
                 try:
-                    self.rs.execute(query, (email,))
+                    self.rs.execute(query, tuple([email, self.client]))
                     for (m) in self.rs:
                         m = m[0]
                     self.rs.reset()
@@ -406,8 +406,9 @@ class DBAPI:
                     query += "date = %s, "
                     params.append(date)
                 query = query[:-2] + ' '
-                query += "WHERE email = %s;"
+                query += "WHERE email = %s AND client = %s;"
                 params.append(email)
+                params.append(self.client)
 
                 try:
                     self.rs.execute(query, tuple(params))
@@ -635,10 +636,10 @@ class DBAPI:
                 e = self._validate_varchar(e)
                 iid = self._validate_item(iid)
 
-                query = "SELECT email FROM Vender WHERE email = %s;"
+                query = "SELECT email FROM Vender WHERE email = %s AND client = %s;"
                 m = None
                 try:
-                    self.rs.execute(query, (e,))
+                    self.rs.execute(query, tuple([e, self.client]))
                     for (m) in self.rs:
                         m = m[0]
                     self.rs.reset()
