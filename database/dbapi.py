@@ -975,147 +975,146 @@ class DBAPI:
 
                 if name is not None:
                     name = self._validate_varchar(name)
-                    query += "name = %s "
+                    query += "name = %s AND "
                     params.append(name)
                 if type_ is not None:
                     type_ = self._validate_varchar(type_)
-                    query += "AND type = %s "
+                    query += "type = %s AND "
                     params.append(type_)
                 if version is not None:
                     version = self._validate_varchar(version)
-                    query += "AND version = %s "
+                    query += "version = %s AND "
                     params.append(version)
                 if os is not None:
                     os = self._validate_varchar(os)
-                    query += "AND os = %s "
+                    query += "os = %s AND "
                     params.append(os)
                 if os_version is not None:
                     os_version = self._validate_varchar(os_version)
-                    query += "AND os_version = %s "
+                    query += "os_version = %s AND "
                     params.append(os_version)
                 if mac is not None:
                     mac = self._validate_int(mac, size="BIGINT")
-                    query += "AND mac = %s "
+                    query += "mac = %s AND "
                     params.append(mac)
                 if ports is not None:
                     ports = self._validate_varchar(ports)
-                    query += "AND ports = %s "
+                    query += "ports = %s AND "
                     params.append(ports)
                 if protocols is not None:
                     protocols = self._validate_varchar(protocols)
-                    query += "AND protocols = %s "
+                    query += "protocols = %s AND "
                     params.append(protocols)
                 if statuses is not None:
                     statuses = self._validate_varchar(statuses)
-                    query += "AND statuses = %s "
+                    query += "statuses = %s AND "
                     params.append(statuses)
                 if services is not None:
                     services = self._validate_varchar(services)
-                    query += "AND services = %s "
+                    query += "services = %s AND "
                     params.append(services)
                 if services_versions is not None:
                     services_versions = self._validate_varchar(services_versions)
-                    query += "AND services_versions = %s "
+                    query += "services_versions = %s AND "
                     params.append(services_versions)
                 if vender is not None:
                     vender = self._validate_varchar(vender)
-                    query += "AND vender = %s "
+                    query += "vender = %s AND "
                     params.append(vender)
                 if auto_log_off_freq is not None:
                     auto_log_off_freq = self._validate_int(auto_log_off_freq)
-                    query += "AND auto_log_off_freq = %s "
+                    query += "auto_log_off_freq = %s AND "
                     params.append(auto_log_off_freq)
                 if server is not None:
                     server = self._validate_int(server)
-                    query += "AND server = %s "
+                    query += "server = %s AND "
                     params.append(server)
                 if ephi is not None:
                     ephi = self._validate_bool(ephi)
-                    query += "AND ephi = %s "
+                    query += "ephi = %s AND "
                     params.append(ephi)
                 if ephi_encrypted is not None:
                     ephi_encrypted = self._validate_bool(ephi_encrypted)
-                    query += "AND ephi_encrypted = %s "
+                    query += "ephi_encrypted = %s AND "
                     params.append(ephi_encrypted)
                 if ephi_encr_method is not None:
                     ephi_encr_method = self._validate_varchar(ephi_encr_method)
-                    query += "AND ephi_encr_method = %s "
+                    query += "ephi_encr_method = %s AND "
                     params.append(ephi_encr_method)
                 if ephi_encr_tested is not None:
                     ephi_encr_tested = self._validate_bool(ephi_encr_tested)
-                    query += "AND ephi_encr_tested = %s "
+                    query += "ephi_encr_tested = %s AND "
                     params.append(ephi_encr_tested)
                 if interfaces_with is not None:
                     interfaces_with = self._validate_text(interfaces_with)
-                    query += "AND interfaces_with = %s "
+                    query += "interfaces_with = %s AND "
                     params.append(interfaces_with)
                 if user_auth_method is not None:
                     user_auth_method = self._validate_varchar(user_auth_method)
-                    query += "AND user_auth_method = %s "
+                    query += "user_auth_method = %s AND "
                     params.append(user_auth_method)
                 if app_auth_method is not None:
                     app_auth_method = self._validate_varchar(app_auth_method)
-                    query += "AND app_auth_method = %s "
+                    query += "app_auth_method = %s AND "
                     params.append(app_auth_method)
                 if psw_min_len is not None:
                     psw_min_len = self._validate_int(psw_min_len)
-                    query += "AND psw_min_len = %s "
+                    query += "psw_min_len = %s AND "
                     params.append(psw_min_len)
                 if psw_change_freq is not None:
                     psw_change_freq = self._validate_int(psw_change_freq)
-                    query += "AND psw_change_freq = %s "
+                    query += "psw_change_freq = %s AND "
                     params.append(psw_change_freq)
                 if dept is not None:
                     dept = self._validate_varchar(dept)
-                    query += "AND dept = %s "
+                    query += "dept = %s AND "
                     params.append(dept)
                 if space is not None:
                     space = self._validate_varchar(space)
-                    query += "AND space = %s "
+                    query += "space = %s AND "
                     params.append(space)
                 if date_last_ordered is not None:
                     date_last_ordered = self._validate_date(date_last_ordered)
-                    query += "AND date_last_ordered = %s "
+                    query += "date_last_ordered = %s AND "
                     params.append(date_last_ordered)
                 if purchase_price is not None:
                     purchase_price = self._validate_decimal(purchase_price)
-                    query += "AND purchase_price = %s "
+                    query += "purchase_price = %s AND "
                     params.append(purchase_price)
                 if warranty_expires is not None:
                     warranty_expires = self._validate_date(warranty_expires)
-                    query += "AND warranty_expires = %s "
+                    query += "warranty_expires = %s AND "
                     params.append(warranty_expires)
                 if item_condition is not None:
                     item_condition = self._validate_varchar(item_condition)
-                    query += "AND item_condition = %s "
+                    query += "item_condition = %s AND "
                     params.append(item_condition)
                 if quantity is not None:
                     quantity = self._validate_int(quantity)
-                    query += "AND quantity = %s "
+                    query += "quantity = %s AND "
                     params.append(quantity)
                 if assset_value is not None:
                     assset_value = self._validate_decimal(assset_value)
-                    query += "assset_value = %s, "
+                    query += "assset_value = %s AND "
                     params.append(assset_value)
                 if model_num is not None:
                     model_num = self._validate_varchar(model_num)
-                    query += "model_num = %s, "
+                    query += "model_num = %s AND "
                     params.append(model_num)
                 if notes is not None:
                     notes = self._validate_text(notes)
-                    query += "notes = %s, "
+                    query += "notes = %s AND "
                     params.append(notes)
                 if link is not None:
                     link = self._validate_varchar(link)
-                    query += "link = %s, "
+                    query += "link = %s AND "
                     params.append(link)
                 
                 if "WHERE " == query[-6:]:
                     raise ValueError("check_item_exist() method called without \
                                       any arguments passed; cannot determine \
                                       existence of nothing.")
-                query = query[:-1]
-                query += " AND client = %s;"
+                query += "client = %s;"
                 params.append(self.client)
                 m = None
                 try:
