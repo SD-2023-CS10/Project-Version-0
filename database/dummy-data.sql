@@ -11,9 +11,9 @@ INSERT INTO User VALUES
     ("MedTech", "bhuyck1", 789);
 
 INSERT INTO Vender VALUES
-    ("Matt M.", "mattm@gmail.com", FALSE, '2023-10-31'),
-    ("Matt M.", "mattm@yahoo.com", FALSE, '2023-10-31'),
-    ("Bob Smith", "bobby@startup.co", TRUE, '2022-01-28');
+    ("mattm@gmail.com", "Matt M.", FALSE, '2023-10-31', "MedCorp"),
+    ("mattm@yahoo.com", "Matt M.", FALSE, '2023-10-31', "MedCorp"),
+    ("bobby@startup.co", "Bob Smith", TRUE, '2022-01-28', "MedCorp");
 
 INSERT INTO Location (cloud_prem, details, protection) VALUES
     ("Cloud", "deets1", "protection-notes1"),
