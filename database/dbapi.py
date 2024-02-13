@@ -1131,8 +1131,42 @@ class DBAPI:
                 return True if m is not None else False
 
             # surrogate key, so existence is defined by passed "composite key" for params
-            def check_server_exists(self):
-                pass
+            def check_server_exists(self, name=None, ip_address=None, ip_version=None, location_id=None):
+                params = []
+                query = "SELECT id FROM Server WHERE "
+                ip_address, ip_version = self._validate_ip_address(ip_address, ip_version)
+
+                if name is not None:
+                    name = self._validate_varchar(name)
+                    query += "name = %s AND "
+                    params.append(name)
+                if ip_address is not None:
+                    query += "ip_address = %s AND "
+                    params.append(ip_address)
+                if ip_version is not None:
+                    query += "ip_version = %s AND "
+                    params.append(ip_version)
+                if location_id is not None:
+                    location_id = self._validate_int(location_id)
+                    query += "location_id = %s AND "
+                    params.append(location_id)
+
+                if query[-6:] == "WHERE ":
+                    raise ValueError("check_server_exist() method called without \
+                                      any arguments passed; cannot determine \
+                                      existence of nothing.")
+
+                query = query[:-5] + ';'
+                m = None
+                try:
+                    self.rs.execute(query, tuple(params))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                return True if m is not None else False
 
             # surrogate key, so existence is defined by passed "composite key" for params
             def check_location_exists(self, cloud_prem=None, details=None, protection=None):
