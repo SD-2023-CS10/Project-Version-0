@@ -1135,8 +1135,39 @@ class DBAPI:
                 pass
 
             # surrogate key, so existence is defined by passed "composite key" for params
-            def check_location_exists(self):
-                pass
+            def check_location_exists(self, cloud_prem=None, details=None, protection=None):
+                params = []
+                query = "SELECT id FROM Location WHERE "
+
+                if cloud_prem is not None:
+                    cloud_prem = self._validate_cloud_prem(cloud_prem)
+                    query += "cloud_prem = %s AND "
+                    params.append(cloud_prem)
+                if details is not None:
+                    details = self._validate_varchar(details)
+                    query += "details = %s AND "
+                    params.append(details)
+                if protection is not None:
+                    protection = self._validate_text(protection)
+                    query += "protection = %s AND "
+                    params.append(protection)
+
+                if query[-6:] == "WHERE ":
+                    raise ValueError("check_location_exist() method called without \
+                                      any arguments passed; cannot determine \
+                                      existence of nothing.")
+
+                query = query[-5:] + ';'
+                m = None
+                try:
+                    self.rs.execute(query, tuple(params))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                return True if m is not None else False
 
             # primary key is email, so existence is defined by email in table
             def check_vender_exists(self):
