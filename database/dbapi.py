@@ -1191,7 +1191,7 @@ class DBAPI:
                                       any arguments passed; cannot determine \
                                       existence of nothing.")
 
-                query = query[-5:] + ';'
+                query = query[:-5] + ';'
                 m = None
                 try:
                     self.rs.execute(query, tuple(params))
