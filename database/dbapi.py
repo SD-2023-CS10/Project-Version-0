@@ -1205,8 +1205,18 @@ class DBAPI:
                 return True if m is not None else False
 
             # primary key is email, so existence is defined by email in table
-            def check_vender_exists(self):
-                pass
+            def check_vender_exists(self, email):
+                query = "SELECT * from Vender WHERE email = %s AND client = %s;"
+                m = None
+                try:
+                    self.rs.execute(query, tuple([email, self.client]))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                return True if m is not None else False
 
             def export(self):
                 query = "SELECT i.name, i.type, i.version, i.os, i.os_version,\
