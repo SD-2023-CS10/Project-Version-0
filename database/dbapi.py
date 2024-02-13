@@ -1129,6 +1129,15 @@ class DBAPI:
 
                 return True if m is not None else False
 
+            def check_server_exists(self):
+                pass
+
+            def check_location_exists(self):
+                pass
+
+            def check_vender_exists(self):
+                pass
+
             def export(self):
                 query = "SELECT i.name, i.type, i.version, i.os, i.os_version,\
                                 i.mac, i.ports, i.protocols, i.statuses,\
