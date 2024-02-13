@@ -956,6 +956,7 @@ class DBAPI:
                     self.close()
                     raise err
 
+            # Surrogate key, so existence is defined by passed "composite key" for params
             def check_item_exist(self, name=None, type_=None, version=None,
                                  os=None, os_version=None, mac=None, ports=None,
                                  protocols=None, statuses=None, services=None,
@@ -1129,12 +1130,15 @@ class DBAPI:
 
                 return True if m is not None else False
 
+            # surrogate key, so existence is defined by passed "composite key" for params
             def check_server_exists(self):
                 pass
 
+            # surrogate key, so existence is defined by passed "composite key" for params
             def check_location_exists(self):
                 pass
 
+            # primary key is email, so existence is defined by email in table
             def check_vender_exists(self):
                 pass
 
