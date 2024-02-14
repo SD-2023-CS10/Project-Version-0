@@ -327,7 +327,7 @@ Args: up_hosts, device_types, os_lst, city, region, country, encryption, gateway
 Pushes crawled data to remote AWS server
 Returns no value
 '''
-def database_push(up_hosts, device_types, os_names, os_versions, city, region, country, encryption, gateway_ip, server_name, services_versions_lst):
+def database_push(username, up_hosts, device_types, os_names, os_versions, city, region, country, encryption, gateway_ip, server_name, services_versions_lst):
     # Add Project parent dir to path
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(current_dir)
@@ -335,31 +335,55 @@ def database_push(up_hosts, device_types, os_names, os_versions, city, region, c
 
     # Create an instance of DBAPI class 
     from database.dbapi import DBAPI
+    # database = DBAPI(username)
     database = DBAPI()
 
     with database as db:
         print("Pushing statistics to database...")
         try:
-            location = f"{city}, {region}, {country}"
-            location_id = db.create_locataion("On-Premise", location, encryption)
-            ip_obj = ipaddress.ip_address(gateway_ip)
-            ip_int = int(ip_obj)
-            server_id = db.create_server(server_name, ip_int, "IPv4", location_id)
+            # TODO: Check if location exists with DB API
+            # location = f"{city}, {region}, {country}"
+            
+            location_id = 4
+            # location_id = db.create_locataion("On-Premise", location, encryption)
+            
+            # TODO: Check if server exists with DB API
+            # ip_obj = ipaddress.ip_address(gateway_ip)
+            # ip_int = int(ip_obj)
+            server_id = 4
+            # server_id = db.create_server(server_name, ip_int, "IPv6", location_id)
             
             for i in range(len(up_hosts)):
-                item_id = db.create_item()  # Inserting an item into the Inv_Item table
-                print("Adding Information for ID:", item_id)
-                db.set_name(up_hosts[i], item_id)  # hostname
-                db.set_type(", ".join(device_types[i]), item_id)  # device type
-                db.set_os(", ".join(os_names[i]), item_id)  # os name
-                db.set_os_version(", ".join(os_versions[i]), item_id)  # os version
-                db.set_server(server_id, item_id)
-                db.set_mac(int(macs_lst[i]), item_id)
-                db.set_ports(", ".join(port_ids_lst[i]), item_id)
-                db.set_protocols(", ".join(protocols_lst[i]), item_id)
-                db.set_statuses(", ".join(status_lst[i]), item_id)
-                db.set_services(", ".join(services_lst[i]), item_id)
-                db.set_services_versions(", ".join(services_versions_lst[i]), item_id)
+                # Check if item exists with DB API
+                dup = db.check_item_exist(name=up_hosts[i], type_=", ".join(device_types[i]), version=None,
+                                 os=", ".join(os_names[i]), os_version=", ".join(os_versions[i]), 
+                                 mac=int(macs_lst[i]), ports=", ".join(port_ids_lst[i]),
+                                 protocols=", ".join(protocols_lst[i]), statuses=", ".join(status_lst[i]), 
+                                 services=", ".join(services_lst[i]), services_versions=", ".join(services_versions_lst[i]), vender=None,
+                                 auto_log_off_freq=None, server=server_id, ephi=None,
+                                 ephi_encrypted=None, ephi_encr_method=None,
+                                 ephi_encr_tested=None, interfaces_with=None,
+                                 user_auth_method=None, app_auth_method=None,
+                                 psw_min_len=None, psw_change_freq=None, dept=None,
+                                 space=None, date_last_ordered=None,
+                                 purchase_price=None, warranty_expires=None,
+                                 item_condition=None, quantity=None,
+                                 assset_value=None, model_num=None, notes=None,
+                                 link=None)
+                if not dup:
+                    item_id = db.create_item()  # Inserting an item into the Inv_Item table
+                    print("Adding Information for ID:", item_id)
+                    db.set_name(up_hosts[i], item_id)  # hostname
+                    db.set_type(", ".join(device_types[i]), item_id)  # device type
+                    db.set_os(", ".join(os_names[i]), item_id)  # os name
+                    db.set_os_version(", ".join(os_versions[i]), item_id)  # os version
+                    db.set_server(server_id, item_id)
+                    db.set_mac(int(macs_lst[i]), item_id)
+                    db.set_ports(", ".join(port_ids_lst[i]), item_id)
+                    db.set_protocols(", ".join(protocols_lst[i]), item_id)
+                    db.set_statuses(", ".join(status_lst[i]), item_id)
+                    db.set_services(", ".join(services_lst[i]), item_id)
+                    db.set_services_versions(", ".join(services_versions_lst[i]), item_id)
             
         except Exception as e:
             print("Error:", e)
@@ -369,6 +393,11 @@ Main Program Driver
 '''
 if __name__ == "__main__":
     print("Started Crawler...")
+    
+    # Username is a cmd-line argument passed from UI to script
+    # TODO: Require a cmd-line argument to create DB API with scope given username
+    username = ""
+    
     nmap = Nmap() # Instantiate nmap object
     device_types = []; os_names = []; os_versions = []; port_ids_lst = []; protocols_lst = []; status_lst = []; services_lst = []; services_versions_lst = []
     server_name, target_host, gateway_ip, subnet, up_hosts, macs_lst, num_devices, city, region, country, encryption = device_stats()
@@ -388,5 +417,5 @@ if __name__ == "__main__":
         
     print_summary(city, region, country, up_hosts, macs_lst, device_types, os_names, os_versions, port_ids_lst, protocols_lst, status_lst, services_lst, services_versions_lst)
     # TODO: Test database push and update auto-increment to sequentially increment IDs
-    database_push(up_hosts, device_types, os_names, os_versions, city, region, country, encryption, gateway_ip, server_name, services_versions_lst)
+    database_push(username, up_hosts, device_types, os_names, os_versions, city, region, country, encryption, gateway_ip, server_name, services_versions_lst)
     

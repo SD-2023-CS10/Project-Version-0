@@ -8,15 +8,32 @@ from database.config import config
 # from config import config # for in-file testing
 
 class DBAPI:
+
+    def __init__(self, as_user):
+        self.as_user = as_user
     
     def __enter__(self):
 
         class Connector:
 
-            def __init__(self):
+            def __init__(self, as_user):
                 usr, pwd, hst, dab = self._read_config_info(config)
                 self._establish_connection(usr, pwd, hst, dab)
-                self.client = self._validate_varchar("MedCorp") # TODO: fix client -- fetch based on logged in user
+                
+                self.as_user = as_user
+
+                query = "SELECT client FROM User WHERE user_name = %s;"
+                try:
+                    self.rs.execute(query, (as_user,))
+                    for (m) in self.rs:
+                        self.client = m[0]
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                except TypeError as e:
+                    self.close()
+                    print("Perhaps username, " + as_user + ", not in DB.")
+                    raise e
 
             '''
             Reads config info from imported config dict. Returns a tuple of relavent info.
@@ -328,10 +345,10 @@ class DBAPI:
                 baa = self._validate_bool(baa) if baa is not None else None
                 date = self._validate_date(date) if date is not None else None
 
-                query = "SELECT email FROM Vender WHERE email = %s;"
+                query = "SELECT email FROM Vender WHERE email = %s AND client = %s;"
                 m = None
                 try:
-                    self.rs.execute(query, (email,))
+                    self.rs.execute(query, tuple([email, self.client]))
                     for (m) in self.rs:
                         m = m[0]
                     self.rs.reset()
@@ -341,9 +358,9 @@ class DBAPI:
                 if m is not None:
                     raise ValueError(email + " already in table")
 
-                query = "INSERT INTO Vender (email) VALUES (%s);"
+                query = "INSERT INTO Vender (email, client) VALUES (%s, %s);"
                 try:
-                    self.rs.execute(query, (email,))
+                    self.rs.execute(query, tuple([email, self.client]))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -354,10 +371,10 @@ class DBAPI:
             def update_vender(self, email, new_email=None, poc=None, baa=None, date=None):
                 email = self._validate_varchar(email)
 
-                query = "SELECT email FROM Vender WHERE email = %s;"
+                query = "SELECT email FROM Vender WHERE email = %s AND client = %s;"
                 m = None
                 try:
-                    self.rs.execute(query, (email,))
+                    self.rs.execute(query, tuple([email, self.client]))
                     for (m) in self.rs:
                         m = m[0]
                     self.rs.reset()
@@ -389,8 +406,9 @@ class DBAPI:
                     query += "date = %s, "
                     params.append(date)
                 query = query[:-2] + ' '
-                query += "WHERE email = %s;"
+                query += "WHERE email = %s AND client = %s;"
                 params.append(email)
+                params.append(self.client)
 
                 try:
                     self.rs.execute(query, tuple(params))
@@ -618,10 +636,10 @@ class DBAPI:
                 e = self._validate_varchar(e)
                 iid = self._validate_item(iid)
 
-                query = "SELECT email FROM Vender WHERE email = %s;"
+                query = "SELECT email FROM Vender WHERE email = %s AND client = %s;"
                 m = None
                 try:
-                    self.rs.execute(query, (e,))
+                    self.rs.execute(query, tuple([e, self.client]))
                     for (m) in self.rs:
                         m = m[0]
                     self.rs.reset()
@@ -939,6 +957,7 @@ class DBAPI:
                     self.close()
                     raise err
 
+            # Surrogate key, so existence is defined by passed "composite key" for params
             def check_item_exist(self, name=None, type_=None, version=None,
                                  os=None, os_version=None, mac=None, ports=None,
                                  protocols=None, statuses=None, services=None,
@@ -954,153 +973,152 @@ class DBAPI:
                                  assset_value=None, model_num=None, notes=None,
                                  link=None):
                 params = []
-                query = "SELECT id FROM Inv_Item WHERE "
+                query = "SELECT item_id FROM Inv_Item WHERE "
 
                 if name is not None:
                     name = self._validate_varchar(name)
-                    query += "name = %s, "
+                    query += "name = %s AND "
                     params.append(name)
                 if type_ is not None:
                     type_ = self._validate_varchar(type_)
-                    query += "type = %s, "
+                    query += "type = %s AND "
                     params.append(type_)
                 if version is not None:
                     version = self._validate_varchar(version)
-                    query += "version = %s, "
+                    query += "version = %s AND "
                     params.append(version)
                 if os is not None:
                     os = self._validate_varchar(os)
-                    query += "os = %s, "
+                    query += "os = %s AND "
                     params.append(os)
                 if os_version is not None:
                     os_version = self._validate_varchar(os_version)
-                    query += "os_version = %s, "
+                    query += "os_version = %s AND "
                     params.append(os_version)
                 if mac is not None:
                     mac = self._validate_int(mac, size="BIGINT")
-                    query += "mac = %s, "
+                    query += "mac = %s AND "
                     params.append(mac)
                 if ports is not None:
                     ports = self._validate_varchar(ports)
-                    query += "ports = %s, "
+                    query += "ports = %s AND "
                     params.append(ports)
                 if protocols is not None:
                     protocols = self._validate_varchar(protocols)
-                    query += "protocols = %s, "
+                    query += "protocols = %s AND "
                     params.append(protocols)
                 if statuses is not None:
                     statuses = self._validate_varchar(statuses)
-                    query += "statuses = %s, "
+                    query += "statuses = %s AND "
                     params.append(statuses)
                 if services is not None:
                     services = self._validate_varchar(services)
-                    query += "services = %s, "
+                    query += "services = %s AND "
                     params.append(services)
                 if services_versions is not None:
                     services_versions = self._validate_varchar(services_versions)
-                    query += "services_versions = %s, "
+                    query += "services_versions = %s AND "
                     params.append(services_versions)
                 if vender is not None:
                     vender = self._validate_varchar(vender)
-                    query += "vender = %s, "
+                    query += "vender = %s AND "
                     params.append(vender)
                 if auto_log_off_freq is not None:
                     auto_log_off_freq = self._validate_int(auto_log_off_freq)
-                    query += "auto_log_off_freq = %s, "
+                    query += "auto_log_off_freq = %s AND "
                     params.append(auto_log_off_freq)
                 if server is not None:
                     server = self._validate_int(server)
-                    query += "server = %s, "
+                    query += "server = %s AND "
                     params.append(server)
                 if ephi is not None:
                     ephi = self._validate_bool(ephi)
-                    query += "ephi = %s, "
+                    query += "ephi = %s AND "
                     params.append(ephi)
                 if ephi_encrypted is not None:
                     ephi_encrypted = self._validate_bool(ephi_encrypted)
-                    query += "ephi_encrypted = %s, "
+                    query += "ephi_encrypted = %s AND "
                     params.append(ephi_encrypted)
                 if ephi_encr_method is not None:
                     ephi_encr_method = self._validate_varchar(ephi_encr_method)
-                    query += "ephi_encr_method = %s, "
+                    query += "ephi_encr_method = %s AND "
                     params.append(ephi_encr_method)
                 if ephi_encr_tested is not None:
                     ephi_encr_tested = self._validate_bool(ephi_encr_tested)
-                    query += "ephi_encr_tested = %s, "
+                    query += "ephi_encr_tested = %s AND "
                     params.append(ephi_encr_tested)
                 if interfaces_with is not None:
                     interfaces_with = self._validate_text(interfaces_with)
-                    query += "interfaces_with = %s, "
+                    query += "interfaces_with = %s AND "
                     params.append(interfaces_with)
                 if user_auth_method is not None:
                     user_auth_method = self._validate_varchar(user_auth_method)
-                    query += "user_auth_method = %s, "
+                    query += "user_auth_method = %s AND "
                     params.append(user_auth_method)
                 if app_auth_method is not None:
                     app_auth_method = self._validate_varchar(app_auth_method)
-                    query += "app_auth_method = %s, "
+                    query += "app_auth_method = %s AND "
                     params.append(app_auth_method)
                 if psw_min_len is not None:
                     psw_min_len = self._validate_int(psw_min_len)
-                    query += "psw_min_len = %s, "
+                    query += "psw_min_len = %s AND "
                     params.append(psw_min_len)
                 if psw_change_freq is not None:
                     psw_change_freq = self._validate_int(psw_change_freq)
-                    query += "psw_change_freq = %s, "
+                    query += "psw_change_freq = %s AND "
                     params.append(psw_change_freq)
                 if dept is not None:
                     dept = self._validate_varchar(dept)
-                    query += "dept = %s, "
+                    query += "dept = %s AND "
                     params.append(dept)
                 if space is not None:
                     space = self._validate_varchar(space)
-                    query += "space = %s, "
+                    query += "space = %s AND "
                     params.append(space)
                 if date_last_ordered is not None:
                     date_last_ordered = self._validate_date(date_last_ordered)
-                    query += "date_last_ordered = %s, "
+                    query += "date_last_ordered = %s AND "
                     params.append(date_last_ordered)
                 if purchase_price is not None:
                     purchase_price = self._validate_decimal(purchase_price)
-                    query += "purchase_price = %s, "
+                    query += "purchase_price = %s AND "
                     params.append(purchase_price)
                 if warranty_expires is not None:
                     warranty_expires = self._validate_date(warranty_expires)
-                    query += "warranty_expires = %s, "
+                    query += "warranty_expires = %s AND "
                     params.append(warranty_expires)
                 if item_condition is not None:
                     item_condition = self._validate_varchar(item_condition)
-                    query += "item_condition = %s, "
+                    query += "item_condition = %s AND "
                     params.append(item_condition)
                 if quantity is not None:
                     quantity = self._validate_int(quantity)
-                    query += "quantity = %s, "
+                    query += "quantity = %s AND "
                     params.append(quantity)
                 if assset_value is not None:
                     assset_value = self._validate_decimal(assset_value)
-                    query += "assset_value = %s, "
+                    query += "assset_value = %s AND "
                     params.append(assset_value)
                 if model_num is not None:
                     model_num = self._validate_varchar(model_num)
-                    query += "model_num = %s, "
+                    query += "model_num = %s AND "
                     params.append(model_num)
                 if notes is not None:
                     notes = self._validate_text(notes)
-                    query += "notes = %s, "
+                    query += "notes = %s AND "
                     params.append(notes)
                 if link is not None:
                     link = self._validate_varchar(link)
-                    query += "link = %s, "
+                    query += "link = %s AND "
                     params.append(link)
                 
                 if "WHERE " == query[-6:]:
                     raise ValueError("check_item_exist() method called without \
                                       any arguments passed; cannot determine \
                                       existence of nothing.")
-                
                 query += "client = %s;"
                 params.append(self.client)
-
+                m = None
                 try:
                     self.rs.execute(query, tuple(params))
                     for (m) in self.rs:
@@ -1110,6 +1128,93 @@ class DBAPI:
                     self.close()
                     raise err
 
+                return True if m is not None else False
+
+            # surrogate key, so existence is defined by passed "composite key" for params
+            def check_server_exists(self, name=None, ip_address=None, ip_version=None, location_id=None):
+                params = []
+                query = "SELECT id FROM Server WHERE "
+                ip_address, ip_version = self._validate_ip_address(ip_address, ip_version)
+
+                if name is not None:
+                    name = self._validate_varchar(name)
+                    query += "name = %s AND "
+                    params.append(name)
+                if ip_address is not None:
+                    query += "ip_address = %s AND "
+                    params.append(ip_address)
+                if ip_version is not None:
+                    query += "ip_version = %s AND "
+                    params.append(ip_version)
+                if location_id is not None:
+                    location_id = self._validate_int(location_id)
+                    query += "location_id = %s AND "
+                    params.append(location_id)
+
+                if query[-6:] == "WHERE ":
+                    raise ValueError("check_server_exist() method called without \
+                                      any arguments passed; cannot determine \
+                                      existence of nothing.")
+
+                query = query[:-5] + ';'
+                m = None
+                try:
+                    self.rs.execute(query, tuple(params))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                return True if m is not None else False
+
+            # surrogate key, so existence is defined by passed "composite key" for params
+            def check_location_exists(self, cloud_prem=None, details=None, protection=None):
+                params = []
+                query = "SELECT id FROM Location WHERE "
+
+                if cloud_prem is not None:
+                    cloud_prem = self._validate_cloud_prem(cloud_prem)
+                    query += "cloud_prem = %s AND "
+                    params.append(cloud_prem)
+                if details is not None:
+                    details = self._validate_varchar(details)
+                    query += "details = %s AND "
+                    params.append(details)
+                if protection is not None:
+                    protection = self._validate_text(protection)
+                    query += "protection = %s AND "
+                    params.append(protection)
+
+                if query[-6:] == "WHERE ":
+                    raise ValueError("check_location_exist() method called without \
+                                      any arguments passed; cannot determine \
+                                      existence of nothing.")
+
+                query = query[:-5] + ';'
+                m = None
+                try:
+                    self.rs.execute(query, tuple(params))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                return True if m is not None else False
+
+            # primary key is email, so existence is defined by email in table
+            def check_vender_exists(self, email):
+                query = "SELECT * from Vender WHERE email = %s AND client = %s;"
+                m = None
+                try:
+                    self.rs.execute(query, tuple([email, self.client]))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
                 return True if m is not None else False
 
             def export(self):
@@ -1134,19 +1239,22 @@ class DBAPI:
                 try:
                     self.rs.execute(query, (self.client,))
                     ret = [m for m in self.rs] # could change to generator w/ yield but then opens data integrity errors for returned resultsSE
-
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                    
                 return ret
 
             def close(self):
                 self.rs.close()
                 self.con.close()
 
-        self.api_obj = Connector()
+        self.api_obj = Connector(self.as_user)
         return self.api_obj
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.api_obj.close()
 
 if __name__ == '__main__':
-    with DBAPI() as c:
+    with DBAPI("bhuyck") as c:
         pass

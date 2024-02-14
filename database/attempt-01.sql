@@ -14,18 +14,20 @@ CREATE TABLE Client (
 
 CREATE TABLE User (
     client VARCHAR(255) NOT NULL,
-    user_name VARCHAR(255) NOT NULL,
+    user_name VARCHAR(255) PRIMARY KEY,
     psw_hash_salted VARCHAR(255) NOT NULL,
-    PRIMARY KEY (client, user_name),
     FOREIGN KEY (client) REFERENCES Client(name)
 );
 
 CREATE TABLE Vender (
     -- id INT UNSIGNED AUTO NOT NULL,
+    email VARCHAR(255) NOT NULL,
     poc VARCHAR(255),
-    email VARCHAR(255) PRIMARY KEY,
     baa BOOL,
-    date DATE
+    date DATE,
+    client VARCHAR(255) NOT NULL,
+    PRIMARY KEY (email, client),
+    FOREIGN KEY (client) REFERENCES Client(name)
 );
 
 CREATE TABLE Location (
