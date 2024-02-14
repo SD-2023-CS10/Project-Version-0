@@ -5,11 +5,11 @@ INSERT INTO Client VALUES
     ("MedTech");
 
 INSERT INTO User VALUES
-    ("MedCorp", "bhuyck1", 123),
-    ("MedCorp", "bhuyck2", 456),
-    ("GonMed", "bhuyck3", 123),
-    ("MedTech", "bhuyck", 789);
-
+    ("MedCorp", "bhuyck1", "123"),
+    ("MedCorp", "bhuyck2", "456"),
+    ("GonMed", "bhuyck3", "123"),
+    ("MedTech", "bhuyck", "789");
+    
 INSERT INTO Vender VALUES
     ("mattm@gmail.com", "Matt M.", FALSE, '2023-10-31', "MedCorp"),
     ("mattm@yahoo.com", "Matt M.", FALSE, '2023-10-31', "MedCorp"),
