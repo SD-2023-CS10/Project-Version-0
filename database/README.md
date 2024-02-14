@@ -12,6 +12,14 @@ There are two users for the database: an admin user with full priviledges, and a
 
 Medcurity provided us with a spreadsheet that contained a list of information that they ask their clients to provide them as part of their device inventory. We took this list, made each item a column in our database, and then normalized the it. We also added a User relation that will store authorized usernames, the hash of their salted passwords, and the client that they are associated with (and therefore have access to view and update).
 
+A quick overview of the schema:
+- Client is its own relation since it is a foreign key for many other relations but has no additional, determined attributes of its own.
+- User requires unique user names for ease of user creation. Users are tied to a specific client, which determines what information they can access. Users have a password that they use to login to the system; the password is salted and hashed before being stored; the PHP function doing that returns a 60 character string, but noted that number could be expanded in the future, up to 255 characters, hence why we chose the type of the field to be VARCHAR(255).
+- Vendors are mostly defined by their email address, as theoretically many venders may have the same name, but they cannot have the same email. However, a single vendor could be the vendor for multiple clients but have different BAAs and dates with each, requiring the relation to have a composite key of (email, client).
+- Location has a surrogate key, as there is no easy way to define it through its fields, and is a foreign key that is referenced by Server.
+- Server doesn't require any fields be NOT NULL, so it also has a surrogate key. It references Location as a foreign key as previously mentioned. It stores the IP address as a BIGINT, as that is required for IPv6 addresses. Since an IPv4 and IPv6 address can look the same in decimal notation but be different in practice, we also store the IP version as an attribute. To ensure data integrity, we place appropriate checks and uniqueness requirements on IP addresses and versions.
+- Inv_Item is the main relation, storing the devices and software that are the main focus of this project. It uses a surrogate key, since none of the fields are NOT NULL, and what may be filled in or blank is not a given. Of note, it places a upper-bounds check on MAC addresses; MAC addresses need to be stored as a BIGINT due to their size, but cannot be the full size permitted by BIGINT. Also, fields that should represent monetary values are stored as DECIMAL(13,4) to follow the Generally Accepted Accounting Principles (GAAP).
+
 ## Python API for Crawler
 
 To use the API in the Crawler script, do the following.
@@ -57,4 +65,4 @@ With this, the API should work. To access the Database through the command line,
 
 ## Notes
 
-- Decimal (13, 4) allows for monetary values to follow the Gene3rally Accepted Accounting Principles
+Two typos that are present in the database are "assset_value" with three (3) 's's, and "Vender" with an 'e' instead of an 'o'. Be mindful of these with further development.
