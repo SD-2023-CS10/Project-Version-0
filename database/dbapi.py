@@ -345,10 +345,10 @@ class DBAPI:
                 baa = self._validate_bool(baa) if baa is not None else None
                 date = self._validate_date(date) if date is not None else None
 
-                query = "SELECT email FROM Vender WHERE email = %s;"
+                query = "SELECT email FROM Vender WHERE email = %s AND client = %s;"
                 m = None
                 try:
-                    self.rs.execute(query, (email,))
+                    self.rs.execute(query, tuple([email, self.client]))
                     for (m) in self.rs:
                         m = m[0]
                     self.rs.reset()
@@ -358,9 +358,9 @@ class DBAPI:
                 if m is not None:
                     raise ValueError(email + " already in table")
 
-                query = "INSERT INTO Vender (email) VALUES (%s);"
+                query = "INSERT INTO Vender (email, client) VALUES (%s, %s);"
                 try:
-                    self.rs.execute(query, (email,))
+                    self.rs.execute(query, tuple([email, self.client]))
                     self.con.commit()
                     self.rs.reset()
                 except mysql_connector_Error as err:
@@ -371,10 +371,10 @@ class DBAPI:
             def update_vender(self, email, new_email=None, poc=None, baa=None, date=None):
                 email = self._validate_varchar(email)
 
-                query = "SELECT email FROM Vender WHERE email = %s;"
+                query = "SELECT email FROM Vender WHERE email = %s AND client = %s;"
                 m = None
                 try:
-                    self.rs.execute(query, (email,))
+                    self.rs.execute(query, tuple([email, self.client]))
                     for (m) in self.rs:
                         m = m[0]
                     self.rs.reset()
@@ -406,8 +406,9 @@ class DBAPI:
                     query += "date = %s, "
                     params.append(date)
                 query = query[:-2] + ' '
-                query += "WHERE email = %s;"
+                query += "WHERE email = %s AND client = %s;"
                 params.append(email)
+                params.append(self.client)
 
                 try:
                     self.rs.execute(query, tuple(params))
@@ -635,10 +636,10 @@ class DBAPI:
                 e = self._validate_varchar(e)
                 iid = self._validate_item(iid)
 
-                query = "SELECT email FROM Vender WHERE email = %s;"
+                query = "SELECT email FROM Vender WHERE email = %s AND client = %s;"
                 m = None
                 try:
-                    self.rs.execute(query, (e,))
+                    self.rs.execute(query, tuple([e, self.client]))
                     for (m) in self.rs:
                         m = m[0]
                     self.rs.reset()
@@ -956,6 +957,7 @@ class DBAPI:
                     self.close()
                     raise err
 
+            # Surrogate key, so existence is defined by passed "composite key" for params
             def check_item_exist(self, name=None, type_=None, version=None,
                                  os=None, os_version=None, mac=None, ports=None,
                                  protocols=None, statuses=None, services=None,
@@ -1127,6 +1129,93 @@ class DBAPI:
                     self.close()
                     raise err
 
+                return True if m is not None else False
+
+            # surrogate key, so existence is defined by passed "composite key" for params
+            def check_server_exists(self, name=None, ip_address=None, ip_version=None, location_id=None):
+                params = []
+                query = "SELECT id FROM Server WHERE "
+                ip_address, ip_version = self._validate_ip_address(ip_address, ip_version)
+
+                if name is not None:
+                    name = self._validate_varchar(name)
+                    query += "name = %s AND "
+                    params.append(name)
+                if ip_address is not None:
+                    query += "ip_address = %s AND "
+                    params.append(ip_address)
+                if ip_version is not None:
+                    query += "ip_version = %s AND "
+                    params.append(ip_version)
+                if location_id is not None:
+                    location_id = self._validate_int(location_id)
+                    query += "location_id = %s AND "
+                    params.append(location_id)
+
+                if query[-6:] == "WHERE ":
+                    raise ValueError("check_server_exist() method called without \
+                                      any arguments passed; cannot determine \
+                                      existence of nothing.")
+
+                query = query[:-5] + ';'
+                m = None
+                try:
+                    self.rs.execute(query, tuple(params))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                return True if m is not None else False
+
+            # surrogate key, so existence is defined by passed "composite key" for params
+            def check_location_exists(self, cloud_prem=None, details=None, protection=None):
+                params = []
+                query = "SELECT id FROM Location WHERE "
+
+                if cloud_prem is not None:
+                    cloud_prem = self._validate_cloud_prem(cloud_prem)
+                    query += "cloud_prem = %s AND "
+                    params.append(cloud_prem)
+                if details is not None:
+                    details = self._validate_varchar(details)
+                    query += "details = %s AND "
+                    params.append(details)
+                if protection is not None:
+                    protection = self._validate_text(protection)
+                    query += "protection = %s AND "
+                    params.append(protection)
+
+                if query[-6:] == "WHERE ":
+                    raise ValueError("check_location_exist() method called without \
+                                      any arguments passed; cannot determine \
+                                      existence of nothing.")
+
+                query = query[:-5] + ';'
+                m = None
+                try:
+                    self.rs.execute(query, tuple(params))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
+                return True if m is not None else False
+
+            # primary key is email, so existence is defined by email in table
+            def check_vender_exists(self, email):
+                query = "SELECT * from Vender WHERE email = %s AND client = %s;"
+                m = None
+                try:
+                    self.rs.execute(query, tuple([email, self.client]))
+                    for (m) in self.rs:
+                        m = m[0]
+                    self.rs.reset()
+                except mysql_connector_Error as err:
+                    self.close()
+                    raise err
                 return True if m is not None else False
 
             def export(self):
