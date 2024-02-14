@@ -26,16 +26,23 @@ To use the API in the Crawler script, do the following.
 
 1. Ensure you are running the script from the parent directory, project-version-0
 2. Import the Database API with `from database.dbapi import DBAPI`
-3. When needing to use the API, use the block `with DBAPI() as <varname>:`
-4. Alternatively, create an instance of the class and then use that in the `with` block as such:
+3. When instantiating the DBAPI object, do so by passing the username of the user accessing the tool to the constructor. This allows the DBAPI to set which client the user is associated with and determine what information they have access to.
+4. When needing to use the API, use the block `with DBAPI(<usr>) as <varname>:`. This is to ensure safe exits.
+5. Alternatively, create an instance of the class and then use that in the `with` block as such:
 ```
-<var-foo> = DBAPI()
+<var-foo> = DBAPI(<usr>)
 with <var-foo> as <var-bar>:
     pass
 ```
-5. Within the block, execute statements using method calls on the reference, such as `<varname>.create_item()`
+6. Within the block, execute statements using method calls on the reference, such as `<varname>.create_item()`
 
-Note: In general, methods do not return anything. The exception to this are when the object being created has an surrogate key. In this case, the auto-incremented ID value is returned for future reference.
+Other notable design decisions include:
+- validating data types
+- validating certain fields, such as cloud_prem and ip_address + ip_version, in special ways
+- calling update_* methods within create_* methods to avoid repeating code
+
+
+Note: In general, methods do not return anything. There are exceptions, however. First, when the object being created has an surrogate key, its "create" method returns the auto-incremented ID value for future reference. Second, existence checks return `True` if the entry exists and `False` if it does not. Third, `export()` returns a list-type object of its results; further documentation on this can be found in the csv/README.md file.
 
 ## Development Set-Up
 
