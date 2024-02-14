@@ -14,9 +14,8 @@ CREATE TABLE Client (
 
 CREATE TABLE User (
     client VARCHAR(255) NOT NULL,
-    user_name VARCHAR(255) NOT NULL,
+    user_name VARCHAR(255) PRIMARY KEY,
     psw_hash_salted INT UNSIGNED NOT NULL,
-    PRIMARY KEY (client, user_name),
     FOREIGN KEY (client) REFERENCES Client(name)
 );
 
