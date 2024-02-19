@@ -19,7 +19,7 @@ class DBAPI:
             def __init__(self, as_user):
                 usr, pwd, hst, dab = self._read_config_info(config)
                 self._establish_connection(usr, pwd, hst, dab)
-                self.client = ""
+                self.client = None
                 
                 self.as_user = as_user
 
@@ -28,6 +28,9 @@ class DBAPI:
                     self.rs.execute(query, (as_user,))
                     for (m) in self.rs:
                         self.client = m[0]
+                    if self.client is None:
+                        self.close()
+                        raise RuntimeError("Client not set for user, " + as_user)
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
