@@ -347,10 +347,10 @@ def database_push(username, up_hosts, device_types, os_names, os_versions, city,
             lid = db.check_location_exists("On-Premise", location, encryption)
             location_id = -1
             if (lid is None):
-                print("Item doesn't exist")
+                print("Location doesn't exist")
                 location_id = db.create_locataion("On-Premise", location, encryption)
             else:
-                print(f"Item exists as ID {lid}")
+                print(f"Location exists as ID {lid}")
                 location_id = lid
             print(location_id)
             # Check if server exists with DB API
