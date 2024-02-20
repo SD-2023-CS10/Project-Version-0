@@ -130,6 +130,7 @@
                                 echo "<td>AUTOMATIC LOG-OFF FREQUENCY</td>";
                                 echo "<td>BAA?</td>";
                                 echo "<td>DATE BAA SIGNED</td>";
+                                echo "<td>Action</td>"; // New column for the delete button
                             echo "</thead>";
 
                             while ($st -> fetch()) {
@@ -150,20 +151,49 @@
                             $cn ->close ();
                         ?>
                     </table>
-                    <form action="">
-                        <input type="submit" placeholder="add" onclick="return addDevice();" />
-                        <input type="text" id ="userDevice" />
+                    <form action="addDevice.php" method="post">
+                        <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                        <input type="submit" value="Add" />
                     </form>
-                    <script>
-                        function addDevice() {
-                            var table = document.getElementById("deviceTable");
-                            var row = table.insertRow(-1);
-                            var cell = row.insertCell(0);
-                            cell.innerHTML = '<div contenteditable="true">' + document.getElementById("userDevice").value + '</div>';
-                            return false;
-                        }
-                    </script>
                 </font>
+                <script>
+                    function deleteRow(rowId) {
+                        var table = document.getElementById("deviceTable");
+                        var row = table.rows[rowId];
+                        var name = row.cells[0].innerText; // Assuming the name is in the first cell
+
+                        // Make an AJAX call to delete the record
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "deleteDevice.php", true);
+                        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState == 4 && xhr.status == 200) {
+                                // Remove the row from the table after successful deletion
+                                table.deleteRow(rowId);
+                            }
+                        };
+                        xhr.send("name=" + name);
+                    }
+
+                    // Add this function to create the delete button in each row
+                    function addDeleteButton() {
+                        var table = document.getElementById("deviceTable");
+                        var rows = table.getElementsByTagName("tr");
+
+                        for (var i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+                            var cell = rows[i].insertCell(-1);
+                            var button = document.createElement("button");
+                            button.innerHTML = "Delete";
+                            button.onclick = function () {
+                                deleteRow(this.parentNode.parentNode.rowIndex);
+                            };
+                            cell.appendChild(button);
+                        }
+                    }
+
+                    // Call the function after the table is loaded
+                    window.onload = addDeleteButton;
+                </script>
             </div>
 
             <!-- Server Information -->
