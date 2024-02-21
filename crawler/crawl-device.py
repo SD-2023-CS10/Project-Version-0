@@ -399,12 +399,12 @@ def database_push(username, up_hosts, device_types, os_names, os_versions, city,
             print("Error:", e)
 
 '''
-Function: check_args()
+Function: extract_cmdline_username()
 Args: None
 Checks arguments provided for a username
-Returns username field
+Returns username field from command-line arguments provided from the UI
 '''
-def check_args():
+def extract_cmdline_username():
     if (len(sys.argv) != 2):
         print("Usage: python3 crawl-device.py <username>")
         raise ValueError("Exactly one argument is required.")
@@ -420,7 +420,7 @@ if __name__ == "__main__":
     print("Started Crawler...")
     # Username is a cmd-line argument passed from UI to script
     # Require a cmd-line argument to create DB API with proper scope
-    username = check_args()
+    username = extract_cmdline_username()
     
     nmap = Nmap() # Instantiate nmap object
     device_types = []; os_names = []; os_versions = []; port_ids_lst = []; protocols_lst = []; status_lst = []; services_lst = []; services_versions_lst = []
