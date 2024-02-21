@@ -1,5 +1,6 @@
 '''
 Network Crawling
+To run from Project-Version-0: python3 crawler/crawl-device.py <username>
 '''
 from nmap3 import Nmap
 import json
@@ -335,24 +336,33 @@ def database_push(username, up_hosts, device_types, os_names, os_versions, city,
 
     # Create an instance of DBAPI class 
     from database.dbapi import DBAPI
-    # database = DBAPI(username)
-    database = DBAPI()
+    database = DBAPI(username)
 
     with database as db:
         print("Pushing statistics to database...")
         try:
-            # TODO: Check if location exists with DB API
-            # location = f"{city}, {region}, {country}"
-            
-            location_id = 4
-            # location_id = db.create_locataion("On-Premise", location, encryption)
-            
-            # TODO: Check if server exists with DB API
-            # ip_obj = ipaddress.ip_address(gateway_ip)
-            # ip_int = int(ip_obj)
-            server_id = 4
-            # server_id = db.create_server(server_name, ip_int, "IPv6", location_id)
-            
+            location = f"{city}, {region}, {country}"
+            print(f"Location is {location}")
+            # Capture location ID in case we need it for the server ID entry
+            lid = db.check_location_exists("On-Premise", location, encryption)
+            location_id = -1
+            if (lid is None):
+                print("Location doesn't exist")
+                location_id = db.create_locataion("On-Premise", location, encryption)
+            else:
+                print(f"Location exists as ID {lid}")
+                location_id = lid
+            print(location_id)
+            # Check if server exists with DB API
+            ip_obj = ipaddress.ip_address(gateway_ip)
+            ip_int = int(ip_obj)
+            sid = db.check_server_exists(server_name, ip_int, None)
+            server_id = -1
+            if (sid is None):
+                server_id = db.create_server(server_name, ip_int, None, location_id)
+            else:
+                server_id = sid
+                
             for i in range(len(up_hosts)):
                 # Check if item exists with DB API
                 dup = db.check_item_exist(name=up_hosts[i], type_=", ".join(device_types[i]), version=None,
@@ -387,16 +397,30 @@ def database_push(username, up_hosts, device_types, os_names, os_versions, city,
             
         except Exception as e:
             print("Error:", e)
-            
+
+'''
+Function: extract_cmdline_username()
+Args: None
+Checks arguments provided for a username
+Returns username field from command-line arguments provided from the UI
+'''
+def extract_cmdline_username():
+    if (len(sys.argv) != 2):
+        print("Usage: python3 crawl-device.py <username>")
+        raise ValueError("Exactly one argument is required.")
+    username = sys.argv[1]
+    print(f"Username: {username}")
+    return username
+
+
 '''
 Main Program Driver
 '''
 if __name__ == "__main__":
     print("Started Crawler...")
-    
     # Username is a cmd-line argument passed from UI to script
-    # TODO: Require a cmd-line argument to create DB API with scope given username
-    username = ""
+    # Require a cmd-line argument to create DB API with proper scope
+    username = extract_cmdline_username()
     
     nmap = Nmap() # Instantiate nmap object
     device_types = []; os_names = []; os_versions = []; port_ids_lst = []; protocols_lst = []; status_lst = []; services_lst = []; services_versions_lst = []
@@ -416,6 +440,5 @@ if __name__ == "__main__":
         print(f"Executed in {end_time - start_time} seconds.")
         
     print_summary(city, region, country, up_hosts, macs_lst, device_types, os_names, os_versions, port_ids_lst, protocols_lst, status_lst, services_lst, services_versions_lst)
-    # TODO: Test database push and update auto-increment to sequentially increment IDs
     database_push(username, up_hosts, device_types, os_names, os_versions, city, region, country, encryption, gateway_ip, server_name, services_versions_lst)
     
