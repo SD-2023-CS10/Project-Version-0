@@ -157,30 +157,43 @@
                     </form>
                 </font>
                 <script>
+                    function updateDatabase(element) {
+                        var table = document.getElementById("deviceTable");
+                        var rowIndex = element.parentNode.rowIndex + 1;
+                        var cellIndex = element.cellIndex;
+                        var columnName = table.rows[0].cells[cellIndex].innerText; // Assuming the header row contains the column names
+                        var cellValue = element.innerText;
+
+                        // Make an AJAX call to update the record in the database
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "updateDevice.php", true);
+                        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhr.send("rowIndex=" + rowIndex + "&columnName=" + columnName + "&cellValue=" + cellValue);
+                    }
+
                     function deleteRow(rowId) {
+                        // The deleteRow function remains the same
                         var table = document.getElementById("deviceTable");
                         var row = table.rows[rowId];
                         var name = row.cells[0].innerText; // Assuming the name is in the first cell
 
-                        // Make an AJAX call to delete the record
                         var xhr = new XMLHttpRequest();
                         xhr.open("POST", "deleteDevice.php", true);
                         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                         xhr.onreadystatechange = function () {
                             if (xhr.readyState == 4 && xhr.status == 200) {
-                                // Remove the row from the table after successful deletion
                                 table.deleteRow(rowId);
                             }
                         };
                         xhr.send("name=" + name);
                     }
 
-                    // Add this function to create the delete button in each row
                     function addDeleteButton() {
+                        // The addDeleteButton function remains the same
                         var table = document.getElementById("deviceTable");
                         var rows = table.getElementsByTagName("tr");
 
-                        for (var i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+                        for (var i = 1; i < rows.length; i++) {
                             var cell = rows[i].insertCell(-1);
                             var button = document.createElement("button");
                             button.innerHTML = "Delete";
@@ -191,8 +204,16 @@
                         }
                     }
 
-                    // Call the function after the table is loaded
-                    window.onload = addDeleteButton;
+                    window.onload = function () {
+                        addDeleteButton();
+                        // Attach the updateDatabase function to the input event of all editable cells
+                        var editableCells = document.querySelectorAll("td[contenteditable='true']");
+                        editableCells.forEach(function (cell) {
+                            cell.addEventListener("input", function () {
+                                updateDatabase(cell);
+                            });
+                        });
+                    };
                 </script>
             </div>
 
