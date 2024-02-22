@@ -57,7 +57,7 @@
             echo "\nFailed to install some dependencies. Please check and try again.\n";
         }
     } else {
-        echo "All dependencies are already installed.\n";
+        echo "\nAll dependencies are already installed.\n";
     }
     
 ?>
