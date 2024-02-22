@@ -39,7 +39,7 @@
             <a href="network.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a>
             <a href="settings.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-gear"></i> SETTINGS</a>
             <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</a>
-            <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
+            <a href="" id="runScanButton" onclick="runScan();" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
         </div>
     </nav>
 
@@ -534,6 +534,24 @@
                 document.getElementById("myOverlay").style.display = "none";
             }
         </script>
+
+        <!-- runScanButton triggers runScan.php which parses username and launches /crawler script -->
+        <script>
+            document.getElementById("runScanButton").addEventListener("click", function() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "runScan.php", true);                
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        // Output response from the server to a div with id "output"
+                        document.getElementById("scanOutput").innerHTML = xhr.responseText;
+                    }
+                };
+                xhr.send();
+            });
+        </script>
+
+        <!-- Display output here -->
+        <div id="scanOutput"></div>
     </div>
 </body>
 
