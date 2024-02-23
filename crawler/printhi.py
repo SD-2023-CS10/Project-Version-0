@@ -8,6 +8,6 @@ def extract():
     username = sys.argv[1]
     return username
 
-print("HI\n")
+print("\nHI")
 username = extract()
 print(f"User from printhi: {username}")
