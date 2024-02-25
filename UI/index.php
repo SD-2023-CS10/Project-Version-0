@@ -39,7 +39,7 @@
             <a href="network.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a>
             <a href="settings.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-gear"></i> SETTINGS</a>
             <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</a>
-            <a href="" id="runScanButton" onclick="runScan();" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
+            <a href="" id="runScanButton" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
         </div>
     </nav>
 
@@ -538,20 +538,46 @@
         <!-- runScanButton triggers runScan.php which parses username and launches /crawler script -->
         <script>
             document.getElementById("runScanButton").addEventListener("click", function() {
+                console.log("Clicked scan button!");
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", "runScan.php", true);                
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4 && xhr.status == 200) {
                         // Output response from the server to a div with id "output"
                         document.getElementById("scanOutput").innerHTML = xhr.responseText;
+                        console.log(xhr.responseText);
+                        
+                        setTimeout(function() {
+                            location.reload(); // Refresh the page after 20 seconds
+                            console.log("\n20 seconds have passed.\n");
+                        }, 50000);
+
+                        console.log("Hi there");
                     }
                 };
                 xhr.send();
             });
+
+            // Create a new EventSource to listen for Server-Sent Events (SSE)
+            const eventSource = new EventSource('runScan.php');
+
+            // Add an event listener to handle incoming messages
+            eventSource.onmessage = function(event) {
+                // Log the message to the console
+                console.log(event.data);
+            };
+
+            // Add an event listener to handle errors
+            eventSource.onerror = function(event) {
+                // Log any errors to the console
+                console.error('EventSource failed:', event);
+                // Close the EventSource connection
+                eventSource.close();
+            };
         </script>
 
-        <!-- Display output here -->
         <div id="scanOutput"></div>
+
     </div>
 </body>
 
