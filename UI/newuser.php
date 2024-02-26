@@ -33,37 +33,45 @@
     }
 
     // set up the query
-    $query = "SELECT * FROM User WHERE user_name='$username' AND psw_hash_salted='$old_psw_hash_salt';";
+    $query = "SELECT * FROM User WHERE user_name = ? AND psw_hash_salted = ?;";
 
     // set up the prepared statement
     $st = $cn ->stmt_init();
-    $st ->prepare($q);
+    $st ->prepare($query);
+    // I need to set up the statements here but I need to use old_psw_hash_salt, which isn't from POST
+    $st ->bind_param("ss", $_POST["username"], $old_psw_hash_salt);
  
     // execute statement and store result in $result
     $st ->execute();
     $st ->bind_result($result);
 
-
-    if($result->num_rows == 1) {
+    // check for it user login was successful
+    if ($result->num_rows == 1) {
         // login was successful
 
         // TODO: I will have to insert the new hashed and salted password into the DB
-        $query = "INSERT';";
+        $query = "INSERT INTO User.psw_hash_salted VALUES $new_psw_hash_salt';";
 
         // set up the prepared statement
         $st = $cn ->stmt_init();
-        $st ->prepare($q);
- 
+        $st ->prepare($query);
+        // Do I need to add measures for injection if it just gets hashed and salted?
+
+
         // execute statement and store result in $result
         $st ->execute();
         $st ->bind_result($result);
 
-
+        // I should echo that new password has been set
         
      } else {
-
+        
+        $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
+        
+        exit();
      }
 
-
+     $st->close();
+     $cn->close();
 
 ?>

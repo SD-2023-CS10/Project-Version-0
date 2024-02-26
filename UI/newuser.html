@@ -6,6 +6,9 @@
     <!-- <link rel="shortcut icon" href="/assets/favicon.ico"> -->
     <link rel="stylesheet" href="styling\login-menu.css">
 </head>
+<div class="errorcontainer invisible">
+    Error: Incorrect username or password. Please try again.
+</div>
 <body>
     <div class="container">
         <!-- <form class="form" id="login"> -->
@@ -17,7 +20,7 @@
                 <div class="form__input-error-message"></div>
             </div>
             <div class="form__input-group">
-                <input type="text" class="form__input" name="old password" autofocus placeholder="Old Password" required>
+                <input type="password" class="form__input" name="old password" autofocus placeholder="Old Password" required>
                 <div class="form__input-error-message"></div>
             </div>
             <div class="form__input-group">

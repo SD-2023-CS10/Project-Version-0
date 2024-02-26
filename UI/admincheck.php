@@ -10,7 +10,7 @@
         // PASSWORD_DEFAULT is the default hashing algorithm for PHP that is updated with new PHP releases
         // array('cost') param takes the salt in form cost factor
         
-        // note that this cannot be tested right now because the password stored in the DB are not hashed and salted
+        // note that this cannot be tested right now because the password stored in the DB are not hashed nor salted
         $psw_hash_salt = password_hash($password, PASSWORD_DEFAULT, array('cost' => 9));
     }
 
@@ -28,15 +28,14 @@
         die("Connection failed: " . mysqli_connect_error ());
     }
     
-    // Validating the User Login
-    
     
     // set up the query
-    $query = "SELECT * FROM User WHERE user_name='$username' AND psw_hash_salted='$psw_hash_salt';";
+    $query = "SELECT * FROM User WHERE user_name='?' AND psw_hash_salted = '?';";
 
     // set up the prepared statement
     $st = $cn ->stmt_init();
-    $st ->prepare($q);
+    $st ->prepare($query);
+    $st ->bind_param("ss", $_POST["username"], $psw_hash_salt);
 
     // execute statement and store result in $result
     $st ->execute();
@@ -44,20 +43,24 @@
 
     // $result = $cn->query($query)
 
-    if($result->num_rows == 1) {
+    // check for if admin login was successful
+    if ($result->num_rows == 1) {
         // login was successful
 
-        // TODO: will have to change to index.php, since that's the new version of the file
-        header("Location: index.php");
+        
+        header("Location: admincreate.html");
         exit();
     } 
     else {
         // login was unsuccessful
         // header("Location: error.html")
+        $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
         exit();
 
         // if possible, display popup that login info was wrong, otherwise, can redirect back to login page
     }
 
+    $st->close();
     $cn->close();
+    
 ?>
