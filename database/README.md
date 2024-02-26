@@ -70,6 +70,11 @@ password = <password>
 
 With this, the API should work. To access the Database through the command line, use the linux command ```mysql -h <database> -u <username> -p``` and enter the password when prompted. This can be done for testing.
 
+## DB Encryption
+
+The database system used for this project is provided from AWS’s relational database service (RDS). Amazon’s RDS has the option for “encryption at rest”, which allows Amazon to use the industry standard AES-256 algorithm to securely encrypt the data on the server that hosts the database, where Amazon will promptly handle authentication of access and decryption for the data stored without much compromise on overall performance.
+ 	In addition to Amazon’s encryption at rest option, Medcurity also utilizes security groups to ensure specific IP addresses only have access to their respective data. Security Groups are also used to close down any unnecessary ports in the network.
+
 ## Notes
 
 Two typos that are present in the database are "assset_value" with three (3) 's's, and "Vender" with an 'e' instead of an 'o'. Be mindful of these with further development.
