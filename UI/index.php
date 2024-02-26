@@ -546,34 +546,10 @@
                         // Output response from the server to a div with id "output"
                         document.getElementById("scanOutput").innerHTML = xhr.responseText;
                         console.log(xhr.responseText);
-                        
-                        setTimeout(function() {
-                            location.reload(); // Refresh the page after 20 seconds
-                            console.log("\n20 seconds have passed.\n");
-                        }, 50000);
-
-                        console.log("Hi there");
                     }
                 };
                 xhr.send();
             });
-
-            // Create a new EventSource to listen for Server-Sent Events (SSE)
-            const eventSource = new EventSource('runScan.php');
-
-            // Add an event listener to handle incoming messages
-            eventSource.onmessage = function(event) {
-                // Log the message to the console
-                console.log(event.data);
-            };
-
-            // Add an event listener to handle errors
-            eventSource.onerror = function(event) {
-                // Log any errors to the console
-                console.error('EventSource failed:', event);
-                // Close the EventSource connection
-                eventSource.close();
-            };
         </script>
 
         <div id="scanOutput"></div>

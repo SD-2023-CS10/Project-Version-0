@@ -10,8 +10,9 @@
     ob_implicit_flush(true);
     
     // Locate and parse configuration file
-    $config = parse_ini_file("./config.ini");
-    $username = $config["username"];
+    // $config = parse_ini_file("./config.ini");
+    // $username = $config["username"];
+    $username = "clemak";
     echo $username;
 
     // Check if the username parameter is set
@@ -46,23 +47,17 @@
                 // Read from the pipe and display the output dynamically
                 $output = stream_get_contents($pipes[1]);
                 fclose($pipes[1]);
-                echo $output;
+                echo "$output";
+                flush();
 
                 // Close the process and get the return value
                 $return_value = proc_close($process);
             } else {
-                echo "Error: Failed to launch PHP script.\n";
+                echo "Error: Failed to launch PHP script.";
             }
         } else {
-            echo "Error: PHP script not found.\n";
+            echo "Error: PHP script not found.";
         } 
-    }
-    
-    // Sends a message using Server-Sent Events (SSE)
-    function sendMsg($msg) {
-        echo "$msg";
-        // ob_flush();
-        flush();
     }
 
     // Launches crawler/crawl-device.py with username as argument from Project-Version-0 folder
@@ -88,19 +83,18 @@
             if ($crawlerScriptAbsolutePath) {
                 // Read from the pipe and display the output dynamically
                 while (($output = fgets($pipes[1])) !== false) {
-                    sendMsg($output);
-                    // echo $output;
-                    // flush(); // Flush the output buffer to make sure it's sent to the browser immediately
+                    echo $output;
+                    flush(); // Flush the output buffer to make sure it's sent to the browser immediately
                 }
                 fclose($pipes[1]); // Close the pipe when done reading from it
 
                 // Close the process and get the return value
                 $return_value = proc_close($process);
             } else {
-                echo "Error: Failed to launch Python script.\n";
+                echo "Error: Failed to launch Python script.";
             }
         } else {
-            echo "Error: Python script not found.\n";
+            echo "Error: Python script not found.";
         }
     }
 ?>
