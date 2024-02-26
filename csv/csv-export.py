@@ -8,7 +8,7 @@ from database.dbapi import DBAPI
 from sys import argv
 
 if __name__=='__main__':
-    with open('./csv/outfile.csv', 'w', newline='') as outfile:
+    with open('../csv/outfile.csv', 'w', newline='') as outfile:
         with DBAPI(argv[1]) as dbapi:
             writer = csv.writer(outfile)
             writer.writerow(("name", "type", "version", "os", "os_version",

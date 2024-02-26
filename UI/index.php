@@ -1,3 +1,7 @@
+<?php
+    session_start();
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -60,9 +64,11 @@
                         <div id="visBar">0%</div>
                     </div>
                     <b>MedCorp System Inventory</b>
-                    <button onclick="move()" class="button margin-right right green large">SAVE <i
-                        class="fa fa-solid fa-upload large"></i>
-                    </button>
+                    <form action="index.php" method="POST">
+                        <button name="SAVE" value="True" onclick="csv_launch()" class="button margin-right right green large">SAVE <i
+                            class="fa fa-solid fa-upload large"></i>
+                        </button>
+                    </form>
                 </h1>
                 
         <body>
@@ -503,22 +509,40 @@
             // Animate the bar moving accross the screen
             var i = 0;
             function move() {
-            if (i == 0) {
-                i = 1;
-                var elem = document.getElementById("visBar");
-                var width = 10;
-                var id = setInterval(frame, 10);
-                function frame() {
-                if (width >= 100) {
-                    clearInterval(id);
-                    i = 0;
-                } else {
-                    width++;
-                    elem.style.width = width + "%";
-                    elem.innerHTML = width  + "%";
-                }
+                if (i == 0) {
+                    i = 1;
+                    var elem = document.getElementById("visBar");
+                    var width = 10;
+                    var id = setInterval(frame, 10);
+                    function frame() {
+                        if (width >= 100) {
+                            clearInterval(id);
+                            i = 0;
+                        } else {
+                            width++;
+                            elem.style.width = width + "%";
+                            elem.innerHTML = width  + "%";
+                        }
+                    }
                 }
             }
+        </script>
+
+        
+        <script>
+            function csv_launch() {
+                move();
+                location.reload();
+                <?php
+                    if (isset($_POST["SAVE"]) && $_POST["SAVE"] == "True")
+                    {
+                        // $username = $_SESSION["username"];
+                        $username = "clemak";
+                        $pythonScript = realpath(__DIR__) . '/../csv/csv-export.py';
+                        $command = "python3 $pythonScript $username";
+                        shell_exec($command);
+                    }
+                ?>
             }
         </script>
 
