@@ -102,7 +102,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT Inv_Item.name, Inv_Item.type, Inv_Item.version,
+                            $q = "SELECT Inv_Item.item_id, Inv_Item.name, Inv_Item.type, Inv_Item.version,
                                         Inv_Item.os, Inv_Item.os_version, Vender.poc,
                                         Vender.email, Inv_Item.auto_log_off_freq,
                                         Vender.baa, Vender.date
@@ -115,12 +115,13 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($name, $type, $version, $os,
+                            $st ->bind_result($item_id, $name, $type, $version, $os,
                                             $os_version, $vpoc, $vemail,
                                             $auto_log_off_freq, $baa, $date);
 
                             // output result
                             echo "<thead>";
+                                echo "<td>ID</td>";
                                 echo "<td>Name</td>";
                                 echo "<td>Type of Application/Device</td>";
                                 echo "<td>APPLICATION Version in Place</td>";
@@ -130,11 +131,12 @@
                                 echo "<td>AUTOMATIC LOG-OFF FREQUENCY</td>";
                                 echo "<td>BAA?</td>";
                                 echo "<td>DATE BAA SIGNED</td>";
-                                echo "<td>Action</td>"; // New column for the delete button
+                                echo "<td>Delete</td>";
                             echo "</thead>";
 
                             while ($st -> fetch()) {
                                 echo "<tr>";
+                                    echo "<td contenteditable='true'>" . $item_id . "</td>";
                                     echo "<td contenteditable='true'>" . $name . "</td>";
                                     echo "<td contenteditable='true'>" . $type . "</td>";
                                     echo "<td contenteditable='true'>" . $version . "</td>";
@@ -159,23 +161,23 @@
                 <script>
                     function updateDatabase(element) {
                         var table = document.getElementById("deviceTable");
-                        var rowIndex = element.parentNode.rowIndex + 1;
+                        var rowIndex = element.parentNode.rowIndex;
                         var cellIndex = element.cellIndex;
-                        var columnName = table.rows[0].cells[cellIndex].innerText; // Assuming the header row contains the column names
+                        var columnName = table.rows[0].cells[cellIndex].innerText;
+                        var item_id = table.rows[rowIndex].cells[0].innerText;
                         var cellValue = element.innerText;
 
                         // Make an AJAX call to update the record in the database
                         var xhr = new XMLHttpRequest();
                         xhr.open("POST", "updateDevice.php", true);
                         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                        xhr.send("rowIndex=" + rowIndex + "&columnName=" + columnName + "&cellValue=" + cellValue);
+                        xhr.send("item_id=" + item_id + "&rowIndex=" + rowIndex + "&columnName=" + columnName + "&cellValue=" + cellValue);
                     }
 
                     function deleteRow(rowId) {
                         // The deleteRow function remains the same
                         var table = document.getElementById("deviceTable");
-                        var row = table.rows[rowId];
-                        var name = row.cells[0].innerText; // Assuming the name is in the first cell
+                        var item_id = table.rows[rowId].cells[0].innerText;
 
                         var xhr = new XMLHttpRequest();
                         xhr.open("POST", "deleteDevice.php", true);
@@ -185,7 +187,7 @@
                                 table.deleteRow(rowId);
                             }
                         };
-                        xhr.send("name=" + name);
+                        xhr.send("item_id=" + item_id);
                     }
 
                     function addDeleteButton() {

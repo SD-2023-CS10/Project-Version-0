@@ -1,6 +1,7 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Extracting parameters from the POST request
+    $item_id = $_POST["item_id"];
     $rowIndex = $_POST["rowIndex"];
     $columnName = $_POST["columnName"];
     $cellValue = $_POST["cellValue"];
@@ -18,7 +19,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    // Example usage:
     $columnName = replaceStrings($columnName);
 
     // Assuming 'item_id' is the primary key column name
@@ -84,14 +84,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Bind parameters based on the determined data type
-    $st->bind_param($paramType . "i", $cellValue, $rowIndex); // Assuming 'item_id' is of integer type
+    $st->bind_param($paramType . "i", $cellValue, $item_id); // Assuming 'item_id' is of integer type
 
     $st->execute();
 
     $st->close();
     $cn->close();
 
-    // You can send a response if needed, for example, echo "Update successful";
 }
 
 function replaceStrings($inputString) {
@@ -99,10 +98,10 @@ function replaceStrings($inputString) {
         'Name' => 'name',
         'Type of Application/Device' => 'type',
         'APPLICATION Version in Place' => 'version',
-        'Operating System & Version' => 'os $os_version',
+        'Operating System & Version' => 'os os_version',
         'VENDOR POC' => 'vpoc',
         'POC E-mail' => 'vemail',
-        'AUTOMATIC LOG-OFF FREQUENCY' => '$auto_log_off_freq',
+        'AUTOMATIC LOG-OFF FREQUENCY' => 'auto_log_off_freq',
         'BAA?' => 'baa',
         'DATE BAA SIGNED' => 'date'
     );
