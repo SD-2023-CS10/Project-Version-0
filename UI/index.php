@@ -39,7 +39,7 @@
             <a href="network.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a>
             <a href="settings.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-gear"></i> SETTINGS</a>
             <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</a>
-            <a href="" id="runScanButton" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
+            <a href="" id="runScanButton" id="scanOutput" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
         </div>
     </nav>
 
@@ -535,25 +535,24 @@
             }
         </script>
 
-        <!-- runScanButton triggers runScan.php which parses username and launches /crawler script -->
+        <!-- Run Scan Button launches crawler and dependency scripts -->
         <script>
             document.getElementById("runScanButton").addEventListener("click", function() {
-                console.log("Clicked scan button!");
+                console.log("Launching scan...");
                 var xhr = new XMLHttpRequest();
-                xhr.open("GET", "runScan.php", true);                
+                xhr.open("POST", "runScan.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4 && xhr.status == 200) {
-                        // Output response from the server to a div with id "output"
+                        // Capture output
                         document.getElementById("scanOutput").innerHTML = xhr.responseText;
                         console.log(xhr.responseText);
                     }
                 };
+                // Send the POST data
                 xhr.send();
             });
         </script>
-
-        <div id="scanOutput"></div>
-
     </div>
 </body>
 
