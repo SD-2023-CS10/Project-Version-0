@@ -1,6 +1,6 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST["name"];
+    $item_id = $_POST["item_id"];
 
     // Add database connection and deletion logic here
     $config = parse_ini_file("./config.ini");
@@ -15,9 +15,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    $deleteQuery = "DELETE FROM Inv_Item WHERE name = ?";
+    $deleteQuery = "DELETE FROM Inv_Item WHERE item_id = ?";
     $st = $cn->prepare($deleteQuery);
-    $st->bind_param("s", $name);
+    $st->bind_param("i", $item_id);
     $st->execute();
 
     $st->close();
