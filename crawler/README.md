@@ -62,7 +62,7 @@ As the script progresses, it will output feedback messages to the terminal indic
 ## Integration Process
 Integration of the crawler Python file with other components posed several challenges. The crawler solution consists of helper files to download dependencies, pass information from file-to-file, and pipe feedback messages to the terminal in order to confirm integrity of important data (i.e. the username of the client currently logged in).
 
-1. Upon the repository tool's bootup, `login.html` prompts the user for their credentials.  This information is dynamically written to the UI's config.ini file for parsing and storage. 
+1. Upon the repository tool's bootup, `login.html` prompts the user for their credentials.  This information logs the user in and confirms with the database that the credentials are valid. 
 
 2. `index.php` is then launched, showing the user the Network Inventory Tool's homepage. The left panel contains various buttons with functionality, including a `RUN SCAN` button. 
 
