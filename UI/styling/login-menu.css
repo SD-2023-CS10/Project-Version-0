@@ -142,3 +142,17 @@ body {
   flex-basis: 70%;
   /* / flex: 0 1 70%; / */
 }
+
+.errorcontainer {
+  position:absolute;
+  margin-top: -600px;
+  color: red;
+  border-width: 4px;
+  padding: 10px;
+  border-style:solid;
+  border-color: red;
+}
+
+.invisible {
+  visibility: hidden;
+}
