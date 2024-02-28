@@ -1,14 +1,6 @@
 <?php
-    // Launch the crawler from a shell command
-    function launch_crawler($username) {
-        // Launch Python script with argument
-        $pythonScript = realpath(__DIR__ . '/../crawler/crawl-device.py');
-        $command = "python3 $pythonScript $username";
-        echo "Launching Python script: $command" . PHP_EOL;
-        shell_exec($command);
-    }
 
-    // Installs dependencies if necessary
+    // Installs missing dependencies as necessary
     function check_dependencies() {
         // Check if pip dependencies are installed, if not, install them
         $dependencies = array(
@@ -36,6 +28,7 @@
         }
     }
 
+    // Checks dependency installation with python3 and pip3
     function is_dependency_installed($dependency) {
         if ($dependency === "python3-nmap") {
             // Handle 'python3-nmap' separately
@@ -48,8 +41,8 @@
         return $return_var === 0;
     }    
 
-    // Use UI-inputted username to replace "my_username"
-    // $username = "my_username";
+    
+    // Main Program Driver
     $missing_dependencies = check_dependencies();
     if (!empty($missing_dependencies)) {
         echo "Missing dependencies found:\n";
@@ -64,7 +57,7 @@
             echo "\nFailed to install some dependencies. Please check and try again.\n";
         }
     } else {
-        echo "All dependencies are already installed.\n";
+        echo "\nAll dependencies are already installed.\n";
     }
-    // launch_crawler($username);
+    
 ?>

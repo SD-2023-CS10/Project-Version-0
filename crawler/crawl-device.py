@@ -298,6 +298,7 @@ def device_stats():
             print("No server encryption type found.")
     except Exception as e:
         print("Check network connection to retrieve statistics.")
+        exit()
     return server_name, target_host, gateway_ip, subnet, up_hosts, macs_lst, num_devices, city, region, country, encryption
 
 '''
