@@ -1,3 +1,7 @@
+<?php
+    session_start();
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -38,8 +42,11 @@
             <a href="index.php" onclick="closeSB()" class="bar-item button padding grey black-text"><i class="fa fa-solid fa-folder"></i> HOME</a> 
             <a href="network.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a>
             <a href="settings.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-gear"></i> SETTINGS</a>
-            <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</a>
+            <form action="index.php" method="POST">
+                <button href="" name="DOWNLOAD" value="True" onclick="csv_launch()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</button>
+            </form>
             <a href="" id="runScanButton" id="scanOutput" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
+
         </div>
     </nav>
 
@@ -60,9 +67,6 @@
                         <div id="visBar">0%</div>
                     </div>
                     <b>MedCorp System Inventory</b>
-                    <button onclick="move()" class="button margin-right right green large">SAVE <i
-                        class="fa fa-solid fa-upload large"></i>
-                    </button>
                 </h1>
                 
         <body>
@@ -102,7 +106,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT Inv_Item.name, Inv_Item.type, Inv_Item.version,
+                            $q = "SELECT Inv_Item.item_id, Inv_Item.name, Inv_Item.type, Inv_Item.version,
                                         Inv_Item.os, Inv_Item.os_version, Vender.poc,
                                         Vender.email, Inv_Item.auto_log_off_freq,
                                         Vender.baa, Vender.date
@@ -115,12 +119,13 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($name, $type, $version, $os,
+                            $st ->bind_result($item_id, $name, $type, $version, $os,
                                             $os_version, $vpoc, $vemail,
                                             $auto_log_off_freq, $baa, $date);
 
                             // output result
                             echo "<thead>";
+                                echo "<td>ID</td>";
                                 echo "<td>Name</td>";
                                 echo "<td>Type of Application/Device</td>";
                                 echo "<td>APPLICATION Version in Place</td>";
@@ -130,11 +135,12 @@
                                 echo "<td>AUTOMATIC LOG-OFF FREQUENCY</td>";
                                 echo "<td>BAA?</td>";
                                 echo "<td>DATE BAA SIGNED</td>";
-                                echo "<td>Action</td>"; // New column for the delete button
+                                echo "<td>Delete</td>";
                             echo "</thead>";
 
                             while ($st -> fetch()) {
                                 echo "<tr>";
+                                    echo "<td contenteditable='true'>" . $item_id . "</td>";
                                     echo "<td contenteditable='true'>" . $name . "</td>";
                                     echo "<td contenteditable='true'>" . $type . "</td>";
                                     echo "<td contenteditable='true'>" . $version . "</td>";
@@ -157,30 +163,43 @@
                     </form>
                 </font>
                 <script>
-                    function deleteRow(rowId) {
+                    function updateDatabase(element) {
                         var table = document.getElementById("deviceTable");
-                        var row = table.rows[rowId];
-                        var name = row.cells[0].innerText; // Assuming the name is in the first cell
+                        var rowIndex = element.parentNode.rowIndex;
+                        var cellIndex = element.cellIndex;
+                        var columnName = table.rows[0].cells[cellIndex].innerText;
+                        var item_id = table.rows[rowIndex].cells[0].innerText;
+                        var cellValue = element.innerText;
 
-                        // Make an AJAX call to delete the record
+                        // Make an AJAX call to update the record in the database
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "updateDevice.php", true);
+                        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhr.send("item_id=" + item_id + "&rowIndex=" + rowIndex + "&columnName=" + columnName + "&cellValue=" + cellValue);
+                    }
+
+                    function deleteRow(rowId) {
+                        // The deleteRow function remains the same
+                        var table = document.getElementById("deviceTable");
+                        var item_id = table.rows[rowId].cells[0].innerText;
+
                         var xhr = new XMLHttpRequest();
                         xhr.open("POST", "deleteDevice.php", true);
                         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                         xhr.onreadystatechange = function () {
                             if (xhr.readyState == 4 && xhr.status == 200) {
-                                // Remove the row from the table after successful deletion
                                 table.deleteRow(rowId);
                             }
                         };
-                        xhr.send("name=" + name);
+                        xhr.send("item_id=" + item_id);
                     }
 
-                    // Add this function to create the delete button in each row
                     function addDeleteButton() {
+                        // The addDeleteButton function remains the same
                         var table = document.getElementById("deviceTable");
                         var rows = table.getElementsByTagName("tr");
 
-                        for (var i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+                        for (var i = 1; i < rows.length; i++) {
                             var cell = rows[i].insertCell(-1);
                             var button = document.createElement("button");
                             button.innerHTML = "Delete";
@@ -191,8 +210,16 @@
                         }
                     }
 
-                    // Call the function after the table is loaded
-                    window.onload = addDeleteButton;
+                    window.onload = function () {
+                        addDeleteButton();
+                        // Attach the updateDatabase function to the input event of all editable cells
+                        var editableCells = document.querySelectorAll("td[contenteditable='true']");
+                        editableCells.forEach(function (cell) {
+                            cell.addEventListener("input", function () {
+                                updateDatabase(cell);
+                            });
+                        });
+                    };
                 </script>
             </div>
 
@@ -503,22 +530,40 @@
             // Animate the bar moving accross the screen
             var i = 0;
             function move() {
-            if (i == 0) {
-                i = 1;
-                var elem = document.getElementById("visBar");
-                var width = 10;
-                var id = setInterval(frame, 10);
-                function frame() {
-                if (width >= 100) {
-                    clearInterval(id);
-                    i = 0;
-                } else {
-                    width++;
-                    elem.style.width = width + "%";
-                    elem.innerHTML = width  + "%";
-                }
+                if (i == 0) {
+                    i = 1;
+                    var elem = document.getElementById("visBar");
+                    var width = 10;
+                    var id = setInterval(frame, 10);
+                    function frame() {
+                        if (width >= 100) {
+                            clearInterval(id);
+                            i = 0;
+                        } else {
+                            width++;
+                            elem.style.width = width + "%";
+                            elem.innerHTML = width  + "%";
+                        }
+                    }
                 }
             }
+        </script>
+
+        
+        <script>
+            function csv_launch() {
+                closeSB();
+                location.reload();
+                <?php
+                    if (isset($_POST["DOWNLOAD"]) && $_POST["DOWNLOAD"] == "True")
+                    {
+                        // $username = $_SESSION["username"];
+                        $username = "clemak";
+                        $pythonScript = realpath(__DIR__) . '/../csv/csv-export.py';
+                        $command = "python3 $pythonScript $username";
+                        shell_exec($command);
+                    }
+                ?>
             }
         </script>
 
