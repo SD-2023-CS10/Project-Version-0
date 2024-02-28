@@ -42,7 +42,9 @@
             <a href="index.php" onclick="closeSB()" class="bar-item button padding grey black-text"><i class="fa fa-solid fa-folder"></i> HOME</a> 
             <a href="network.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a>
             <a href="settings.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-gear"></i> SETTINGS</a>
-            <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</a>
+            <form action="index.php" method="POST">
+                <button href="" name="DOWNLOAD" value="True" onclick="csv_launch()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</button>
+            </form>
             <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
         </div>
     </nav>
@@ -64,11 +66,6 @@
                         <div id="visBar">0%</div>
                     </div>
                     <b>MedCorp System Inventory</b>
-                    <form action="index.php" method="POST">
-                        <button name="SAVE" value="True" onclick="csv_launch()" class="button margin-right right green large">SAVE <i
-                            class="fa fa-solid fa-upload large"></i>
-                        </button>
-                    </form>
                 </h1>
                 
         <body>
@@ -554,10 +551,10 @@
         
         <script>
             function csv_launch() {
-                move();
+                closeSB();
                 location.reload();
                 <?php
-                    if (isset($_POST["SAVE"]) && $_POST["SAVE"] == "True")
+                    if (isset($_POST["DOWNLOAD"]) && $_POST["DOWNLOAD"] == "True")
                     {
                         // $username = $_SESSION["username"];
                         $username = "clemak";
