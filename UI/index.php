@@ -30,7 +30,7 @@
     <!-- Sidebar/menu -->
     <nav class="sidebar collapse blue animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
         <div class="container">
-            <a href="index.php" onclick="closeSB()" class="hide-large right jumbo padding hover-grey"
+            <a href="index.php" onclick="closeSB()" class="hide-large right xxlarge padding hover-grey"
                 title="close menu">
                 <i class="fa fa-remove"></i>
             </a>
@@ -40,12 +40,12 @@
         <div class="section bottombar"></div>
         <div class="bar-block">
             <a href="index.php" onclick="closeSB()" class="bar-item button padding grey black-text"><i class="fa fa-solid fa-folder"></i> HOME</a> 
-            <a href="network.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a>
+            <!-- <a href="network.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a> -->
             <a href="settings.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-gear"></i> SETTINGS</a>
             <form action="index.php" method="POST">
                 <button href="" name="DOWNLOAD" value="True" onclick="csv_launch()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</button>
             </form>
-            <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
+            <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-play"></i> RUN SCAN</a>
         </div>
     </nav>
 
@@ -62,9 +62,6 @@
             <span class="button hide-large xxlarge hover-text-grey" onclick="openSB()"><i class="fa fa-bars"></i></span>
             <div class="container">
                 <h1>
-                    <div id="progressBar">
-                        <div id="visBar">0%</div>
-                    </div>
                     <b>MedCorp System Inventory</b>
                 </h1>
                 
@@ -124,7 +121,7 @@
 
                             // output result
                             echo "<thead>";
-                                echo "<td>ID</td>";
+                                echo "<td>Item ID</td>";
                                 echo "<td>Name</td>";
                                 echo "<td>Type of Application/Device</td>";
                                 echo "<td>APPLICATION Version in Place</td>";
@@ -139,7 +136,7 @@
 
                             while ($st -> fetch()) {
                                 echo "<tr>";
-                                    echo "<td contenteditable='true'>" . $item_id . "</td>";
+                                    echo "<td>" . $item_id . "</td>";
                                     echo "<td contenteditable='true'>" . $name . "</td>";
                                     echo "<td contenteditable='true'>" . $type . "</td>";
                                     echo "<td contenteditable='true'>" . $version . "</td>";
@@ -248,7 +245,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT s.name, s.ip_address, l.cloud_prem,
+                            $q = "SELECT i.item_id, s.name, s.ip_address, l.cloud_prem,
                                         l.details, l.protection
                                 FROM Inv_Item as i LEFT JOIN Server as s
                                     ON i.server = s.id
@@ -260,10 +257,11 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($name, $addr, $cp, $details, $protection);
+                            $st ->bind_result($id, $name, $addr, $cp, $details, $protection);
 
                             // output result
                             echo "<thead>";
+                                echo "<td>Item ID</td>";
                                 echo "<td>SERVER NAME</td>";
                                 echo "<td>SERVER IP ADDRESS</td>";
                                 echo "<td>Cloud or On Premise?</td>";
@@ -272,7 +270,8 @@
                             echo "</thead>";
 
                             while ($st -> fetch()) {
-                                echo "<tr>";
+                                echo "<tr>";    
+                                    echo "<td>" . $id . "</td>";
                                     echo "<td contenteditable='true'>" . $name . "</td>";
                                     echo "<td contenteditable='true'>" . $addr . "</td>";
                                     echo "<td contenteditable='true'>" . $cp . "</td>";
@@ -315,7 +314,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT i.ephi, i.ephi_encrypted, i.ephi_encr_method, i.ephi_encr_tested, i.interfaces_with
+                            $q = "SELECT i.item_id, i.ephi, i.ephi_encrypted, i.ephi_encr_method, i.ephi_encr_tested, i.interfaces_with
                                     FROM Inv_Item as i;";
                                 //   <!-- WHERE client = " $CLIENT";";  -->
 
@@ -324,10 +323,11 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($ephi, $encr, $meth, $test, $inter);
+                            $st ->bind_result($item_id, $ephi, $encr, $meth, $test, $inter);
 
                             // output result
                             echo "<thead>";
+                                echo "<td>Item ID</td>";
                                 echo "<td>ePHI YES/NO</td>";
                                 echo "<td>ENCRYPTED? YES/NO</td>";
                                 echo "<td>IF YES, ENCRYPTION METHOD</td>";
@@ -337,6 +337,7 @@
 
                             while ($st -> fetch()) {
                                 echo "<tr>";
+                                    echo "<td>" . $item_id . "</td>";
                                     echo "<td contenteditable='true'>" . $ephi . "</td>";
                                     echo "<td contenteditable='true'>" . $encr . "</td>";
                                     echo "<td contenteditable='true'>" . $meth . "</td>";
@@ -379,7 +380,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT i.user_auth_method, i.app_auth_method, i.psw_min_len, i.psw_change_freq
+                            $q = "SELECT i.item_id, i.user_auth_method, i.app_auth_method, i.psw_min_len, i.psw_change_freq
                                     FROM Inv_Item as i;";
                                 //   <!-- WHERE client = " $CLIENT";";  -->
 
@@ -388,10 +389,11 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($user, $app, $min, $freq);
+                            $st ->bind_result($id, $user, $app, $min, $freq);
 
                             // output result
                             echo "<thead>";
+                                echo "<td>Item ID</td>";
                                 echo "<td>USER AUTHENTICATION METHOD</td>";
                                 echo "<td>APPLICATION AUTHENTICATION METHOD</td>";
                                 echo "<td>Minimum Password Length (as applicable)</td>";
@@ -400,6 +402,7 @@
 
                             while ($st -> fetch()) {
                                 echo "<tr>";
+                                    echo "<td>" . $id . "</td>";
                                     echo "<td contenteditable='true'>" . $user . "</td>";
                                     echo "<td contenteditable='true'>" . $app . "</td>";
                                     echo "<td contenteditable='true'>" . $min . "</td>";
@@ -441,7 +444,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT i.dept, i.space, i.date_last_ordered, i.vender,
+                            $q = "SELECT i.item_id, i.dept, i.space, i.date_last_ordered, i.vender,
                                     i.purchase_price, i.warranty_expires, i.item_condition,
                                     i.quantity, i.assset_value, i.model_num, i.notes, i.link
                                     FROM Inv_Item as i;";
@@ -452,10 +455,11 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($dept, $space, $dlo, $vender, $price, $warr, $cond, $quant, $value, $model_num, $notes, $link);
+                            $st ->bind_result($id, $dept, $space, $dlo, $vender, $price, $warr, $cond, $quant, $value, $model_num, $notes, $link);
 
                             // output result
                             echo "<thead>";
+                                echo "<td>Item ID</td>";
                                 echo "<td>DEPARTMENT</td>";
                                 echo "<td>SPACE (LOCATION)</td>";
                                 echo "<td>DATE OF LAST ORDER</td>";
@@ -474,6 +478,7 @@
 
                             while ($st -> fetch()) {
                                 echo "<tr>";
+                                    echo "<td>" . $id . "</td>";
                                     echo "<td contenteditable='true'>" . $dept . "</td>";
                                     echo "<td contenteditable='true'>" . $space . "</td>";
                                     echo "<td contenteditable='true'>" . $dlo . "</td>";
@@ -496,14 +501,6 @@
                             $cn ->close ();
                         ?>
                     </table>
-                    <div class="container">
-                        <div class="button left xxlarge">
-                            <i class="fa fa-solid fa-plus left"></i>
-                        </div>
-                        <div class="inputbar">
-                            <input class="left" type="text" placeholder="Add Device..">
-                        </div>
-                    </div>
                 </font>
             </div>
         </body>
