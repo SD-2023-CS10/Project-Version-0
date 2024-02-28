@@ -60,11 +60,11 @@
     <div class="main" style="margin-left:300px">
 
         <!-- Header -->
-        <header id="MedCorp System Inventory">
+        <header id="Med INC System Inventory">
             <span class="button hide-large xxlarge hover-text-grey" onclick="openSB()"><i class="fa fa-bars"></i></span>
             <div class="container">
                 <h1>
-                    <b>MedCorp System Inventory</b>
+                    <b>Med INC System Inventory</b>
                 </h1>
                 
         <body>
@@ -86,7 +86,7 @@
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%" id="deviceTable">
                         <?php
-                            $CLIENT = "MedCorp";
+                            $CLIENT = "Med INC";
 
                             // connection params
                             $config = parse_ini_file("./config.ini");
@@ -109,8 +109,8 @@
                                         Vender.email, Inv_Item.auto_log_off_freq,
                                         Vender.baa, Vender.date
                                 FROM Inv_Item LEFT JOIN Vender
-                                    ON Inv_Item.vender = Vender.email;";
-                                //   <!-- WHERE client = " $CLIENT";";  -->
+                                    ON Inv_Item.vender = Vender.email
+                                WHERE Inv_Item.client =  '$CLIENT';";
 
                             $st = $cn ->stmt_init ();
                             $st ->prepare($q);
@@ -229,7 +229,7 @@
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%">
                         <?php
-                            $CLIENT = "MedCorp";
+                            $CLIENT = "Med INC";
 
                             // connection params
                             $config = parse_ini_file("./config.ini");
@@ -251,8 +251,8 @@
                                         l.details, l.protection
                                 FROM Inv_Item as i LEFT JOIN Server as s
                                     ON i.server = s.id
-                                    LEFT JOIN Location as l ON l.id = s.location_id;";
-                                //   <!-- WHERE client = " $CLIENT";";  -->
+                                    LEFT JOIN Location as l ON l.id = s.location_id
+                                WHERE i.client = '$CLIENT';";
 
                             $st = $cn ->stmt_init ();
                             $st ->prepare($q);
@@ -298,7 +298,7 @@
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%">
                         <?php
-                            $CLIENT = "MedCorp";
+                            $CLIENT = "Med INC";
 
                             // connection params
                             $config = parse_ini_file("./config.ini");
@@ -317,8 +317,8 @@
 
                             // set up the prepared statement
                             $q = "SELECT i.item_id, i.ephi, i.ephi_encrypted, i.ephi_encr_method, i.ephi_encr_tested, i.interfaces_with
-                                    FROM Inv_Item as i;";
-                                //   <!-- WHERE client = " $CLIENT";";  -->
+                                    FROM Inv_Item as i
+                                WHERE i.client = '$CLIENT';";
 
                             $st = $cn ->stmt_init ();
                             $st ->prepare($q);
@@ -364,7 +364,7 @@
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%">
                         <?php
-                            $CLIENT = "MedCorp";
+                            $CLIENT = "Med INC";
 
                             // connection params
                             $config = parse_ini_file("./config.ini");
@@ -383,8 +383,8 @@
 
                             // set up the prepared statement
                             $q = "SELECT i.item_id, i.user_auth_method, i.app_auth_method, i.psw_min_len, i.psw_change_freq
-                                    FROM Inv_Item as i;";
-                                //   <!-- WHERE client = " $CLIENT";";  -->
+                                    FROM Inv_Item as i
+                                WHERE i.client = '$CLIENT';"; 
 
                             $st = $cn ->stmt_init ();
                             $st ->prepare($q);
@@ -428,7 +428,7 @@
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%">
                         <?php
-                            $CLIENT = "MedCorp";
+                            $CLIENT = "Med INC";
 
                             // connection params
                             $config = parse_ini_file("./config.ini");
@@ -449,8 +449,8 @@
                             $q = "SELECT i.item_id, i.dept, i.space, i.date_last_ordered, i.vender,
                                     i.purchase_price, i.warranty_expires, i.item_condition,
                                     i.quantity, i.assset_value, i.model_num, i.notes, i.link
-                                    FROM Inv_Item as i;";
-                                //   <!-- WHERE client = " $CLIENT";";  -->
+                                    FROM Inv_Item as i
+                                WHERE i.client = '$CLIENT';";
 
                             $st = $cn ->stmt_init ();
                             $st ->prepare($q);
