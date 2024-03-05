@@ -1,3 +1,34 @@
+<!--
+ * File Name: index.php
+ * 
+ * Description:
+ * This is the main entry point of the application. It initializes the application
+ * environment, loads the necessary resources, and routes the request to the appropriate
+ * controller. This file also handles basic configuration settings and global declarations.
+ * 
+ * @package MedcurityNetworkScanner
+ * @authors Jack Nealon (jnealon0805@gmail.com)
+ * @license 
+ * @version 1.0.0
+ * @link 
+ * @since 
+ * 
+ * Usage:
+ * This file should be placed in the root directory of the application. It can be directly
+ * accessed via the URL [Your Application's URL]. No modifications are necessary for basic
+ * operation, but customization can be done by editing the configuration settings within.
+ * 
+ * Modifications:
+ * [Date] - [Your Name] - Version [New Version Number] - [Description of Changes]
+ * 
+ * Notes:
+ * - Additional notes or special instructions can be added here.
+ * - Remember to update the version number and modification log with each change.
+ * 
+ * TODO:
+ * - List any pending tasks or improvements that are planned for future updates.
+ * 
+ -->
 <?php
     session_start();
 ?>
@@ -5,6 +36,12 @@
 <!DOCTYPE html>
 <html>
 
+<!--
+    Header Information for Inventory Page
+
+    Title: Inventory
+    Description: This is the head section for the Inventory management system page.
+-->
 <head>
     <title>Inventory</title>
     <meta charset="UTF-8">
@@ -13,11 +50,11 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-        body,
+        body, 
         h1,
-        h2,
-        h3,
-        h4,
+        h2, 
+        h3, 
+        h4, 
         h5,
         h6 {
             font-family: "Raleway", sans-serif
@@ -25,10 +62,13 @@
     </style>
 </head>
 
+<!-- Background container --> 
 <body class="light-grey content" style="max-width:1600px">
 
     <!-- Sidebar/menu -->
     <nav class="sidebar collapse blue animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+        
+        <!-- Logo and sidebar title -->
         <div class="container">
             <a href="index.php" onclick="closeSB()" class="hide-large right xxlarge padding hover-grey"
                 title="close menu">
@@ -38,6 +78,8 @@
             <h4><b>Network Inventory</b></h4>
         </div>
         <div class="section bottombar"></div>
+
+        <!-- Sidebar redirection tabs -->
         <div class="bar-block">
             <a href="index.php" onclick="closeSB()" class="bar-item button padding grey black-text"><i class="fa fa-solid fa-folder"></i> HOME</a> 
             <!-- <a href="network.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a> -->
@@ -47,8 +89,8 @@
             </form>
          
             <a href="" id="runScanButton" id="scanOutput" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
-
         </div>
+
     </nav>
 
     <!-- Overlay effect when opening sidebar on small screens -->
@@ -59,14 +101,21 @@
     <!-- PAGE CONTENT! -->
     <div class="main" style="margin-left:300px">
 
-        <!-- Header -->
+        <!-- Client Program Header -->
         <header id="Med INC System Inventory">
             <span class="button hide-large xxlarge hover-text-grey" onclick="openSB()"><i class="fa fa-bars"></i></span>
             <div class="container">
                 <h1>
                     <b>Med INC System Inventory</b>
                 </h1>
-                
+        <!-- Left open to give rest of page indentation off sidebar -->
+
+        <!--
+            Primary Content Container
+
+            Title: Homepage
+            Description: Holds the tables to display shown as Tabs in the GUI
+        -->
         <body>
             <h2>Homepage</h2>
             <div class="tab">
@@ -80,9 +129,13 @@
 
             <!-- System Devices -->
             <div id="System/Devices" class="tabcontent">
+
+                <!-- Table Filter Input -->
                 <div class="inputbar">
                     <input type="text" placeholder="Search Filter..">
                 </div>
+
+                <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%" id="deviceTable">
                         <?php
@@ -139,15 +192,15 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";
                                     echo "<td>" . $item_id . "</td>";
-                                    echo "<td contenteditable='true'>" . $name . "</td>";
-                                    echo "<td contenteditable='true'>" . $type . "</td>";
-                                    echo "<td contenteditable='true'>" . $version . "</td>";
-                                    echo "<td contenteditable='true'>" . $os . " " . $os_version . "</td>";
-                                    echo "<td contenteditable='true'>" . $vpoc . "</td>";
-                                    echo "<td contenteditable='true'>" . $vemail . "</td>";
-                                    echo "<td contenteditable='true'>" . $auto_log_off_freq . "</td>";
-                                    echo "<td contenteditable='true'>" . $baa . "</td>";
-                                    echo "<td contenteditable='true'>" . $date . "</td>";
+                                    echo "<td id='device' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='device' contenteditable='true'>" . $type . "</td>";
+                                    echo "<td id='device' contenteditable='true'>" . $version . "</td>";
+                                    echo "<td id='device' contenteditable='true'>" . $os . " " . $os_version . "</td>";
+                                    echo "<td id='device' contenteditable='true'>" . $vpoc . "</td>";
+                                    echo "<td id='device' contenteditable='true'>" . $vemail . "</td>";
+                                    echo "<td id='device' contenteditable='true'>" . $auto_log_off_freq . "</td>";
+                                    echo "<td id='device' contenteditable='true'>" . $baa . "</td>";
+                                    echo "<td id='device' contenteditable='true'>" . $date . "</td>";
                                 echo "</tr>";
                             }
                             // clean up
@@ -155,11 +208,15 @@
                             $cn ->close ();
                         ?>
                     </table>
+
+                    <!-- Add device input -->
                     <form action="addDevice.php" method="post">
                         <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
                         <input type="submit" value="Add" />
                     </form>
+
                 </font>
+
                 <script>
                     function updateDatabase(element) {
                         var table = document.getElementById("deviceTable");
@@ -168,7 +225,9 @@
                         var columnName = table.rows[0].cells[cellIndex].innerText;
                         var item_id = table.rows[rowIndex].cells[0].innerText;
                         var cellValue = element.innerText;
-
+                        
+                        var tableId = element.parentNode.parentNode.parentNode.id; // Get the ID of the table
+                        var tableName = (tableId === "deviceTable") ? "device" : "server"; // Determine table context
                         // Make an AJAX call to update the record in the database
                         var xhr = new XMLHttpRequest();
                         xhr.open("POST", "updateDevice.php", true);
@@ -177,7 +236,6 @@
                     }
 
                     function deleteRow(rowId) {
-                        // The deleteRow function remains the same
                         var table = document.getElementById("deviceTable");
                         var item_id = table.rows[rowId].cells[0].innerText;
 
@@ -193,7 +251,6 @@
                     }
 
                     function addDeleteButton() {
-                        // The addDeleteButton function remains the same
                         var table = document.getElementById("deviceTable");
                         var rows = table.getElementsByTagName("tr");
 
@@ -210,7 +267,6 @@
 
                     window.onload = function () {
                         addDeleteButton();
-                        // Attach the updateDatabase function to the input event of all editable cells
                         var editableCells = document.querySelectorAll("td[contenteditable='true']");
                         editableCells.forEach(function (cell) {
                             cell.addEventListener("input", function () {
@@ -223,11 +279,15 @@
 
             <!-- Server Information -->
             <div id="Server" class="tabcontent">
+
+                <!-- Table Filter Input -->
                 <div class="inputbar">
-                    <input type="text" placeholder="Search Filter.." id= "newDevice">
+                        <input type="text" placeholder="Search Filter..">
                 </div>
+
+                <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
-                    <table BORDER=1 width="100%">
+                    <table BORDER=1 width="100%" id="serverTable">
                         <?php
                             $CLIENT = "Med INC";
 
@@ -274,11 +334,11 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";    
                                     echo "<td>" . $id . "</td>";
-                                    echo "<td contenteditable='true'>" . $name . "</td>";
-                                    echo "<td contenteditable='true'>" . $addr . "</td>";
-                                    echo "<td contenteditable='true'>" . $cp . "</td>";
-                                    echo "<td contenteditable='true'>" . $details . "</td>";
-                                    echo "<td contenteditable='true'>" . $protection . "</td>";
+                                    echo "<td id='server' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='server' contenteditable='true'>" . $addr . "</td>";
+                                    echo "<td id='server' contenteditable='true'>" . $cp . "</td>";
+                                    echo "<td id='server' contenteditable='true'>" . $details . "</td>";
+                                    echo "<td id='server' contenteditable='true'>" . $protection . "</td>";
                                 echo "</tr>";
                             }
 
@@ -287,16 +347,27 @@
                             $cn ->close ();
                         ?>
                     </table>
+
+                    <!-- Add device input -->
+                    <form action="addDevice.php" method="post">
+                        <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                        <input type="submit" value="Add" />
+                    </form>
+
                 </font>
             </div>
 
             <!-- ePHI -->
             <div id="ePHI" class="tabcontent">
+
+                <!-- Table Filter Input -->
                 <div class="inputbar">
                     <input type="text" placeholder="Search Filter..">
                 </div>
+
+                <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
-                    <table BORDER=1 width="100%">
+                    <table BORDER=1 width="100%" id="ephiTable">
                         <?php
                             $CLIENT = "Med INC";
 
@@ -353,16 +424,24 @@
                             $cn ->close ();
                         ?>
                     </table>
+                    <form action="addDevice.php" method="post">
+                        <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                        <input type="submit" value="Add" />
+                    </form>
                 </font>
             </div>
 
             <!-- Authentication Information -->
             <div id="Authentication" class="tabcontent">
+
+                <!-- Table Filter Input -->
                 <div class="inputbar">
                     <input type="text" placeholder="Search Filter..">
                 </div>
+
+                <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
-                    <table BORDER=1 width="100%">
+                    <table BORDER=1 width="100%" id="authenticationTable">
                         <?php
                             $CLIENT = "Med INC";
 
@@ -405,10 +484,10 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";
                                     echo "<td>" . $id . "</td>";
-                                    echo "<td contenteditable='true'>" . $user . "</td>";
-                                    echo "<td contenteditable='true'>" . $app . "</td>";
-                                    echo "<td contenteditable='true'>" . $min . "</td>";
-                                    echo "<td contenteditable='true'>" . $freq . "</td>";
+                                    echo "<td id='authen' contenteditable='true'>" . $user . "</td>";
+                                    echo "<td id='authen' contenteditable='true'>" . $app . "</td>";
+                                    echo "<td id='authen' contenteditable='true'>" . $min . "</td>";
+                                    echo "<td id='authen' contenteditable='true'>" . $freq . "</td>";
                                 echo "</tr>";
                             }
 
@@ -417,16 +496,24 @@
                             $cn ->close ();
                         ?>
                     </table>
+                    <form action="addDevice.php" method="post">
+                        <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                        <input type="submit" value="Add" />
+                    </form>
                 </font>
             </div>
 
             <!-- Asset Information -->
             <div id="Asset Information" class="tabcontent">
+
+                <!-- Table Filter Input -->
                 <div class="inputbar">
                     <input type="text" placeholder="Search Filter..">
                 </div>
+
+                <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
-                    <table BORDER=1 width="100%">
+                    <table BORDER=1 width="100%" id="assetTable">
                         <?php
                             $CLIENT = "Med INC";
 
@@ -503,6 +590,10 @@
                             $cn ->close ();
                         ?>
                     </table>
+                    <form action="addDevice.php" method="post">
+                        <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                        <input type="submit" value="Add" />
+                    </form>
                 </font>
             </div>
         </body>

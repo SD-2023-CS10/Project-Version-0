@@ -1,3 +1,34 @@
+<!--
+ * File Name: updateDevice.php
+ * 
+ * Description:
+ * This is the main entry point of the application. It initializes the application
+ * environment, loads the necessary resources, and routes the request to the appropriate
+ * controller. This file also handles basic configuration settings and global declarations.
+ * 
+ * @package MedcurityNetworkScanner
+ * @authors Jack Nealon (jnealon0805@gmail.com)
+ * @license 
+ * @version 1.0.0
+ * @link 
+ * @since 
+ * 
+ * Usage:
+ * This file should be placed in the root directory of the application. It can be directly
+ * accessed via the URL [Your Application's URL]. No modifications are necessary for basic
+ * operation, but customization can be done by editing the configuration settings within.
+ * 
+ * Modifications:
+ * [Date] - [Your Name] - Version [New Version Number] - [Description of Changes]
+ * 
+ * Notes:
+ * - Additional notes or special instructions can be added here.
+ * - Remember to update the version number and modification log with each change.
+ * 
+ * TODO:
+ * - List any pending tasks or improvements that are planned for future updates.
+ * 
+ -->
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Extracting parameters from the POST request
@@ -15,6 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $cn = mysqli_connect($server, $username, $password, $database);
 
+    // Connection error check
     if (!$cn) {
         die("Connection failed: " . mysqli_connect_error());
     }
@@ -93,6 +125,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 }
 
+/*
+* Name: replaceStrings()
+* Purpose: Class constructor
+* Inputs: string
+* Output: string
+* Notes: swaps out the name for database item name
+*/
 function replaceStrings($inputString) {
     $replacements = array(
         'Name' => 'name',
