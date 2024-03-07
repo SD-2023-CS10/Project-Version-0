@@ -3,7 +3,7 @@
  * 
  * Description:
  * This is the export script. It connects to the database, and then writes each
- * row into a csv file.
+ * row into a csv file. Refer to /csv/README.md for more detailed information.
  * 
  * @package MedcurityNetworkScanner
  * @authors Brandon Huyck (bhuyck@zagmail.gonzaga.edu)
