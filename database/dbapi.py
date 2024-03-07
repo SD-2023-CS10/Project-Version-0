@@ -1,4 +1,31 @@
 '''
+/*
+ * File Name: dbapi.py
+ * 
+ * Description:
+ * This is the main database api for the python scripts, notable csv export scripts
+ * and the crawler. It connects to the database, and then allows other scripts to 
+ * make changes to the database. Refer to the /database/README.md for more information.
+ * 
+ * @package MedcurityNetworkScanner
+ * @authors Brandon Huyck (bhuyck@zagmail.gonzaga.edu)
+ * @license 
+ * @version 1.0.0
+ * @link 
+ * @since 
+ * 
+ * Usage:
+ * This file should be placed in the database subdirectory of the application. It can be
+ * connected to by importing the file as a module, and then connecting to the database
+ * through a `with` block. No modifications are necessary for basic operation.
+ * 
+ * Notes:
+ * - Additional notes or special instructions can be added here.
+ * 
+ * TODO:
+ * - List any pending tasks or improvements that are planned for future updates.
+ * 
+ */
 '''
 
 import mysql.connector as mc
