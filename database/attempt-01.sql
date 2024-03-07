@@ -1,3 +1,27 @@
+-- /*
+--  * File Name: attempt-01.sql
+--  * 
+--  * Description:
+--  * This is the main MariaDB/MySQL database schema file. It creates all the tables.
+--  * Please refer to the /database/README.md for more detailed information.
+--  * 
+--  * @package MedcurityNetworkScanner
+--  * @authors Brandon Huyck (bhuyck@zagmail.gonzaga.edu)
+--  * @license 
+--  * @version 1.0.0
+--  * @link 
+--  * @since 
+--  * 
+--  * Usage:
+--  * This file can be uploaded to a MariaDB/MySQL database using the `source` command.
+--  * 
+--  * Notes:
+--  * - Additional notes or special instructions can be added here.
+--  * 
+--  * TODO:
+--  * - List any pending tasks or improvements that are planned for future updates.
+--  * 
+--  */
 
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS Client;
