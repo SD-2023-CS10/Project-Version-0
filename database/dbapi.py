@@ -62,6 +62,9 @@ class DBAPI:
                     self.con.close()
                     raise err
 
+            def _validate_admin(self):
+                pass
+
             def _validate_varchar(self, s, l=255):
                 s = str(s)
                 if len(s) > l:
@@ -1220,6 +1223,9 @@ class DBAPI:
                     self.close()
                     raise err
                 return True if m is not None else False
+
+            def admin_export(self):
+                pass
 
             def export(self):
                 query = "SELECT i.name, i.type, i.version, i.os, i.os_version,\
