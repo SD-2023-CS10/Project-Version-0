@@ -1,3 +1,33 @@
+'''
+ * File Name: csv-export.py
+ * 
+ * Description:
+ * This is the export script. It connects to the database, and then writes each
+ * row into a csv file. Refer to /csv/README.md for more detailed information.
+ * 
+ * @package MedcurityNetworkScanner
+ * @authors Brandon Huyck (bhuyck@zagmail.gonzaga.edu)
+ * @license 
+ * @version 1.0.0
+ * @link 
+ * @since 
+ * 
+ * Usage:
+ * This file should be placed in the csv subdirectory of the application. It
+ * can be launched from its parent directory by invoking it with python. No
+ * modifications are necessary for basic operation, but customization can be
+ * done by editing the file paths.
+ * 
+ * Notes:
+ * - Additional notes or special instructions can be added here.
+ * 
+ * TODO:
+ * - Update the header row writing to be done dynamially through the dbapi.py
+ *   export() method.
+ * 
+'''
+
+
 import os, sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
