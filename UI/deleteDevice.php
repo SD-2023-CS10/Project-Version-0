@@ -42,10 +42,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $cn = mysqli_connect($server, $username, $password, $database);
 
+    // Connection error check
     if (!$cn) {
         die("Connection failed: " . mysqli_connect_error());
     }
 
+    // Create query and send
     $deleteQuery = "DELETE FROM Inv_Item WHERE item_id = ?";
     $st = $cn->prepare($deleteQuery);
     $st->bind_param("i", $item_id);

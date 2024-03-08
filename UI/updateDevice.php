@@ -51,9 +51,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Connection failed: " . mysqli_connect_error());
     }
 
+    // Replace column name with database item name
     $columnName = replaceStrings($columnName);
 
-    // Assuming 'item_id' is the primary key column name
+    // Create query assuming 'item_id' is the primary key column name
     $updateQuery = "UPDATE Inv_Item SET $columnName = ? WHERE item_id = ?";
     $st = $cn->prepare($updateQuery);
 

@@ -41,19 +41,50 @@ the use of saved password. Overall, it is good practice to change the account pa
 
 
 
+## Development Set-Up
+
+To use the database APIs during development, create a config file of the appropriate format in the appropriate directory. Get the values from the Google Doc Kraig shared with us.
+
+For the crawler, this would be database/config.py. In this file, create a dictionary defined as below. All keys and values should be strings.
+
+```
+config = {
+    'host' : <host>,
+    'user' : <username>,
+    'pass' : <password>,
+    'db' : <databasename>
+}
+```
+
+For the UI, this would be UI/config.ini. In this file, add the code defined as below. Note that only the username and password should be in quotes.
+
+```
+[database]
+servername = <host>
+username = <username>
+password = <password>
+```
+
+With this, the API should work. To access the Database through the command line, use the linux command ```mysql -h <database> -u <username> -p``` and enter the password when prompted. This can be done for testing.
+
+
 ## Encryption for User Login Information
 The username and password of all users are stored in a database. The username is stored as is, but the passwords are stored salted and hashed using the bcrypt algorithm.
 
 The bcrypt algorithm is among the most secure methods of encryption of data due to the following features: 
 
+
 #### Salt Generation: 
 Bcrypt generates a random salt value. A salt is a random piece of data that is added to the password before hashing. This makes it harder for attackers to use precomputed tables, like rainbow tables, to crack passwords.
+
 
 #### Key Expansion: 
 Bcrypt expands the password and salt into an initial state that will be used in the hashing process.
 
+
 #### Iterative Hashing:
 Bcrypt iteratively applies a cryptographic hash function (Blowfish cipher) multiple times to the initial state. The number of iterations is determined by a cost parameter, which can be adjusted to make the hashing process slower and more computationally intensive. This helps to thwart brute-force attacks.
+
 
 #### Output: 
 The final hashed password, along with the salt and cost parameter, is stored in a database. When a user tries to log in, the same process is applied to the provided password, and the resulting hash is compared with the stored hash. If they match, the password is verified.

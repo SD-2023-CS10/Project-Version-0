@@ -44,10 +44,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $cn = mysqli_connect($server, $username, $password, $database);
 
+    // Connection error check
     if (!$cn) {
         die("Connection failed: " . mysqli_connect_error());
     }
 
+    // Create query and send
     $insertQuery = "INSERT INTO Inv_Item (name, client) VALUES (?, ?)";
     $st = $cn->prepare($insertQuery);
     $st->bind_param("ss", $userDevice, $CLIENT);
