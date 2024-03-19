@@ -210,10 +210,12 @@
                     </table>
 
                     <!-- Add device input -->
-                    <form action="addDevice.php" method="post">
-                        <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
-                        <input type="submit" value="Add" />
-                    </form>
+                    <div class="inputbar">
+                        <form action="addDevice.php" method="post">
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="submit" value="Add" />
+                        </form>
+                    </div>
 
                 </font>
 
@@ -349,10 +351,12 @@
                     </table>
 
                     <!-- Add device input -->
-                    <form action="addDevice.php" method="post">
-                        <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
-                        <input type="submit" value="Add" />
-                    </form>
+                    <div class="inputbar">
+                        <form action="addDevice.php" method="post">
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="submit" value="Add" />
+                        </form>
+                    </div>
 
                 </font>
             </div>
@@ -424,10 +428,15 @@
                             $cn ->close ();
                         ?>
                     </table>
-                    <form action="addDevice.php" method="post">
-                        <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
-                        <input type="submit" value="Add" />
-                    </form>
+
+                    <!-- Add device input -->
+                    <div class="inputbar">
+                        <form action="addDevice.php" method="post">
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="submit" value="Add" />
+                        </form>
+                    </div>
+
                 </font>
             </div>
 
@@ -496,10 +505,15 @@
                             $cn ->close ();
                         ?>
                     </table>
-                    <form action="addDevice.php" method="post">
-                        <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
-                        <input type="submit" value="Add" />
-                    </form>
+
+                    <!-- Add device input -->
+                    <div class="inputbar">
+                        <form action="addDevice.php" method="post">
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="submit" value="Add" />
+                        </form>
+                    </div>
+
                 </font>
             </div>
 
@@ -590,10 +604,15 @@
                             $cn ->close ();
                         ?>
                     </table>
-                    <form action="addDevice.php" method="post">
-                        <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
-                        <input type="submit" value="Add" />
-                    </form>
+
+                    <!-- Add device input -->
+                    <div class="inputbar">
+                        <form action="addDevice.php" method="post">
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="submit" value="Add" />
+                        </form>
+                    </div>
+
                 </font>
             </div>
         </body>

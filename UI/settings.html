@@ -42,103 +42,121 @@
   body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 </style>
 </head>
+
 <body class="light-grey content" style="max-width:1600px">
 
-<!-- Sidebar/menu -->
-<nav class="sidebar collapse blue animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
-  <div class="container">
-    <a href="settings.html" onclick="closeSB()" class="hide-large right jumbo padding hover-grey" title="close menu">
-      <i class="fa fa-remove"></i>
-    </a>
-        <img src="resources\logo.png" alt="logo" style="width: 250px;">
-     </a>
-    <h4><b>Network Inventory</b></h4>
-  </div>
-  <div class="section bottombar"></div>
-  <div class="bar-block">
-    <a href="index.php" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-folder"></i> HOME</a> 
-    <a href="settings.html" onclick="closeSB()" class="bar-item button padding grey text-black"><i class="fa fa-solid fa-gear"></i>  SETTINGS</a>
-    <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i>  DOWNLOAD</a>
-    <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-play"></i>  RUN SCAN</a>
-  </div>
-</nav>
-
-<!-- Overlay effect when opening sidebar on small screens -->
-<div class="overlay hide-large animate-opacity" onclick="closeSB()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
-
-<!-- PAGE CONTENT! -->
-<div class="main" style="margin-left:300px">
-
-  <!-- Header -->
-  <header id="MedCorp System Inventory">
-    <span class="button hide-large xxlarge hover-text-grey" onclick="openSB()"><i class="fa fa-bars"></i></span>
+  <!-- Sidebar/menu -->
+  <nav class="sidebar collapse blue animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
     <div class="container">
-      <h1><b>MedCorp System Inventory</b><button class="button margin-right right green large">SAVE <i class="fa fa-solid fa-upload large"></i></button></h1>
+      <a href="settings.html" onclick="closeSB()" class="hide-large right jumbo padding hover-grey" title="close menu">
+        <i class="fa fa-remove"></i>
+      </a>
+      <img src="resources\logo.png" alt="logo" style="width: 250px;">
+      <h4><b>Network Inventory</b></h4>
     </div>
-  </header>
+    <div class="section bottombar"></div>
+    <div class="bar-block">
+      <a href="index.php" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-folder"></i> HOME</a>
+      <a href="settings.html" onclick="closeSB()" class="bar-item button padding grey text-black"><i
+          class="fa fa-solid fa-gear"></i> SETTINGS</a>
+      <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</a>
+      <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-play"></i> RUN SCAN</a>
+    </div>
+  </nav>
 
-  <!-- First Grid-->
-  <body>
-    <div class="container">
-      <h2>Settings</h2>
-      <div class="list-topics-content row-padding">
-        <ul>
-          <li>
-            <div class="single-list-topics-content">
-              <h2><a href="#">Profile</a></h2>
-            </div>
-          </li>
-          <li>
-            <div class="single-list-topics-content">
-              <h2><a href="#">Accessibility</a></h2>
-            </div>
-          </li>
-          <li>
-            <div class="single-list-topics-content">
-              <h2><a href="#">Network</a></h2>
-            </div>
-          </li>
-          <li>
-            <div class="single-list-topics-content">
-              <h2><a href="#">Contact</a></h2>
-            </div>
-          </li>
-        </ul>
+  <!-- Overlay effect when opening sidebar on small screens -->
+  <div class="overlay hide-large animate-opacity" onclick="closeSB()" style="cursor:pointer" title="close side menu"
+    id="myOverlay"></div>
+
+  <!-- PAGE CONTENT! -->
+  <div class="main" style="margin-left:300px">
+
+    <!-- Header -->
+    <header id="MedCorp System Inventory">
+      <span class="button hide-large xxlarge hover-text-grey" onclick="openSB()"><i class="fa fa-bars"></i></span>
+      <div class="container">
+        <h1><b>MedCorp System Inventory</b></h1>
       </div>
-    </div><!--/.container-->
-  </body>
+    </header>
 
-  <!-- Footer -->
-  <footer class="container padding-64 dark-grey bottom">
-  
-    <div class="third">
-    </div>
+    <!-- First Grid-->
+    <body>
+      <div class="container">
+        <div class="list-topics-content row-padding">
+          <div class="single-list-topics-content">
+            <h2><a href="#" onclick="showTab('profile')">Profile</a></h2>
+          </div>
+          <div class="single-list-topics-content">
+            <h2><a href="#" onclick="showTab('accessibility')">Accessibility</a></h2>
+          </div>
+          <div class="single-list-topics-content">
+            <h2><a href="#" onclick="showTab('network')">Network</a></h2>
+          </div>
+          <div class="single-list-topics-content">
+            <h2><a href="#" onclick="showTab('contact')">Contact</a></h2>
+          </div>
+        </div>
+      </div><!--/.container-->
 
-    <div class="third">
-    </div>
+      <!-- Tabs with Back Arrow -->
+      <div id="profile" class="tab-content row-padding" style="display: none;">
+        <button onclick="showList()">Back</button>
+        <h2>Profile</h2>
+        <p>Name:                   John Smith</p>
+        <p>Client name:            Med INC</p>
+        <p>Username:               jsmith21</p>
+        <p>Password:               *******</p>
+        <p>Associated Email:       jsmith@hotmail.com</p>
+      </div>
+      <div id="accessibility" class="tab-content row-padding" style="display: none;">
+        <button onclick="showList()">Back</button>
+        <h2>Accessibility Settings</h2>
+        <p>In Development</p>
+      </div>
+      <div id="network" class="tab-content row-padding" style="display: none;">
+        <button onclick="showList()">Back</button>
+        <h2>Network Settings</h2>
+        <p>In Development</p>
+      </div>
+      <div id="contact" class="tab-content row-padding" style="display: none;">
+        <button onclick="showList()">Back</button>
+        <h2>Help Menu</h2>
+        <p>Medcurity Contact Representitive: (###)-###-####</p>
+        <p>About Application: Link in Development</p>
+        <p>Help Manuals: Link In Development</p>
+        <p>Troubleshooting Guide: In Developemnt</p>
+      </div>
+    </body>
 
-    <div class="third">
-    </div>
+    <script>
+      // Script to open and close sidebar
+      function openSB() {
+        document.getElementById("mySidebar").style.display = "block";
+        document.getElementById("myOverlay").style.display = "block";
+      }
 
-  </footer>
-  
-  <div class="black center padding-24 bottom">
+      function closeSB() {
+        document.getElementById("mySidebar").style.display = "none";
+        document.getElementById("myOverlay").style.display = "none";
+      }
 
-<!-- End page content -->
-</div>
+      // Function to show tab content and hide list
+      function showTab(tabId) {
+        document.querySelector('.list-topics-content').style.display = 'none';
+        document.getElementById(tabId).style.display = 'block';
+      }
 
-<script>
-// Script to open and close sidebar
-function openSB() {
-    document.getElementById("mySidebar").style.display = "block";
-    document.getElementById("myOverlay").style.display = "block";
-}
- 
-function closeSB() {
-    document.getElementById("mySidebar").style.display = "none";
-    document.getElementById("myOverlay").style.display = "none";
-}
-</script>
+      // Function to show list and hide tab content
+      function showList() {
+        document.querySelector('.list-topics-content').style.display = 'block';
+        document.querySelectorAll('.tab-content').forEach(tab => {
+          tab.style.display = 'none';
+        });
+      }
+    </script>
 
 </body>
+
+
+</div>
 </html>
