@@ -1,3 +1,33 @@
+<!-- * File Name: adminCheck.php
+ * 
+ * Description:
+ * The "back end" side of the adminLogin.html page. The adminCheck.php file checks if the admin-entered credentials
+ * are found in the database. If not, an error screen indicating that the login was invalid pops up, otherwise,
+ * the admin is able to proceed to the adminCreate.html page.
+ * 
+ * @package MedcurityNetworkScanner
+ * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
+ * @license 
+ * @version 1.0.0
+ * @link 
+ * @since 
+ * 
+ * Usage:
+ * This file should be placed in the root directory of the application. It can be directly
+ * accessed via the URL [Your Application's URL]. No modifications are necessary for basic
+ * operation.
+ * 
+ * Modifications:
+ * [Date] - [Artis Nateephaisan] - Version [New Version Number] - [Description of Changes]
+ * 
+ * Notes:
+ * - Additional notes or special instructions can be added here.
+ * - Remember to update the version number and modification log with each change.
+ * 
+ * TODO:
+ * - List any pending tasks or improvements that are planned for future updates.
+ * 
+ */ -->
 <?php
 
     if($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -29,8 +59,11 @@
     }
     
     
-    // set up the query
-    $query = "SELECT * FROM User WHERE user_name='?' AND psw_hash_salted = '?';";
+    // // set up the query to check DB for correct login credentials. This query is different from loginCheck.php
+    // // because it uses the client attribute to check if the user is an "admin" client.
+    // $query = "SELECT user_name, psw_hash_salted FROM User WHERE user_name='?' AND psw_hash_salted = '?' AND client='admin';";
+
+    $query = "SELECT 1 FROM User WHERE user_name='?' AND psw_hash_salted = '?' AND client='admin';";
 
     // set up the prepared statement
     $st = $cn ->stmt_init();
@@ -39,16 +72,18 @@
 
     // execute statement and store result in $result
     $st ->execute();
-    $st ->bind_result($result);
+    // $st ->bind_result($result);
 
     // $result = $cn->query($query)
 
+    $st->store_result();
+
     // check for if admin login was successful
-    if ($result->num_rows == 1) {
+    if ($st->num_rows == 1) {
         // login was successful
 
         
-        header("Location: admincreate.html");
+        header("Location: adminCreate.html");
         exit();
     } 
     else {
@@ -60,6 +95,7 @@
         // if possible, display popup that login info was wrong, otherwise, can redirect back to login page
     }
 
+    // probably because the if else statement would take the user to a different page. The st and cn would have to be closed there instead of at the end of the file
     $st->close();
     $cn->close();
     

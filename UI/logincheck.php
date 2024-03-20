@@ -1,3 +1,33 @@
+<!-- * File Name: loginCheck.php
+ * 
+ * Description:
+ * The "back end" side of the login.html page. The loginCheck.php file checks if the user-entered credentials
+ * are found in the database. If not, an error screen indicating that the login was invalid pops up, otherwise,
+ * the user is able to proceed to the index.php page.
+ * 
+ * @package MedcurityNetworkScanner
+ * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
+ * @license 
+ * @version 1.0.0
+ * @link 
+ * @since 
+ * 
+ * Usage:
+ * This file should be placed in the root directory of the application. It can be directly
+ * accessed via the URL [Your Application's URL]. No modifications are necessary for basic
+ * operation.
+ * 
+ * Modifications:
+ * [Date] - [Artis Nateephaisan] - Version [New Version Number] - [Description of Changes]
+ * 
+ * Notes:
+ * - Additional notes or special instructions can be added here.
+ * - Remember to update the version number and modification log with each change.
+ * 
+ * TODO:
+ * - List any pending tasks or improvements that are planned for future updates.
+ * 
+ */ -->
 <?php
     session_start();
     ob_start();
@@ -14,6 +44,7 @@
         
         // note that this cannot be tested right now because the password stored in the DB are not hashed nor salted
         $psw_hash_salt = password_hash($password, PASSWORD_DEFAULT, array('cost' => 9));
+        
     }
 
     // DB connection
@@ -31,8 +62,11 @@
     }
     
 
+    // // set up the query
+    // $query = "SELECT user_name, psw_hash_salted FROM User WHERE user_name = ? AND psw_hash_salted = ?;";
+
     // set up the query
-    $query = "SELECT * FROM User WHERE user_name = ? AND psw_hash_salted = ?;";
+    $query = "SELECT 1 FROM User WHERE user_name = ? AND psw_hash_salted = ?;";
 
     // set up the prepared statement
     $st = $cn ->stmt_init();
@@ -42,11 +76,13 @@
 
     // execute statement and store result in $result
     $st ->execute();
-    $st ->bind_result($result);
 
-    $result = $cn->query($query);
+    // $st ->bind_result($result);
 
-    if($result->num_rows == 1) {
+    // $result = $cn->query($query);
+    $st->store_result();
+
+    if ($st->num_rows == 1) {
         // login was successful
 
         // Use Sessions to transfer username to different PHP pages
@@ -56,6 +92,8 @@
         header("Location: index.php");
         // TODO: 2/20/24 add session_start() in index.php file and add this line: 
         // $username = $_SESSION["session_user"];
+        // $st->close();
+        // $cn->close();
         exit();
     } 
     else {
@@ -63,6 +101,8 @@
         $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
         // I don't think this will work because login.html will just load in without the regex
         header("Location: login.html");
+        // $st->close();
+        // $cn->close();
         exit();
 
         // if possible, display popup that login info was wrong, otherwise, can redirect back to login page
@@ -70,5 +110,6 @@
 
     $st->close();
     $cn->close();
+    
     
 ?>
