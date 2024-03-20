@@ -555,10 +555,44 @@
                 <?php
                     if (isset($_POST["DOWNLOAD"]) && $_POST["DOWNLOAD"] == "True")
                     {
-                        // $username = $_SESSION["username"];
-                        $username = "clemak";
-                        $pythonScript = realpath(__DIR__) . '/../csv/csv-export.py';
-                        $command = "python3 $pythonScript $username";
+                        // $user = $_SESSION["username"];
+                        $user = "bhuyck-admin";
+
+                        // connection params
+                        $config = parse_ini_file("./config.ini");
+                        $server = $config["servername"];
+                        $username = $config["username"];
+                        $password = $config["password"];
+                        $database = "gu_devices";
+
+                        // connect to db
+                        $cn = mysqli_connect($server , $username , $password , $database );
+
+                        // check connection
+                        if (!$cn) {
+                            die("Connection failed: " . mysqli_connect_error ());
+                        }
+
+                        // set up the prepared statement
+                        $q = "SELECT client FROM User WHERE user_name = '$user';";
+
+                        $st = $cn ->stmt_init ();
+                        $st ->prepare($q);
+
+                        // execute the statement and bind the result (to vars)
+                        $st ->execute ();
+                        $st ->bind_result($c);
+
+                        $st -> fetch();
+                        if ($c == "Medcurity") {
+                            $py = '/../csv/admin-export.py';
+                        }
+                        else {
+                            $py = '/../csv/csv-export.py';
+                        }
+                
+                        $pythonScript = realpath(__DIR__) . $py;
+                        $command = "python3 $pythonScript $user";
                         shell_exec($command);
                     }
                 ?>
