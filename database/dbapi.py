@@ -1277,7 +1277,8 @@ class DBAPI:
                 return ret
 
             def admin_export(self):
-                if self.client != "Medcurity":
+                # if self.client != "Medcurity":
+                if self.client != "admin":
                     raise RuntimeError("User isn't admin")
                 
                 query = "SELECT name FROM Client;"

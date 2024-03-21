@@ -584,7 +584,8 @@
                         $st ->bind_result($c);
 
                         $st -> fetch();
-                        if ($c == "Medcurity") {
+                        // if ($c == "Medcurity") {
+                        if ($c == "admin") {
                             $py = '/../csv/admin-export.py';
                         }
                         else {
