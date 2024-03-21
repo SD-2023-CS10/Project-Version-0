@@ -36,7 +36,9 @@ INSERT INTO User VALUES
     ("MedCorp", "bhuyck1", "123"),
     ("MedCorp", "bhuyck2", "456"),
     ("GonMed", "bhuyck3", "123"),
-    ("MedTech", "bhuyck", "789");
+    ("MedTech", "bhuyck", "789"),
+    ("MedCorp", "testuser", "$2y$09$pyqGNb0LScJiGhizc72u5u3347wmmlJPlIrXPCm6xZR/GnpEylNeO"),
+    ("admin", "testadmin", "$2y$09$NHy5D/zIxWY0LkBoyAhhue.6WGF4J5s5OjbYDUz6cV5Pq2v0deD8u");
     
 INSERT INTO Vender VALUES
     ("mattm@gmail.com", "Matt M.", FALSE, '2023-10-31', "MedCorp"),
