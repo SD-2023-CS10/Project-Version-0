@@ -43,9 +43,12 @@
         // array('cost') param takes the salt in form cost factor
         
         // note that this cannot be tested right now because the password stored in the DB are not hashed and salted
-        $old_psw_hash_salt = password_hash($old_password, PASSWORD_DEFAULT, array('cost' => 9));
+        // $old_psw_hash_salt = password_hash($old_password, PASSWORD_DEFAULT, array('cost' => 9));
 
         $new_psw_hash_salt = password_hash($new_password, PASSWORD_DEFAULT, array('cost' => 9));
+    } else {
+        header("Location: newUser.html");
+        exit();
     }
     // connection params
     $config = parse_ini_file("./config.ini");
@@ -66,45 +69,43 @@
     // $query = "SELECT user_name, psw_hash_salted FROM User WHERE user_name = ? AND psw_hash_salted = ?;";
 
     // set up the query
-    $query = "SELECT 1 FROM User WHERE user_name = ? AND psw_hash_salted = ?;";
+    $query = "SELECT psw_hash_salted FROM User WHERE user_name = ?;";
 
     // set up the prepared statement
     $st = $cn ->stmt_init();
     $st ->prepare($query);
     // I need to set up the statements here but I need to use old_psw_hash_salt, which isn't from POST
-    $st ->bind_param("ss", $_POST["username"], $old_psw_hash_salt);
+    $st ->bind_param("s", $username);
  
     // execute statement and store result in $result
     $st ->execute();
-    // $st ->bind_result($result);
-    $st->store_result();
+    $st ->bind_result($result);
+    // $st->store_result();
 
     // check for it user login was successful
-    if ($st->num_rows == 1) {
+    if (password_verify($password, $result)) {
         // login was successful
 
-        // TODO: I will have to insert the new hashed and salted password into the DB
-        $query = "INSERT INTO User.psw_hash_salted VALUES $new_psw_hash_salt';";
+        // TODO: I will have to UPDATE the new hashed and salted password into the DB
+        $query = "UPDATE User SET psw_hash_salted = $new_psw_hash_salt WHERE user_name = ?;";
 
         // set up the prepared statement
         $st = $cn ->stmt_init();
         $st ->prepare($query);
 
+        $st ->bind_param("s", $username);
 
-        // execute statement and store result in $result
+        // execute statement
         $st ->execute();
-        $st ->bind_result($result);
 
         // I should echo that new password has been set
         
      } else {
         
-        $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
-        
+        $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);   
         exit();
      }
 
      $st->close();
      $cn->close();
-
 ?>

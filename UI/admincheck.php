@@ -42,6 +42,9 @@
         
         // note that this cannot be tested right now because the password stored in the DB are not hashed nor salted
         $psw_hash_salt = password_hash($password, PASSWORD_DEFAULT, array('cost' => 9));
+    } else {
+        header("Location: adminLogin.html");
+        exit();
     }
 
     // DB connection
@@ -63,23 +66,24 @@
     // // because it uses the client attribute to check if the user is an "admin" client.
     // $query = "SELECT user_name, psw_hash_salted FROM User WHERE user_name='?' AND psw_hash_salted = '?' AND client='admin';";
 
-    $query = "SELECT 1 FROM User WHERE user_name='?' AND psw_hash_salted = '?' AND client='admin';";
+    $query = "SELECT psw_hash_salted FROM User WHERE user_name = ? AND client = 'admin';";
 
     // set up the prepared statement
     $st = $cn ->stmt_init();
     $st ->prepare($query);
-    $st ->bind_param("ss", $_POST["username"], $psw_hash_salt);
+    $st ->bind_param("s", $username);
 
     // execute statement and store result in $result
     $st ->execute();
-    // $st ->bind_result($result);
 
-    // $result = $cn->query($query)
+    $st ->bind_result($result);
 
-    $st->store_result();
+    // $result = $cn->query($query);
+
+    // $st->store_result();
 
     // check for if admin login was successful
-    if ($st->num_rows == 1) {
+    if (password_verify($password, $result)) {
         // login was successful
 
         

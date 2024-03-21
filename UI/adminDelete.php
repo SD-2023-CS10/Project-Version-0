@@ -36,6 +36,7 @@
         // retrieve form data
         $username = $_POST["username"];
         // $old_password = $_POST["old password"];
+        $client = $_POST["client"];
 
         // here the password would have to be salted and hashed upon retrieval from the post form
         // PASSWORD_DEFAULT is the default hashing algorithm for PHP that is updated with new PHP releases
@@ -43,6 +44,9 @@
         
         // note that this cannot be tested right now because the password stored in the DB are not hashed and salted
         // $old_psw_hash_salt = password_hash($old_password, PASSWORD_DEFAULT, array('cost' => 9));
+    } else {
+        header("Location: adminCreate.html");
+        exit();
     }
     // connection params
     $config = parse_ini_file("./config.ini");
@@ -63,40 +67,36 @@
     // $query = "SELECT user_name, psw_hash_salted FROM User WHERE user_name = ?;";
 
     // set up the query
-    $query = "SELECT 1 FROM User WHERE user_name = ? AND psw_hash_salted = ?;";
+    $query = "SELECT psw_hash_salted FROM User WHERE user_name = ?;";
 
     // set up the prepared statement
     $st = $cn ->stmt_init();
     $st ->prepare($query);
+
     // Does this work? While the old_password could be an inject, it should get hashed and salted, so the injection shouldnt work.
-    $st ->bind_param("s", $_POST["username"]);
+    $st ->bind_param("s", $username);
  
     // execute statement and store result in $result
     $st ->execute();
-    // $st ->bind_result($result);
-    $st->store_result();
+    $st ->bind_result($result);
+    // $st->store_result();
+    // $result = $cn->query($query);
 
     // check for if the exact same username/password params have already been in the database
-    if ($st->num_rows == 1) {
+    if (password_verify($password, $result)) {
 
         // insert the username into the User table under user_name column
-        $query = "DELETE FROM User WHERE User.user_name = ?';";
+        $query = "DELETE FROM User WHERE user_name = ? AND client = ?;";
 
         // set up the prepared statement
         $st = $cn ->stmt_init();
         $st ->prepare($query);
         
-        $st ->bind_param("s", $_POST["username"]);
+        $st ->bind_param("ss", $username, $client);
  
         // execute statement and store result in $result
         $st ->execute();
-        $st ->bind_result($result);
-
-     } else if ($result->num_rows >= 1) {
-        // if there's multiple clients with the same username, error message
-        // note, this should not happen, since user_name in the DB is a primary key, every username should be unique
-        $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
-        exit();
+        // $st ->bind_result($result);
      } else {
         // if there is no client with that username, error message
         $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);

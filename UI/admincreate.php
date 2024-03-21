@@ -44,6 +44,9 @@
         
         // note that this cannot be tested right now because the password stored in the DB are not hashed and salted
         $old_psw_hash_salt = password_hash($old_password, PASSWORD_DEFAULT, array('cost' => 9));
+    } else {
+        header("Location: adminCreate.html");
+        exit();
     }
     // connection params
     $config = parse_ini_file("./config.ini");
@@ -64,64 +67,41 @@
     // $query = "SELECT user_name, psw_hash_salted FROM User WHERE user_name = ? AND psw_hash_salted = ?;";
 
     // set up the query
-    $query = "SELECT 1 FROM User WHERE user_name = ? AND psw_hash_salted = ?;";
+    $query = "SELECT psw_hash_salted FROM User WHERE user_name = ?;";
 
     // set up the prepared statement
     $st = $cn ->stmt_init();
     $st ->prepare($query);
-    // Does this work? While the old_password could be an inject, it should get hashed and salted, so the injection shouldnt work.
-    $st ->bind_param("ss", $_POST["username"], $old_psw_hash_salt);
+
+    $st ->bind_param("s", $username);
  
     // execute statement and store result in $result
     $st ->execute();
-    // $st ->bind_result($result);
-    $st->store_result();
+    $st ->bind_result($result);
+    // $st->store_result();
+
+    // $result = $cn->query($query);
 
     // check for if the exact same username/password params have already been in the database
-    if ($st->num_rows == 1) {
-
-        // insert the username into the User table under user_name column
-        $query = "INSERT INTO User.user_name VALUES ?';";
-
-        // set up the prepared statement
-        $st = $cn ->stmt_init();
-        $st ->prepare($query);
+    if (password_verify($old_password, $result)) {
+        // need an if to check if client is in the DB, if it is, continue with normall query, if it isn't add the 
+        // client in the table
         
-        $st ->bind_param("s", $_POST["username"]);
- 
-        // execute statement and store result in $result
-        $st ->execute();
-        $st ->bind_result($result);
-
-
-        // insert the hashed and salted into the User table under psw_hash_salted column
-        $query = "INSERT INTO User.psw_hash_salted VALUES $new_psw_hash_salt';";
+        // insert the username into the User table under user_name column
+        $query = "INSERT INTO User VALUES (client, user_name, psw_hash_salted) VALUES (?, ?, ?);";
 
         // set up the prepared statement
         $st = $cn ->stmt_init();
+
         $st ->prepare($query);
- 
-        // execute statement and store result in $result
+        $st ->bind_param("sss", $client, $username, $old_psw_hash_salt);
+
+        // execute statement 
         $st ->execute();
-        $st ->bind_result($result);
 
-        // insert the client into the User table under client column
-        $query = "INSERT INTO User.client VALUES $client';";
-
-        // set up the prepared statement
-        $st = $cn ->stmt_init();
-        $st ->prepare($query);
- 
-        // execute statement and store result in $result
-        $st ->execute();
-        $st ->bind_result($result);
-
-     } else if ($result->num_rows >= 1) {
-        // if there is already one or more instances of a user with these exact params, make an error message popup
-        $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
-        exit();
      } else {
-        // this should never happen
+        // this needs to be fixed
+        $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
         exit();
      }
 
