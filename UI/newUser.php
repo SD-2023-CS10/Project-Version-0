@@ -1,9 +1,9 @@
-<!-- * File Name: adminCreate.php
+<!-- * File Name: newUser.php
  * 
  * Description:
- * The "back end" side of the adminCreate.html page. The adminCreate.php file checks if the admin-entered credentials
+ * The "back end" side of the newUser.html page. The newUser.php file checks if the user-entered credentials
  * are found in the database. If not, an error screen indicating that the login was invalid pops up, otherwise,
- * the admin is able to delete old user accounts, erasing their login information from the database.
+ * the user is able to set their password to something else.
  * 
  * @package MedcurityNetworkScanner
  * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
@@ -15,7 +15,7 @@
  * Usage:
  * This file should be placed in the root directory of the application. It can be directly
  * accessed via the URL [Your Application's URL]. No modifications are necessary for basic
- * operation.
+ * operation, but customization can be done by editing the configuration settings within.
  * 
  * Modifications:
  * [Date] - [Artis Nateephaisan] - Version [New Version Number] - [Description of Changes]
@@ -36,16 +36,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     // retrieve form data
     $username = $_POST["username"];
     $old_password = $_POST["old password"];
-    $client = $_POST["client"];
+    $new_password = $_POST["new password"];
 
     // here the password would have to be salted and hashed upon retrieval from the post form
     // PASSWORD_DEFAULT is the default hashing algorithm for PHP that is updated with new PHP releases
     // array('cost') param takes the salt in form cost factor
 
     // note that this cannot be tested right now because the password stored in the DB are not hashed and salted
-    $old_psw_hash_salt = password_hash($old_password, PASSWORD_DEFAULT, array('cost' => 9));
+    // $old_psw_hash_salt = password_hash($old_password, PASSWORD_DEFAULT, array('cost' => 9));
+
+    $new_psw_hash_salt = password_hash($new_password, PASSWORD_DEFAULT, array('cost' => 9));
 } else {
-    header("Location: adminCreate.html");
+    header("Location: newUser.html");
     exit();
 }
 // connection params
@@ -72,7 +74,7 @@ $query = "SELECT psw_hash_salted FROM User WHERE user_name = ?;";
 // set up the prepared statement
 $st = $cn ->stmt_init();
 $st ->prepare($query);
-
+// I need to set up the statements here but I need to use old_psw_hash_salt, which isn't from POST
 $st ->bind_param("s", $username);
 
 // execute statement and store result in $result
@@ -80,32 +82,30 @@ $st ->execute();
 $st ->bind_result($result);
 // $st->store_result();
 
-// $result = $cn->query($query);
+// check for it user login was successful
+if (password_verify($password, $result)) {
+    // login was successful
 
-// check for if the exact same username/password params have already been in the database
-if (password_verify($old_password, $result)) {
-    // need an if to check if client is in the DB, if it is, continue with normall query, if it isn't add the 
-    // client in the table
-
-    // insert the username into the User table under user_name column
-    $query = "INSERT INTO User VALUES (client, user_name, psw_hash_salted) VALUES (?, ?, ?);";
+    // TODO: I will have to UPDATE the new hashed and salted password into the DB
+    $query = "UPDATE User SET psw_hash_salted = $new_psw_hash_salt WHERE user_name = ?;";
 
     // set up the prepared statement
     $st = $cn ->stmt_init();
-
     $st ->prepare($query);
-    $st ->bind_param("sss", $client, $username, $old_psw_hash_salt);
 
-    // execute statement 
+    $st ->bind_param("s", $username);
+
+    // execute statement
     $st ->execute();
 
+    // I should echo that new password has been set
+
  } else {
-    // this needs to be fixed
-    $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
+
+    $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);   
     exit();
  }
 
  $st->close();
  $cn->close();
-
 ?>
