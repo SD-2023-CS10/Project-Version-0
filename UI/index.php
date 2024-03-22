@@ -46,7 +46,7 @@
                 <button href="" name="DOWNLOAD" value="True" onclick="csv_launch()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</button>
             </form>
          
-            <a href="" id="runScanButton" id="scanOutput" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
+            <a href="" id="runScanButton" id="scanOutput" class="bar-item button padding"><i class="fa fa-solid fa-play"></i> RUN SCAN</a>
 
         </div>
     </nav>
@@ -556,7 +556,7 @@
                     if (isset($_POST["DOWNLOAD"]) && $_POST["DOWNLOAD"] == "True")
                     {
                         // $user = $_SESSION["username"];
-                        $user = "bhuyck-admin";
+                        $user = "testadmin";
 
                         // connection params
                         $config = parse_ini_file("./config.ini");
