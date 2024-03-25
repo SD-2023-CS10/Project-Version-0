@@ -90,6 +90,7 @@ This page provides organized sections of information, search functionality, inte
 ## Settings Page
 
 ### Profile
+This page displays the current information associated with their account including their Name, email, client, date, and baa. This information is unable to be edited by anyone other than a Medcurity representative or developer. 
 
 ### Accessibility
 In Development
