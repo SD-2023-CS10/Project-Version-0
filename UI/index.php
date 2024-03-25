@@ -83,7 +83,7 @@
         <div class="bar-block">
             <a href="index.php" onclick="closeSB()" class="bar-item button padding grey black-text"><i class="fa fa-solid fa-folder"></i> HOME</a> 
             <!-- <a href="network.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-wifi"></i> NETWORK</a> -->
-            <a href="settings.html" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-gear"></i> SETTINGS</a>
+            <a href="settings.php" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-gear"></i> SETTINGS</a>
             <form action="index.php" method="POST">
                 <button href="" name="DOWNLOAD" value="True" onclick="csv_launch()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</button>
             </form>
@@ -123,8 +123,7 @@
                 <button class="tablinks" onclick="opentab(event, 'Server')">Server</button>
                 <button class="tablinks" onclick="opentab(event, 'ePHI')">ePHI</button>
                 <button class="tablinks" onclick="opentab(event, 'Authentication')">Authentication</button>
-                <button class="tablinks" onclick="opentab(event, 'Asset Information')">Asset
-                    Information</button>
+                <button class="tablinks" onclick="opentab(event, 'Asset Information')">Asset Information</button>
             </div>
 
             <!-- System Devices -->
@@ -193,14 +192,14 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";
                                     echo "<td>" . $item_id . "</td>";
-                                    echo "<td id='Inv_Item.name' contenteditable='true'>" . $name . "</td>";
-                                    echo "<td id='Inv_Item.type' contenteditable='true'>" . $type . "</td>";
-                                    echo "<td id='Inv_Item.version' contenteditable='true'>" . $version . "</td>";
-                                    echo "<td id='Inv_Item.os' contenteditable='true'>" . $os . "</td>";
-                                    echo "<td id='Inv_Item.os_version' contenteditable='true'>" . $os_version . "</td>";
+                                    echo "<td id='Inv_Item.name.item_id' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='Inv_Item.type.item_id' contenteditable='true'>" . $type . "</td>";
+                                    echo "<td id='Inv_Item.version.item_id' contenteditable='true'>" . $version . "</td>";
+                                    echo "<td id='Inv_Item.os.item_id' contenteditable='true'>" . $os . "</td>";
+                                    echo "<td id='Inv_Item.os_version.item_id' contenteditable='true'>" . $os_version . "</td>";
                                     echo "<td id='Vender.poc' contenteditable='true'>" . $vpoc . "</td>";
                                     echo "<td id='Vender.email' contenteditable='true'>" . $vemail . "</td>";
-                                    echo "<td id='Inv_Item.auto_log_off_freq' contenteditable='true'>" . $auto_log_off_freq . "</td>";
+                                    echo "<td id='Inv_Item.auto_log_off_freq.item_id' contenteditable='true'>" . $auto_log_off_freq . "</td>";
                                     echo "<td id='Vender.baa' contenteditable='true'>" . $baa . "</td>";
                                     echo "<td id='Vender.date' contenteditable='true'>" . $date . "</td>";
                                 echo "</tr>";
@@ -234,7 +233,7 @@
                         var xhr = new XMLHttpRequest();
                         xhr.open("POST", "updateDevice.php", true);
                         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                        xhr.send("item_id=" + item_id + "&rowIndex=" + rowIndex + "&cellValue=" + cellValue + "&cellId=" + cellId);
+                        xhr.send("&rowIndex=" + rowIndex + "&cellValue=" + cellValue + "&cellId=" + cellId);
                     }
 
                     function deleteRow(rowId) {

@@ -29,6 +29,9 @@
  * - List any pending tasks or improvements that are planned for future updates.
  * 
  -->
+ <?php
+    session_start();
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -81,7 +84,7 @@
 
     <!-- First Grid-->
     <body>
-      <div class="container">
+      <div class="container margin-left">
         <div class="list-topics-content row-padding">
           <div class="single-list-topics-content">
             <h2><a href="#" onclick="showTab('profile')">Profile</a></h2>
@@ -98,15 +101,11 @@
         </div>
       </div><!--/.container-->
 
-      <!-- Tabs with Back Arrow -->
+
       <div id="profile" class="tab-content row-padding" style="display: none;">
         <button onclick="showList()">Back</button>
-        <h2>Profile</h2>
-        <p>Name:                   John Smith</p>
-        <p>Client name:            Med INC</p>
-        <p>Username:               jsmith21</p>
-        <p>Password:               *******</p>
-        <p>Associated Email:       jsmith@hotmail.com</p>
+        <h2>Profile Settings</h2>
+        <p>In Development</p>
       </div>
       <div id="accessibility" class="tab-content row-padding" style="display: none;">
         <button onclick="showList()">Back</button>
@@ -123,7 +122,7 @@
         <h2>Help Menu</h2>
         <p>Medcurity Contact Representitive: (###)-###-####</p>
         <p>About Application: Link in Development</p>
-        <p>Help Manuals: Link In Development</p>
+        <p>Help Manuals: <?php include 'README.md';?></p>
         <p>Troubleshooting Guide: In Developemnt</p>
       </div>
     </body>
