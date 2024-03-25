@@ -180,7 +180,8 @@
                                 echo "<td>Name</td>";
                                 echo "<td>Type of Application/Device</td>";
                                 echo "<td>APPLICATION Version in Place</td>";
-                                echo "<td>Operating System & Version</td>";
+                                echo "<td>Operating System </td>";
+                                echo "<td>OS Version</td>";
                                 echo "<td>VENDOR POC</td>";
                                 echo "<td>POC E-mail</td>";
                                 echo "<td>AUTOMATIC LOG-OFF FREQUENCY</td>";
@@ -192,15 +193,16 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";
                                     echo "<td>" . $item_id . "</td>";
-                                    echo "<td id='device' contenteditable='true'>" . $name . "</td>";
-                                    echo "<td id='device' contenteditable='true'>" . $type . "</td>";
-                                    echo "<td id='device' contenteditable='true'>" . $version . "</td>";
-                                    echo "<td id='device' contenteditable='true'>" . $os . " " . $os_version . "</td>";
-                                    echo "<td id='device' contenteditable='true'>" . $vpoc . "</td>";
-                                    echo "<td id='device' contenteditable='true'>" . $vemail . "</td>";
-                                    echo "<td id='device' contenteditable='true'>" . $auto_log_off_freq . "</td>";
-                                    echo "<td id='device' contenteditable='true'>" . $baa . "</td>";
-                                    echo "<td id='device' contenteditable='true'>" . $date . "</td>";
+                                    echo "<td id='Inv_Item.name' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='Inv_Item.type' contenteditable='true'>" . $type . "</td>";
+                                    echo "<td id='Inv_Item.version' contenteditable='true'>" . $version . "</td>";
+                                    echo "<td id='Inv_Item.os' contenteditable='true'>" . $os . "</td>";
+                                    echo "<td id='Inv_Item.os_version' contenteditable='true'>" . $os_version . "</td>";
+                                    echo "<td id='Vender.poc' contenteditable='true'>" . $vpoc . "</td>";
+                                    echo "<td id='Vender.email' contenteditable='true'>" . $vemail . "</td>";
+                                    echo "<td id='Inv_Item.auto_log_off_freq' contenteditable='true'>" . $auto_log_off_freq . "</td>";
+                                    echo "<td id='Vender.baa' contenteditable='true'>" . $baa . "</td>";
+                                    echo "<td id='Vender.date' contenteditable='true'>" . $date . "</td>";
                                 echo "</tr>";
                             }
                             // clean up
@@ -212,8 +214,8 @@
                     <!-- Add device input -->
                     <div class="inputbar">
                         <form action="addDevice.php" method="post">
-                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
                             <input type="submit" value="Add" />
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
                         </form>
                     </div>
 
@@ -224,23 +226,28 @@
                         var table = document.getElementById("deviceTable");
                         var rowIndex = element.parentNode.rowIndex;
                         var cellIndex = element.cellIndex;
-                        var columnName = table.rows[0].cells[cellIndex].innerText;
                         var item_id = table.rows[rowIndex].cells[0].innerText;
                         var cellValue = element.innerText;
-                        
-                        var tableId = element.parentNode.parentNode.parentNode.id; // Get the ID of the table
-                        var tableName = (tableId === "deviceTable") ? "device" : "server"; // Determine table context
-                        // Make an AJAX call to update the record in the database
+                        // Retrieve the cell's id
+                        var cellId = element.id;
+
                         var xhr = new XMLHttpRequest();
                         xhr.open("POST", "updateDevice.php", true);
                         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                        xhr.send("item_id=" + item_id + "&rowIndex=" + rowIndex + "&columnName=" + columnName + "&cellValue=" + cellValue);
+                        xhr.send("item_id=" + item_id + "&rowIndex=" + rowIndex + "&cellValue=" + cellValue + "&cellId=" + cellId);
                     }
 
                     function deleteRow(rowId) {
                         var table = document.getElementById("deviceTable");
                         var item_id = table.rows[rowId].cells[0].innerText;
 
+                        // Confirm user will delete entire item
+                        var confirmed = window.confirm("Are you sure you want to delete this item? This action will delete the entire item and cannot be undone.");
+                        if (!confirmed) {
+                            return; // If user cancels, exit the function
+                        }
+
+                        // Run php script to delete item
                         var xhr = new XMLHttpRequest();
                         xhr.open("POST", "deleteDevice.php", true);
                         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -289,7 +296,7 @@
 
                 <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
-                    <table BORDER=1 width="100%" id="serverTable">
+                    <table BORDER=1 width="100%" id="Server">
                         <?php
                             $CLIENT = "Med INC";
 
@@ -336,11 +343,11 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";    
                                     echo "<td>" . $id . "</td>";
-                                    echo "<td id='server' contenteditable='true'>" . $name . "</td>";
-                                    echo "<td id='server' contenteditable='true'>" . $addr . "</td>";
-                                    echo "<td id='server' contenteditable='true'>" . $cp . "</td>";
-                                    echo "<td id='server' contenteditable='true'>" . $details . "</td>";
-                                    echo "<td id='server' contenteditable='true'>" . $protection . "</td>";
+                                    echo "<td id='Server.name' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='Server.ip_address' contenteditable='true'>" . $addr . "</td>";
+                                    echo "<td id='Server.cloud_prem' contenteditable='true'>" . $cp . "</td>";
+                                    echo "<td id='Location.details' contenteditable='true'>" . $details . "</td>";
+                                    echo "<td id='Location.protection' contenteditable='true'>" . $protection . "</td>";
                                 echo "</tr>";
                             }
 
@@ -353,7 +360,7 @@
                     <!-- Add device input -->
                     <div class="inputbar">
                         <form action="addDevice.php" method="post">
-                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Insert New Device" />
                             <input type="submit" value="Add" />
                         </form>
                     </div>
@@ -415,11 +422,11 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";
                                     echo "<td>" . $item_id . "</td>";
-                                    echo "<td contenteditable='true'>" . $ephi . "</td>";
-                                    echo "<td contenteditable='true'>" . $encr . "</td>";
-                                    echo "<td contenteditable='true'>" . $meth . "</td>";
-                                    echo "<td contenteditable='true'>" . $test . "</td>";
-                                    echo "<td contenteditable='true'>" . $inter . "</td>";
+                                    echo "<td id='Inv_Item.ephi'contenteditable='true'>" . $ephi . "</td>";
+                                    echo "<td id='Inv_Item.ephi_encrypted'contenteditable='true'>" . $encr . "</td>";
+                                    echo "<td id='Inv_Item.ephi_encr_method'contenteditable='true'>" . $meth . "</td>";
+                                    echo "<td id='Inv_Item.ephi_encr_tested'contenteditable='true'>" . $test . "</td>";
+                                    echo "<td id='Inv_Item.interfaces_with'contenteditable='true'>" . $inter . "</td>";
                                 echo "</tr>";
                             }
 
@@ -493,10 +500,10 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";
                                     echo "<td>" . $id . "</td>";
-                                    echo "<td id='authen' contenteditable='true'>" . $user . "</td>";
-                                    echo "<td id='authen' contenteditable='true'>" . $app . "</td>";
-                                    echo "<td id='authen' contenteditable='true'>" . $min . "</td>";
-                                    echo "<td id='authen' contenteditable='true'>" . $freq . "</td>";
+                                    echo "<td id='Inv_Item.user_auth_method.' contenteditable='true'>" . $user . "</td>";
+                                    echo "<td id='Inv_Item.app_auth_method' contenteditable='true'>" . $app . "</td>";
+                                    echo "<td id='Inv_Item.psw_min_len' contenteditable='true'>" . $min . "</td>";
+                                    echo "<td id='Inv_Item.psw_change_freq' contenteditable='true'>" . $freq . "</td>";
                                 echo "</tr>";
                             }
 
@@ -582,20 +589,18 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";
                                     echo "<td>" . $id . "</td>";
-                                    echo "<td contenteditable='true'>" . $dept . "</td>";
-                                    echo "<td contenteditable='true'>" . $space . "</td>";
-                                    echo "<td contenteditable='true'>" . $dlo . "</td>";
-                                    echo "<td contenteditable='true'>" . $vender . "</td>";
-                                    echo "<td contenteditable='true'>" . $price . "</td>";
-                                    echo "<td contenteditable='true'>" . $warr . "</td>";
-                                    echo "<td contenteditable='true'>" . $cond . "</td>";
-                                    echo "<td contenteditable='true'>" . $quant . "</td>";
-                                    echo "<td contenteditable='true'>" . $value . "</td>";
-                                    echo "<td contenteditable='true'></td>";
-                                    echo "<td contenteditable='true'>" . $model_num . "</td>";
-                                    echo "<td contenteditable='true'></td>";
-                                    echo "<td contenteditable='true'>" . $notes . "</td>";
-                                    echo "<td contenteditable='true'>" . $link . "</td>";
+                                    echo "<td id='Inv_Item.dept' contenteditable='true'>" . $dept . "</td>";
+                                    echo "<td id='Inv_Item.space' contenteditable='true'>" . $space . "</td>";
+                                    echo "<td id='Inv_Item.date_last_ordered' contenteditable='true'>" . $dlo . "</td>";
+                                    echo "<td id='Inv_Item.vender' contenteditable='true'>" . $vender . "</td>";
+                                    echo "<td id='Inv_Item.purchase_price' contenteditable='true'>" . $price . "</td>";
+                                    echo "<td id='Inv_Item.warranty_expires' contenteditable='true'>" . $warr . "</td>";
+                                    echo "<td id='Inv_Item.item_condition' contenteditable='true'>" . $cond . "</td>";
+                                    echo "<td id='Inv_Item.quantity' contenteditable='true'>" . $quant . "</td>";
+                                    echo "<td id='Inv_Item.assset_value' contenteditable='true'>" . $value . "</td>";
+                                    echo "<td id='Inv_Item.model_num' contenteditable='true'>" . $model_num . "</td>";
+                                    echo "<td id='Inv_Item.notes' contenteditable='true'>" . $notes . "</td>";
+                                    echo "<td id='Inv_Item.link' contenteditable='true'>" . $link . "</td>";
                                 echo "</tr>";
                             }
 

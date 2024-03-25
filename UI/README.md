@@ -43,29 +43,6 @@ the use of saved password. Overall, it is good practice to change the account pa
 
 ## Development Set-Up
 
-To use the database APIs during development, create a config file of the appropriate format in the appropriate directory. Get the values from the Google Doc Kraig shared with us.
-
-For the crawler, this would be database/config.py. In this file, create a dictionary defined as below. All keys and values should be strings.
-
-```
-config = {
-    'host' : <host>,
-    'user' : <username>,
-    'pass' : <password>,
-    'db' : <databasename>
-}
-```
-
-For the UI, this would be UI/config.ini. In this file, add the code defined as below. Note that only the username and password should be in quotes.
-
-```
-[database]
-servername = <host>
-username = <username>
-password = <password>
-```
-
-With this, the API should work. To access the Database through the command line, use the linux command ```mysql -h <database> -u <username> -p``` and enter the password when prompted. This can be done for testing.
 
 
 ## Encryption for User Login Information
