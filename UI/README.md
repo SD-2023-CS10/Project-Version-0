@@ -92,11 +92,15 @@ This page provides organized sections of information, search functionality, inte
 ### Profile
 
 ### Accessibility
+In Development
 
 ### Network
+In Development
 
 ### Contact
+Provides the user with help manuals along with a Medcurity representative contact abd/or messaging ticket service to help the user with understanding the system, troubleshooting, and development setup.
 
+Currently displays the information contained in the UI README.md
 
 ## Encryption for User Login Information
 The username and password of all users are stored in a database. The username is stored as is, but the passwords are stored salted and hashed using the bcrypt algorithm.

@@ -101,12 +101,68 @@
         </div>
       </div><!--/.container-->
 
+      <font size="4" face="Courier New">
+        <table BORDER=1 width="100%" id="deviceTable">
+          <button onclick="showList()">Back</button>
+            <?php
+                $CLIENT = "Med INC";
 
-      <div id="profile" class="tab-content row-padding" style="display: none;">
-        <button onclick="showList()">Back</button>
-        <h2>Profile Settings</h2>
-        <p>In Development</p>
-      </div>
+                // connection params
+                $config = parse_ini_file("./config.ini");
+                $server = $config["servername"];
+                $username = $config["username"];
+                $password = $config["password"];
+                $database = "gu_devices";
+
+                // connect to db
+                $cn = mysqli_connect($server , $username , $password , $database );
+
+                // check connection
+                if (!$cn) {
+                    die("Connection failed: " . mysqli_connect_error ());
+                }
+
+                // set up the prepared statement
+                $q = "SELECT `Vender`.`email`,
+                      `Vender`.`poc`,
+                      `Vender`.`baa`,
+                      `Vender`.`date`,
+                      `Vender`.`client`
+                  FROM `gu_devices`.`Vender`;
+                  ";
+
+                $st = $cn ->stmt_init ();
+                $st ->prepare($q);
+
+                // execute the statement and bind the result (to vars)
+                $st ->execute ();
+                $st ->bind_result($email, $poc, $baa, $date, $client);
+
+                // output result
+                echo "<thead>";
+                    echo "<td>Name</td>";
+                    echo "<td>Email</td>";
+                    echo "<td>Client</td>";
+                    echo "<td>Date</td>";
+                    echo "<td>BAA</td>";
+                echo "</thead>";
+
+                while ($st -> fetch()) {
+                  echo "<tr>";
+                      echo "<td id='Vender.poc'>" . $poc . "</td>";
+                      echo "<td id='Vender.email'>" . $email . "</td>";
+                      echo "<td id='Vender.client'>" . $client . "</td>";
+                      echo "<td id='Vender.date'>" . $date . "</td>";
+                      echo "<td id='Vender.baa'>" . $baa . "</td>";
+                  echo "</tr>";
+                }
+                // clean up
+                $st ->close ();
+                $cn ->close ();
+            ?>
+        </table>
+      </font>
+
       <div id="accessibility" class="tab-content row-padding" style="display: none;">
         <button onclick="showList()">Back</button>
         <h2>Accessibility Settings</h2>
