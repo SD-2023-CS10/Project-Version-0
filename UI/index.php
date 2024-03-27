@@ -216,10 +216,24 @@
                         // Retrieve the cell's id
                         var cellId = element.id;
 
-                        var xhr = new XMLHttpRequest();
-                        xhr.open("POST", "updateDevice.php", true);
-                        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                        xhr.send("&rowIndex=" + rowIndex + "&cellValue=" + cellValue + "&cellId=" + cellId);
+                        // Determine which PHP file to call based on the first element of cellId
+                        var phpFile = "";
+                        var cellIdParts = cellId.split(".");
+                        console.log("cellIdParts:", cellIdParts);
+                        if (cellIdParts[0] === "Server" || cellIdParts[0] === "Location") {
+                            phpFile = "updateServer.php";
+                        } else if (cellIdParts[0] === "Inv_Item") {
+                            phpFile = "updateDevice.php";
+                        }
+
+                        if (phpFile !== "") {
+                            var xhr = new XMLHttpRequest();
+                            xhr.open("POST", phpFile, true);
+                            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                            xhr.send("&item_id=" + item_id + "&rowIndex=" + rowIndex + "&cellValue=" + cellValue + "&cellId=" + cellId);
+                        } else {
+                            console.error("Invalid cellId format.");
+                        }
                     }
 
                     function deleteRow(rowId) {
@@ -329,7 +343,7 @@
                                     echo "<td>" . $id . "</td>";
                                     echo "<td id='Server.name' contenteditable='true'>" . $name . "</td>";
                                     echo "<td id='Server.ip_address' contenteditable='true'>" . $addr . "</td>";
-                                    echo "<td id='Server.cloud_prem' contenteditable='true'>" . $cp . "</td>";
+                                    echo "<td id='Location.cloud_prem' contenteditable='true'>" . $cp . "</td>";
                                     echo "<td id='Location.details' contenteditable='true'>" . $details . "</td>";
                                 echo "</tr>";
                             }

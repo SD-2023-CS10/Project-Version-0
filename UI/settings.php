@@ -41,6 +41,8 @@
 <link rel="stylesheet" href="styling\homepage.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="styling\bootstrap.min.css" rel="stylesheet">
 <style>
   body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 </style>
@@ -60,7 +62,7 @@
     <div class="section bottombar"></div>
     <div class="bar-block">
       <a href="index.php" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-folder"></i> HOME</a>
-      <a href="settings.html" onclick="closeSB()" class="bar-item button padding grey text-black"><i
+      <a href="settings.php" onclick="closeSB()" class="bar-item button padding grey text-black"><i
           class="fa fa-solid fa-gear"></i> SETTINGS</a>
       <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</a>
       <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-play"></i> RUN SCAN</a>
@@ -77,111 +79,59 @@
     <!-- Header -->
     <header id="MedCorp System Inventory">
       <span class="button hide-large xxlarge hover-text-grey" onclick="openSB()"><i class="fa fa-bars"></i></span>
-      <div class="container">
+      <div class="text-center container padding-16">
         <h1><b>MedCorp System Inventory</b></h1>
       </div>
     </header>
 
-    <!-- First Grid-->
-    <body>
-      <div class="container margin-left">
-        <div class="list-topics-content row-padding">
-          <div class="single-list-topics-content">
-            <h2><a href="#" onclick="showTab('profile')">Profile</a></h2>
-          </div>
-          <div class="single-list-topics-content">
-            <h2><a href="#" onclick="showTab('accessibility')">Accessibility</a></h2>
-          </div>
-          <div class="single-list-topics-content">
-            <h2><a href="#" onclick="showTab('network')">Network</a></h2>
-          </div>
-          <div class="single-list-topics-content">
-            <h2><a href="#" onclick="showTab('contact')">Contact</a></h2>
-          </div>
+    <div class="container-xxl py-5">
+        <div class="container">
+            
+            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                <h1 class="mb-3">Settings</h1>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
+                        <div class="rounded p-4">
+                            <h2>Profile</h2>
+                            <span>123 Properties</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
+                        <div class="rounded p-4">
+                            <h2>Network</h2>
+                            <span>123 Properties</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
+                        <div class="rounded p-4">
+                            <h3>Accessibility</h3>
+                            <span>123 Properties</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
+                    <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
+                        <div class="rounded p-4">
+                            <h2>Contact</h2>
+                            <span>123 Properties</span>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
         </div>
-      </div><!--/.container-->
-
-      <font size="4" face="Courier New">
-        <table BORDER=1 width="100%" id="deviceTable">
-          <button onclick="showList()">Back</button>
-            <?php
-                $CLIENT = "Med INC";
-
-                // connection params
-                $config = parse_ini_file("./config.ini");
-                $server = $config["servername"];
-                $username = $config["username"];
-                $password = $config["password"];
-                $database = "gu_devices";
-
-                // connect to db
-                $cn = mysqli_connect($server , $username , $password , $database );
-
-                // check connection
-                if (!$cn) {
-                    die("Connection failed: " . mysqli_connect_error ());
-                }
-
-                // set up the prepared statement
-                $q = "SELECT `Vender`.`email`,
-                      `Vender`.`poc`,
-                      `Vender`.`baa`,
-                      `Vender`.`date`,
-                      `Vender`.`client`
-                  FROM `gu_devices`.`Vender`;
-                  ";
-
-                $st = $cn ->stmt_init ();
-                $st ->prepare($q);
-
-                // execute the statement and bind the result (to vars)
-                $st ->execute ();
-                $st ->bind_result($email, $poc, $baa, $date, $client);
-
-                // output result
-                echo "<thead>";
-                    echo "<td>Name</td>";
-                    echo "<td>Email</td>";
-                    echo "<td>Client</td>";
-                    echo "<td>Date</td>";
-                    echo "<td>BAA</td>";
-                echo "</thead>";
-
-                while ($st -> fetch()) {
-                  echo "<tr>";
-                      echo "<td id='Vender.poc'>" . $poc . "</td>";
-                      echo "<td id='Vender.email'>" . $email . "</td>";
-                      echo "<td id='Vender.client'>" . $client . "</td>";
-                      echo "<td id='Vender.date'>" . $date . "</td>";
-                      echo "<td id='Vender.baa'>" . $baa . "</td>";
-                  echo "</tr>";
-                }
-                // clean up
-                $st ->close ();
-                $cn ->close ();
-            ?>
-        </table>
-      </font>
-
-      <div id="accessibility" class="tab-content row-padding" style="display: none;">
-        <button onclick="showList()">Back</button>
-        <h2>Accessibility Settings</h2>
-        <p>In Development</p>
-      </div>
-      <div id="network" class="tab-content row-padding" style="display: none;">
-        <button onclick="showList()">Back</button>
-        <h2>Network Settings</h2>
-        <p>In Development</p>
-      </div>
-      <div id="contact" class="tab-content row-padding" style="display: none;">
-        <button onclick="showList()">Back</button>
-        <h2>Help Menu</h2>
-        <p>Medcurity Contact Representitive: (###)-###-####</p>
-        <p>About Application: Link in Development</p>
-        <p>Help Manuals: <?php include 'README.md';?></p>
-        <p>Troubleshooting Guide: In Developemnt</p>
-      </div>
-    </body>
+    </div>
+    <!-- Category End -->
 
     <script>
       // Script to open and close sidebar
