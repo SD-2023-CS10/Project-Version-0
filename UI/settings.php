@@ -147,10 +147,10 @@
 
                         // set up the prepared statement
                         $q = "SELECT `Vender`.`email`,
-                            `Vender`.`poc`,
-                            `Vender`.`client`
-                        FROM `gu_devices`.`Vender`;
-                        ";
+                        `Vender`.`poc`,
+                        `Vender`.`client`
+                        FROM `gu_devices`.`Vender` 
+                        WHERE `Vender`.`client` = '$CLIENT'";
 
                         $st = $cn ->stmt_init ();
                         $st ->prepare($q);
