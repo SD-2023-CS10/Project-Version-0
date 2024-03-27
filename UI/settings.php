@@ -64,8 +64,6 @@
       <a href="index.php" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-folder"></i> HOME</a>
       <a href="settings.php" onclick="closeSB()" class="bar-item button padding grey text-black"><i
           class="fa fa-solid fa-gear"></i> SETTINGS</a>
-      <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</a>
-      <a href="" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-play"></i> RUN SCAN</a>
     </div>
   </nav>
 
@@ -79,8 +77,8 @@
     <!-- Header -->
     <header id="MedCorp System Inventory">
       <span class="button hide-large xxlarge hover-text-grey" onclick="openSB()"><i class="fa fa-bars"></i></span>
-      <div class="text-center container padding-16">
-        <h1><b>MedCorp System Inventory</b></h1>
+      <div class="container padding-16">
+        <h1><b>Med INC System Inventory</b></h1>
       </div>
     </header>
 
@@ -96,7 +94,6 @@
                     <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
                         <div class="rounded p-4">
                             <h2>Profile</h2>
-                            <span>123 Properties</span>
                         </div>
                     </a>
                 </div>
@@ -105,7 +102,6 @@
                     <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
                         <div class="rounded p-4">
                             <h2>Network</h2>
-                            <span>123 Properties</span>
                         </div>
                     </a>
                 </div>
@@ -114,7 +110,6 @@
                     <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
                         <div class="rounded p-4">
                             <h3>Accessibility</h3>
-                            <span>123 Properties</span>
                         </div>
                     </a>
                 </div>
@@ -123,7 +118,6 @@
                     <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
                         <div class="rounded p-4">
                             <h2>Contact</h2>
-                            <span>123 Properties</span>
                         </div>
                     </a>
                 </div>

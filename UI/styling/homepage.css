@@ -255,6 +255,15 @@ textarea{
   overflow-y: scroll;
   overflow-x: scroll;
 }
+
+.tabcontent {
+  display: none;
+}
+
+/* Add styles to the active tab */
+.tablinks.active {
+  background-color: #ccc;
+}
 /* Homepage Tab End */
 
 /*** Category ***/

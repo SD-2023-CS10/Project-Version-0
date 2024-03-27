@@ -119,14 +119,14 @@
         <body>
             <h2>Homepage</h2>
             <div class="tab">
-                <button class="tablinks" onclick="opentab(event, 'System/Devices')">System/Devices</button>
+                <button class="tablinks active" onclick="opentab(event, 'System/Devices')">System/Devices</button>
                 <button class="tablinks" onclick="opentab(event, 'Server')">Server</button>
                 <button class="tablinks" onclick="opentab(event, 'ePHI')">ePHI</button>
                 <button class="tablinks" onclick="opentab(event, 'Authentication')">Authentication</button>
             </div>
 
             <!-- System Devices -->
-            <div id="System/Devices" class="tabcontent">
+            <div id="System/Devices" class="tabcontent" style="display: block;">
 
                 <!-- Table Filter Input -->
                 <div class="inputbar">
