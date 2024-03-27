@@ -41,8 +41,8 @@
 <link rel="stylesheet" href="styling\homepage.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="styling\bootstrap.min.css" rel="stylesheet">
+<link href="styling\bootstrap.min.css" rel="stylesheet">
+
 <style>
   body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 </style>
@@ -83,75 +83,159 @@
     </header>
 
     <div class="container-xxl py-5">
-        <div class="container">
-            
-            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <h1 class="mb-3">Settings</h1>
+    <div class="container">
+        <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+            <h1 class="mb-3">Settings</h1>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                <a class="cat-item d-block bg-primary text-center rounded p-3" onclick="openTab(event, 'profile')">
+                    <div class="rounded p-4">
+                        <h2>Profile</h2>
+                    </div>
+                </a>
             </div>
-            
-            <div class="row g-4">
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
-                        <div class="rounded p-4">
-                            <h2>Profile</h2>
-                        </div>
-                    </a>
-                </div>
 
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
-                        <div class="rounded p-4">
-                            <h2>Network</h2>
-                        </div>
-                    </a>
-                </div>
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                <a class="cat-item d-block bg-primary text-center rounded p-3" onclick="openTab(event, 'network')">
+                    <div class="rounded p-4">
+                        <h2>Network</h2>
+                    </div>
+                </a>
+            </div>
 
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
-                        <div class="rounded p-4">
-                            <h3>Accessibility</h3>
-                        </div>
-                    </a>
-                </div>
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                <a class="cat-item d-block bg-primary rounded p-3" onclick="openTab(event, 'accessibility')">
+                    <div class="rounded p-4">
+                        <h3>Accessibility</h3>
+                    </div>
+                </a>
+            </div>
 
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
-                    <a class="cat-item d-block bg-primary text-center rounded p-3" href="">
-                        <div class="rounded p-4">
-                            <h2>Contact</h2>
-                        </div>
-                    </a>
-                </div>
-
+            <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
+                <a class="cat-item d-block bg-primary text-center rounded p-3" onclick="openTab(event, 'contact')">
+                    <div class="rounded p-4">
+                        <h2>Contact</h2>
+                    </div>
+                </a>
             </div>
         </div>
-    </div>
-    <!-- Category End -->
 
-    <script>
+        <div id="profile" class="tab-content row-padding padding-16" style="display: none;">
+            <!-- Profile Content -->
+            <h2>Profile Settings</h2>
+            <font size="4" face="Courier New">
+                <table BORDER=1 width="100%" id="deviceTable">
+                    <?php
+                        $CLIENT = "Med INC";
+
+                        // connection params
+                        $config = parse_ini_file("./config.ini");
+                        $server = $config["servername"];
+                        $username = $config["username"];
+                        $password = $config["password"];
+                        $database = "gu_devices";
+
+                        // connect to db
+                        $cn = mysqli_connect($server , $username , $password , $database );
+
+                        // check connection
+                        if (!$cn) {
+                            die("Connection failed: " . mysqli_connect_error ());
+                        }
+
+                        // set up the prepared statement
+                        $q = "SELECT `Vender`.`email`,
+                            `Vender`.`poc`,
+                            `Vender`.`client`
+                        FROM `gu_devices`.`Vender`;
+                        ";
+
+                        $st = $cn ->stmt_init ();
+                        $st ->prepare($q);
+
+                        // execute the statement and bind the result (to vars)
+                        $st ->execute ();
+                        $st ->bind_result($email, $poc, $client);
+
+                        // output result
+                        echo "<thead>";
+                            echo "<td>Name</td>";
+                            echo "<td>Email</td>";
+                            echo "<td>Client</td>";
+                        echo "</thead>";
+
+                        while ($st -> fetch()) {
+                        echo "<tr>";
+                            echo "<td id='Vender.poc'>" . $poc . "</td>";
+                            echo "<td id='Vender.email'>" . $email . "</td>";
+                            echo "<td id='Vender.client'>" . $client . "</td>";
+                        echo "</tr>";
+                        }
+                        // clean up
+                        $st ->close ();
+                        $cn ->close ();
+                    ?>
+                </table>
+            </font>
+        </div>
+        <div id="network" class="tab-content row-padding padding-16" style="display: none;">
+            <!-- Network Content -->
+            <h2>Network Settings</h2>
+            <p>In Development</p>
+        </div>
+        <div id="accessibility" class="tab-content row-padding padding-16" style="display: none;">
+            <!-- Accessibility Content -->
+            <h2>Accessibility Settings</h2>
+            <p>In Development</p>
+        </div>
+        <div id="contact" class="tab-content row-padding padding-16" style="display: none;">
+            <!-- Contact Content -->
+            <h2>Help Menu</h2>
+            <p>Medcurity Contact Representitive: (###)-###-####</p>
+            <p>About Application: Link in Development</p>
+            <p>Help Manuals: <?php include 'README.md';?></p>
+            <p>Troubleshooting Guide: In Developemnt</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        document.getElementById(tabName).style.display = "block";
+    }
+
+    function showMenu() {
+        var tabcontent = document.getElementsByClassName("tab-content");
+        for (var i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+    }
       // Script to open and close sidebar
-      function openSB() {
+        function openSB() {
         document.getElementById("mySidebar").style.display = "block";
         document.getElementById("myOverlay").style.display = "block";
-      }
+        }
 
-      function closeSB() {
+        function closeSB() {
         document.getElementById("mySidebar").style.display = "none";
         document.getElementById("myOverlay").style.display = "none";
-      }
+        }
 
-      // Function to show tab content and hide list
-      function showTab(tabId) {
-        document.querySelector('.list-topics-content').style.display = 'none';
-        document.getElementById(tabId).style.display = 'block';
-      }
-
-      // Function to show list and hide tab content
-      function showList() {
+        // Function to show list and hide tab content
+        function showList() {
         document.querySelector('.list-topics-content').style.display = 'block';
         document.querySelectorAll('.tab-content').forEach(tab => {
-          tab.style.display = 'none';
+            tab.style.display = 'none';
         });
-      }
+    }
+
     </script>
 
 </body>
