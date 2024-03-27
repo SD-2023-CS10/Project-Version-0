@@ -1,5 +1,5 @@
 <!--
- * File Name: updateDevice.php
+ * File Name: updateServer.php
  * 
  * Description:
  * This is the main entry point of the application. It initializes the application
@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Create update query
-    $updateQuery = "UPDATE $tableName SET $item = ? WHERE item_id = ?";
+    $updateQuery = "UPDATE $tableName SET $item = ? WHERE id = ?";
     $st = $cn->prepare($updateQuery);
 
     // Bind parameters based on the determined data type
