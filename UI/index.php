@@ -123,7 +123,6 @@
                 <button class="tablinks" onclick="opentab(event, 'Server')">Server</button>
                 <button class="tablinks" onclick="opentab(event, 'ePHI')">ePHI</button>
                 <button class="tablinks" onclick="opentab(event, 'Authentication')">Authentication</button>
-                <button class="tablinks" onclick="opentab(event, 'Asset Information')">Asset Information</button>
             </div>
 
             <!-- System Devices -->
@@ -157,12 +156,8 @@
 
                             // set up the prepared statement
                             $q = "SELECT Inv_Item.item_id, Inv_Item.name, Inv_Item.type, Inv_Item.version,
-                                        Inv_Item.os, Inv_Item.os_version, Vender.poc,
-                                        Vender.email, Inv_Item.auto_log_off_freq,
-                                        Vender.baa, Vender.date
-                                FROM Inv_Item LEFT JOIN Vender
-                                    ON Inv_Item.vender = Vender.email
-                                WHERE Inv_Item.client =  '$CLIENT';";
+                                        Inv_Item.os, Inv_Item.os_version, Inv_Item.auto_log_off_freq
+                                FROM Inv_Item WHERE Inv_Item.client =  '$CLIENT'";
 
                             $st = $cn ->stmt_init ();
                             $st ->prepare($q);
@@ -170,8 +165,7 @@
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
                             $st ->bind_result($item_id, $name, $type, $version, $os,
-                                            $os_version, $vpoc, $vemail,
-                                            $auto_log_off_freq, $baa, $date);
+                                            $os_version, $auto_log_off_freq);
 
                             // output result
                             echo "<thead>";
@@ -181,11 +175,7 @@
                                 echo "<td>APPLICATION Version in Place</td>";
                                 echo "<td>Operating System </td>";
                                 echo "<td>OS Version</td>";
-                                echo "<td>VENDOR POC</td>";
-                                echo "<td>POC E-mail</td>";
                                 echo "<td>AUTOMATIC LOG-OFF FREQUENCY</td>";
-                                echo "<td>BAA?</td>";
-                                echo "<td>DATE BAA SIGNED</td>";
                                 echo "<td>Delete</td>";
                             echo "</thead>";
 
@@ -197,11 +187,7 @@
                                     echo "<td id='Inv_Item.version.item_id' contenteditable='true'>" . $version . "</td>";
                                     echo "<td id='Inv_Item.os.item_id' contenteditable='true'>" . $os . "</td>";
                                     echo "<td id='Inv_Item.os_version.item_id' contenteditable='true'>" . $os_version . "</td>";
-                                    echo "<td id='Vender.poc' contenteditable='true'>" . $vpoc . "</td>";
-                                    echo "<td id='Vender.email' contenteditable='true'>" . $vemail . "</td>";
                                     echo "<td id='Inv_Item.auto_log_off_freq.item_id' contenteditable='true'>" . $auto_log_off_freq . "</td>";
-                                    echo "<td id='Vender.baa' contenteditable='true'>" . $baa . "</td>";
-                                    echo "<td id='Vender.date' contenteditable='true'>" . $date . "</td>";
                                 echo "</tr>";
                             }
                             // clean up
@@ -316,7 +302,7 @@
 
                             // set up the prepared statement
                             $q = "SELECT i.item_id, s.name, s.ip_address, l.cloud_prem,
-                                        l.details, l.protection
+                                        l.details
                                 FROM Inv_Item as i LEFT JOIN Server as s
                                     ON i.server = s.id
                                     LEFT JOIN Location as l ON l.id = s.location_id
@@ -327,7 +313,7 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($id, $name, $addr, $cp, $details, $protection);
+                            $st ->bind_result($id, $name, $addr, $cp, $details);
 
                             // output result
                             echo "<thead>";
@@ -336,7 +322,6 @@
                                 echo "<td>SERVER IP ADDRESS</td>";
                                 echo "<td>Cloud or On Premise?</td>";
                                 echo "<td>Location</td>";
-                                echo "<td>How is the Location Protected?</td>";
                             echo "</thead>";
 
                             while ($st -> fetch()) {
@@ -346,7 +331,6 @@
                                     echo "<td id='Server.ip_address' contenteditable='true'>" . $addr . "</td>";
                                     echo "<td id='Server.cloud_prem' contenteditable='true'>" . $cp . "</td>";
                                     echo "<td id='Location.details' contenteditable='true'>" . $details . "</td>";
-                                    echo "<td id='Location.protection' contenteditable='true'>" . $protection . "</td>";
                                 echo "</tr>";
                             }
 
@@ -523,102 +507,6 @@
                 </font>
             </div>
 
-            <!-- Asset Information -->
-            <div id="Asset Information" class="tabcontent">
-
-                <!-- Table Filter Input -->
-                <div class="inputbar">
-                    <input type="text" placeholder="Search Filter..">
-                </div>
-
-                <!-- Device table with database connections -->
-                <font size="4" face="Courier New">
-                    <table BORDER=1 width="100%" id="assetTable">
-                        <?php
-                            $CLIENT = "Med INC";
-
-                            // connection params
-                            $config = parse_ini_file("./config.ini");
-                            $server = $config["servername"];
-                            $username = $config["username"];
-                            $password = $config["password"];
-                            $database = "gu_devices";
-
-                            // connect to db
-                            $cn = mysqli_connect($server , $username , $password , $database );
-
-                            // check connection
-                            if (!$cn) {
-                                die("Connection failed: " . mysqli_connect_error ());
-                            }
-
-                            // set up the prepared statement
-                            $q = "SELECT i.item_id, i.dept, i.space, i.date_last_ordered, i.vender,
-                                    i.purchase_price, i.warranty_expires, i.item_condition,
-                                    i.quantity, i.assset_value, i.model_num, i.notes, i.link
-                                    FROM Inv_Item as i
-                                WHERE i.client = '$CLIENT';";
-
-                            $st = $cn ->stmt_init ();
-                            $st ->prepare($q);
-
-                            // execute the statement and bind the result (to vars)
-                            $st ->execute ();
-                            $st ->bind_result($id, $dept, $space, $dlo, $vender, $price, $warr, $cond, $quant, $value, $model_num, $notes, $link);
-
-                            // output result
-                            echo "<thead>";
-                                echo "<td>Item ID</td>";
-                                echo "<td>DEPARTMENT</td>";
-                                echo "<td>SPACE (LOCATION)</td>";
-                                echo "<td>DATE OF LAST ORDER</td>";
-                                echo "<td>VENDER</td>";
-                                echo "<td>PURCHASE PRICE PER ITEM</td>";
-                                echo "<td>WARRANTY EXPIRY DATE</td>";
-                                echo "<td>CONDITION</td>";
-                                echo "<td>QUANTITY</td>";
-                                echo "<td>ASSET VALUE</td>";
-                                echo "<td>TOTAL VALUE</td>";
-                                echo "<td>MODEL</td>";
-                                echo "<td>VENDOR NO.</td>";
-                                echo "<td>REMARKS</td>";
-                                echo "<td>PHOTOGRAPH/LINK</td>";
-                            echo "</thead>";
-
-                            while ($st -> fetch()) {
-                                echo "<tr>";
-                                    echo "<td>" . $id . "</td>";
-                                    echo "<td id='Inv_Item.dept' contenteditable='true'>" . $dept . "</td>";
-                                    echo "<td id='Inv_Item.space' contenteditable='true'>" . $space . "</td>";
-                                    echo "<td id='Inv_Item.date_last_ordered' contenteditable='true'>" . $dlo . "</td>";
-                                    echo "<td id='Inv_Item.vender' contenteditable='true'>" . $vender . "</td>";
-                                    echo "<td id='Inv_Item.purchase_price' contenteditable='true'>" . $price . "</td>";
-                                    echo "<td id='Inv_Item.warranty_expires' contenteditable='true'>" . $warr . "</td>";
-                                    echo "<td id='Inv_Item.item_condition' contenteditable='true'>" . $cond . "</td>";
-                                    echo "<td id='Inv_Item.quantity' contenteditable='true'>" . $quant . "</td>";
-                                    echo "<td id='Inv_Item.assset_value' contenteditable='true'>" . $value . "</td>";
-                                    echo "<td id='Inv_Item.model_num' contenteditable='true'>" . $model_num . "</td>";
-                                    echo "<td id='Inv_Item.notes' contenteditable='true'>" . $notes . "</td>";
-                                    echo "<td id='Inv_Item.link' contenteditable='true'>" . $link . "</td>";
-                                echo "</tr>";
-                            }
-
-                            // clean up
-                            $st ->close ();
-                            $cn ->close ();
-                        ?>
-                    </table>
-
-                    <!-- Add device input -->
-                    <div class="inputbar">
-                        <form action="addDevice.php" method="post">
-                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
-                            <input type="submit" value="Add" />
-                        </form>
-                    </div>
-
-                </font>
-            </div>
         </body>
         <!-- End page content -->
 
