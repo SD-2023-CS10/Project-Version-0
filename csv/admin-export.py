@@ -1,9 +1,10 @@
 '''
- * File Name: csv-export.py
+ * File Name: admin-export.py
  * 
  * Description:
- * This is the export script. It connects to the database, and then writes each
- * row into a csv file. Refer to /csv/README.md for more detailed information.
+ * This is the export script for Medcurity admins. It connects to the database, and then writes each
+ * row into a csv file for all of Medcurity's clients, attaching the client name to the row.
+ * Refer to /csv/README.md for more detailed information.
  * 
  * @package MedcurityNetworkScanner
  * @authors Brandon Huyck (bhuyck@zagmail.gonzaga.edu)
@@ -19,14 +20,14 @@
  * done by editing the file paths.
  * 
  * Notes:
- * - Additional notes or special instructions can be added here.
+ * - There are checks to ensure the person launching this is an admin; the UI checks when launhing there,
+ *   and the DBAPI checks that the username of the user it is signed in as is an admin.
  * 
  * TODO:
  * - Update the header row writing to be done dynamially through the dbapi.py
- *   export() method.
+ *   admin_export() method.
  * 
 '''
-
 
 import os, sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -41,7 +42,7 @@ if __name__=='__main__':
     with open('../csv/outfile.csv', 'w', newline='') as outfile:
         with DBAPI(argv[1]) as dbapi:
             writer = csv.writer(outfile)
-            writer.writerow(("name", "type", "version", "os", "os_version",
+            writer.writerow(("client", "name", "type", "version", "os", "os_version",
                                 "mac", "ports", "protocols", "statuses",
                                 "services", "services_versions", "poc", "email",
                                 "baa", "date", "auto_log_off_freq", "name",
@@ -53,4 +54,4 @@ if __name__=='__main__':
                                 "dept", "space", "date_last_ordered", "purchase_price",
                                 "warranty_expires", "item_condition", "quantity",
                                 "assset_value", "model_num", "notes", "link"))
-            writer.writerows(dbapi.export())
+            writer.writerows(dbapi.admin_export())

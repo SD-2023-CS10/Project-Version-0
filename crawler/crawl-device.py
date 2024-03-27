@@ -1,6 +1,25 @@
 '''
-Network Crawling
-To run from Project-Version-0: python3 crawler/crawl-device.py <username>
+ * File Name: crawl-device.py
+ * 
+ * Description:
+ * This Python file discovers network devices and logs the findings to our associated database.
+ * The file is launched through the user-interface's scan button and runs on the host machine's connected network.
+ * 
+ * @package MedcurityNetworkScanner
+ * @authors Colleen Lemak
+ * @license 
+ * @version 1.0.0
+ * @link 
+ * @since 
+ * 
+ * Usage:
+ * Place this file in the /crawler directory of the application and run the file from the root directory. 
+ * No modifications are necessary for basic operation, but customization can be done by editing the configuration 
+ * settings within.
+ * 
+ * Notes:
+ * - To run: 'python3 crawler/crawl-device.py'
+ * - Remember to update the version number and modification log with each change.
 '''
 from nmap3 import Nmap
 import json
