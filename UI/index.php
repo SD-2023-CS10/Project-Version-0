@@ -283,11 +283,6 @@
             <!-- Server Information -->
             <div id="Server" class="tabcontent">
 
-                <!-- Table Filter Input -->
-                <div class="inputbar">
-                        <input type="text" placeholder="Search Filter..">
-                </div>
-
                 <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%" id="Server">
@@ -310,7 +305,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT i.item_id, s.name, s.ip_address, l.cloud_prem,
+                            $q = "SELECT i.item_id, i.name, i.type, s.name, s.ip_address, l.cloud_prem,
                                         l.details
                                 FROM Inv_Item as i LEFT JOIN Server as s
                                     ON i.server = s.id
@@ -322,11 +317,13 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($id, $name, $addr, $cp, $details);
+                            $st ->bind_result($id, $name, $type, $servName, $addr, $cp, $details);
 
                             // output result
                             echo "<thead>";
                                 echo "<td>Item ID</td>";
+                                echo "<td>Name</td>";
+                                echo "<td>Type of Application/Device</td>";
                                 echo "<td>SERVER NAME</td>";
                                 echo "<td>SERVER IP ADDRESS</td>";
                                 echo "<td>Cloud or On Premise?</td>";
@@ -336,7 +333,9 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";    
                                     echo "<td>" . $id . "</td>";
-                                    echo "<td id='Server.name' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='Inv_Item.name.item_id' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='Inv_Item.type.item_id' contenteditable='true'>" . $type . "</td>";
+                                    echo "<td id='Server.name' contenteditable='true'>" . $servName . "</td>";
                                     echo "<td id='Server.ip_address' contenteditable='true'>" . $addr . "</td>";
                                     echo "<td id='Location.cloud_prem' contenteditable='true'>" . $cp . "</td>";
                                     echo "<td id='Location.details' contenteditable='true'>" . $details . "</td>";
@@ -363,11 +362,6 @@
             <!-- ePHI -->
             <div id="ePHI" class="tabcontent">
 
-                <!-- Table Filter Input -->
-                <div class="inputbar">
-                    <input type="text" placeholder="Search Filter..">
-                </div>
-
                 <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%" id="ephiTable">
@@ -390,7 +384,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT i.item_id, i.ephi, i.ephi_encrypted, i.ephi_encr_method, i.ephi_encr_tested, i.interfaces_with
+                            $q = "SELECT i.item_id, i.name, i.type, i.ephi, i.ephi_encrypted, i.ephi_encr_method, i.ephi_encr_tested, i.interfaces_with
                                     FROM Inv_Item as i
                                 WHERE i.client = '$CLIENT';";
 
@@ -399,11 +393,13 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($item_id, $ephi, $encr, $meth, $test, $inter);
+                            $st ->bind_result($item_id, $name, $type, $ephi, $encr, $meth, $test, $inter);
 
                             // output result
                             echo "<thead>";
                                 echo "<td>Item ID</td>";
+                                echo "<td>Name</td>";
+                                echo "<td>Type of Application/Device</td>";
                                 echo "<td>ePHI YES/NO</td>";
                                 echo "<td>ENCRYPTED? YES/NO</td>";
                                 echo "<td>IF YES, ENCRYPTION METHOD</td>";
@@ -414,6 +410,8 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";
                                     echo "<td>" . $item_id . "</td>";
+                                    echo "<td id='Inv_Item.name.item_id' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='Inv_Item.type.item_id' contenteditable='true'>" . $type . "</td>";
                                     echo "<td id='Inv_Item.ephi'contenteditable='true'>" . $ephi . "</td>";
                                     echo "<td id='Inv_Item.ephi_encrypted'contenteditable='true'>" . $encr . "</td>";
                                     echo "<td id='Inv_Item.ephi_encr_method'contenteditable='true'>" . $meth . "</td>";
@@ -442,11 +440,6 @@
             <!-- Authentication Information -->
             <div id="Authentication" class="tabcontent">
 
-                <!-- Table Filter Input -->
-                <div class="inputbar">
-                    <input type="text" placeholder="Search Filter..">
-                </div>
-
                 <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%" id="authenticationTable">
@@ -469,7 +462,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT i.item_id, i.user_auth_method, i.app_auth_method, i.psw_min_len, i.psw_change_freq
+                            $q = "SELECT i.item_id, i.name, i.type, i.user_auth_method, i.app_auth_method, i.psw_min_len, i.psw_change_freq
                                     FROM Inv_Item as i
                                 WHERE i.client = '$CLIENT';"; 
 
@@ -478,11 +471,13 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($id, $user, $app, $min, $freq);
+                            $st ->bind_result($id, $name, $type, $user, $app, $min, $freq);
 
                             // output result
                             echo "<thead>";
                                 echo "<td>Item ID</td>";
+                                echo "<td>Name</td>";
+                                echo "<td>Type of Application/Device</td>";
                                 echo "<td>USER AUTHENTICATION METHOD</td>";
                                 echo "<td>APPLICATION AUTHENTICATION METHOD</td>";
                                 echo "<td>Minimum Password Length (as applicable)</td>";
@@ -492,6 +487,8 @@
                             while ($st -> fetch()) {
                                 echo "<tr>";
                                     echo "<td>" . $id . "</td>";
+                                    echo "<td id='Inv_Item.name.item_id' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='Inv_Item.type.item_id' contenteditable='true'>" . $type . "</td>";
                                     echo "<td id='Inv_Item.user_auth_method.' contenteditable='true'>" . $user . "</td>";
                                     echo "<td id='Inv_Item.app_auth_method' contenteditable='true'>" . $app . "</td>";
                                     echo "<td id='Inv_Item.psw_min_len' contenteditable='true'>" . $min . "</td>";
