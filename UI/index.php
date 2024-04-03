@@ -194,8 +194,8 @@
                     <!-- Add device input -->
                     <div class="inputbar">
                         <form action="addDevice.php" method="post">
-                            <input type="submit" value="Add" />
-                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="submit" value="Add" class="margin-top: 15px" />
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Insert Device Name" />
                         </form>
                     </div>
 
@@ -352,7 +352,7 @@
                     <div class="inputbar">
                         <form action="addDevice.php" method="post">
                             <input type="text" name="userDevice" id="userDevice" placeholder="Insert New Device" />
-                            <input type="submit" value="Add" />
+                            <input type="submit" value="Add" class="padding-8" />
                         </form>
                     </div>
 
@@ -429,7 +429,7 @@
                     <!-- Add device input -->
                     <div class="inputbar">
                         <form action="addDevice.php" method="post">
-                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Insert Device Name" />
                             <input type="submit" value="Add" />
                         </form>
                     </div>
@@ -505,7 +505,7 @@
                     <!-- Add device input -->
                     <div class="inputbar">
                         <form action="addDevice.php" method="post">
-                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Insert Device Name" />
                             <input type="submit" value="Add" />
                         </form>
                     </div>
