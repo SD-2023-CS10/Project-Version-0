@@ -227,6 +227,7 @@ textarea{
 #ephiTable th,
 #ephiTable td {
   border: 2px solid #2196F3;
+  background-color: #f1f1f1;
   padding: 8px;
 }
 
