@@ -166,6 +166,71 @@ textarea{
 }
 /* End extract */
 
+/* Styling for ephiTable */
+#ephiTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#ephiTable th,
+#ephiTable td {
+  border: 1px solid black;
+  padding: 8px;
+}
+
+#ephiTable td[contenteditable=true] {
+  background-color: #f1f1f1;
+}
+
+
+/* Styling for deviceTable */
+#deviceTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#deviceTable th,
+#deviceTable td {
+  border: 1px solid black;
+  padding: 8px;
+}
+
+#deviceTable td[contenteditable=true] {
+  background-color: #f1f1f1;
+}
+
+/* Styling for serverTable */
+#serverTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#serverTable th,
+#serverTable td {
+  border: 1px solid black;
+  padding: 8px;
+}
+
+#serverTable td[contenteditable=true] {
+  background-color: #f1f1f1;
+}
+
+/* Styling for authenticationTable */
+#authenticationTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#authenticationTable th,
+#authenticationTable td {
+  border: 1px solid black;
+  padding: 8px;
+}
+
+#authenticationTable td[contenteditable=true] {
+  background-color: #f1f1f1;
+}
+
 #progressBar {
   width: 80%;
   background-color: #ddd;

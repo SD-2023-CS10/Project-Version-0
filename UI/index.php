@@ -285,7 +285,7 @@
 
                 <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
-                    <table BORDER=1 width="100%" id="Server">
+                    <table BORDER=1 width="100%" id="serverTable">
                         <?php
                             $CLIENT = "Med INC";
 

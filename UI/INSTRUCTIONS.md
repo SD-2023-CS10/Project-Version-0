@@ -40,16 +40,55 @@ Displays the client's name and title of the page.
 ### System Information Navigation
 ![Alt text](/UI/resources/tabs-nav.png)
 
-System/Devices
-* ID
-* Name
-* Type of Application/Device
-* APPLICATION Version in Place
-* Operating System,OS Version
-* AUTOMATIC LOG-OFF FREQUENCY
+This table is where all of the current discovered devices along with it's repective information. Each tab's information can be viewed as followed:
 
+* System/Devices
+    * Item ID
+    * Name
+    * Type of Application/Device
+    * Application Version in Place
+    * Operating System
+    * OS Version
+    * Automatic Log-off Frequency
+    * Delete Device
+
+* Server
+    * Item ID
+    * Name
+    * Type of Application/Device
+    * Server Name
+    * Server IP Address
+    * Cloud or On Premise?
+    * Location
+
+* Electronic Personal Health Information (ePHI)
+    * Item ID
+    * Name
+    * Type of Application/Device
+    * ePHI YES/NO
+    * Encrypted? YES/NO
+    * If Yes, Encryption Method
+    * If Yes, Encryption Tested?
+    * Applications Interfaced with
+
+* Authentication
+    * Item ID
+    * Name
+    * Type of Application/Device
+    * User Authentication Method
+    * Application Authentication Method
+    * Minimum Password Length (as applicable)
+    * Password Change Frequency (as applicable)
 
 ---
-### System Information Table
-![Alt text](/UI/resources/info-table.png)
+### System Information Content Table
+![Alt text](/UI/resources/system-content.png)
+
+---
+### Delete Devices from Inventory
+![Alt text](/UI/resources/del-btn.png)
+
+---
+### Add a New Device Manually to Inventory
+![Alt text](/UI/resources/add-dev.png)
 
