@@ -166,23 +166,6 @@ textarea{
 }
 /* End extract */
 
-/* Styling for ephiTable */
-#ephiTable {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-#ephiTable th,
-#ephiTable td {
-  border: 1px solid black;
-  padding: 8px;
-}
-
-#ephiTable td[contenteditable=true] {
-  background-color: #f1f1f1;
-}
-
-
 /* Styling for deviceTable */
 #deviceTable {
   width: 100%;
@@ -209,6 +192,22 @@ textarea{
 #serverTable td {
   border: 1px solid black;
   padding: 8px;
+}
+
+/* Styling for ephiTable */
+#ephiTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#ephiTable th,
+#ephiTable td {
+  border: 1px solid black;
+  padding: 8px;
+}
+
+#ephiTable td[contenteditable=true] {
+  background-color: #f1f1f1;
 }
 
 #serverTable td[contenteditable=true] {
