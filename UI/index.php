@@ -128,11 +128,6 @@
             <!-- System Devices -->
             <div id="System/Devices" class="tabcontent" style="display: block;">
 
-                <!-- Table Filter Input -->
-                <div class="inputbar">
-                    <input type="text" placeholder="Search Filter..">
-                </div>
-
                 <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%" id="deviceTable">
