@@ -74,6 +74,8 @@ $st ->execute();
 
 $st ->bind_result($result);
 
+$st ->fetch();
+
 // $result = $cn->query($query);
 
 // $st->store_result();

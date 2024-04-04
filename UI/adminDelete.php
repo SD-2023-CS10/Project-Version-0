@@ -79,6 +79,7 @@ $st ->bind_param("s", $username);
 // execute statement and store result in $result
 $st ->execute();
 $st ->bind_result($result);
+$st ->fetch();
 // $st->store_result();
 // $result = $cn->query($query);
 
