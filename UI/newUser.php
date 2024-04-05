@@ -35,8 +35,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // retrieve form data
     $username = $_POST["username"];
-    $old_password = $_POST["old password"];
-    $new_password = $_POST["new password"];
+    $old_password = $_POST["oldPassword"];
+    $new_password = $_POST["newPassword"];
 
     // here the password would have to be salted and hashed upon retrieval from the post form
     // PASSWORD_DEFAULT is the default hashing algorithm for PHP that is updated with new PHP releases
@@ -84,17 +84,17 @@ $st ->fetch();
 // $st->store_result();
 
 // check for it user login was successful
-if (password_verify($password, $result)) {
+if (password_verify($old_password, $result)) {
     // login was successful
 
     // TODO: I will have to UPDATE the new hashed and salted password into the DB
-    $query = "UPDATE User SET psw_hash_salted = $new_psw_hash_salt WHERE user_name = ?;";
+    $query = "UPDATE User SET psw_hash_salted = ? WHERE user_name = ?;";
 
     // set up the prepared statement
     $st = $cn ->stmt_init();
     $st ->prepare($query);
 
-    $st ->bind_param("s", $username);
+    $st ->bind_param("ss", $new_psw_hash_salt, $username);
 
     // execute statement
     $st ->execute();
@@ -103,7 +103,8 @@ if (password_verify($password, $result)) {
 
  } else {
 
-    $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);   
+    // $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);   
+    header("Location: newUser.html");
     exit();
  }
 

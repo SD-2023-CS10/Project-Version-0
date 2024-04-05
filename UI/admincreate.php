@@ -34,7 +34,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // retrieve form data
     $username = $_POST["username"];
-    $old_password = $_POST["oldpassword"];
+    $old_password = $_POST["oldPassword"];
     $client = $_POST["client"];
 
     // here the password would have to be salted and hashed upon retrieval from the post form
