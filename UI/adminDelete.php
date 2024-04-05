@@ -31,7 +31,7 @@
  <?php
 
 
-if($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // retrieve form data
     $username = $_POST["username"];
@@ -67,7 +67,7 @@ if (!$cn) {
 // $query = "SELECT user_name, psw_hash_salted FROM User WHERE user_name = ?;";
 
 // set up the query
-$query = "SELECT psw_hash_salted FROM User WHERE user_name = ?;";
+$query = "SELECT user_name FROM User WHERE user_name = ?;";
 
 // set up the prepared statement
 $st = $cn ->stmt_init();
@@ -84,7 +84,7 @@ $st ->fetch();
 // $result = $cn->query($query);
 
 // check for if the exact same username/password params have already been in the database
-if (password_verify($password, $result)) {
+if ($result == $username) {
 
     // insert the username into the User table under user_name column
     $query = "DELETE FROM User WHERE user_name = ? AND client = ?;";

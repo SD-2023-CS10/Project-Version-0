@@ -28,7 +28,7 @@
  * - List any pending tasks or improvements that are planned for future updates.
  * 
  */ -->
- <?php
+<?php
 
 if($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -75,10 +75,6 @@ $st ->execute();
 $st ->bind_result($result);
 
 $st ->fetch();
-
-// $result = $cn->query($query);
-
-// $st->store_result();
 
 // check for if admin login was successful
 if (password_verify($password, $result)) {
