@@ -16,11 +16,15 @@ Our Network Inventory Tool is a comprehensive solution for managing and monitori
 
 ## Installation
 
-1. **Clone the Repository:** Clone the Network Inventory Tool repository to your local machine:
+**Clone the Repository:** Clone the Network Inventory Tool repository to your local machine:
 
-    ```bash
-    git clone https://github.com/SD-2023-CS10/Project-Version-0.git
-    ```
+```bash
+git clone https://github.com/SD-2023-CS10/Project-Version-0.git
+```
+
+Beyond cloning the repository to access, as needed, every functional part of the tool is accessable from the UI. Currently, create a local PHP server using the `php -S localhost:8000` command in a bash terminal from the repository directory and navigate to `localhost:8000/UI/index.php`. From that page, you can launch the crawler with the "Run Scan" button, and you can launch the export script with the "Download" button.
+
+For instructions on further aspects of the project, such as user log-in and creation, as well as more specific details, such as the intricacies with admin users, please refer to the other README documentation files.
 
 ## Maintenance
 
