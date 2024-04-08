@@ -116,7 +116,7 @@
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
                 <a class="cat-item d-block bg-primary text-center rounded p-3" onclick="openTab(event, 'contact')">
                     <div class="rounded p-4">
-                        <h2>Contact</h2>
+                        <h2>Contact/Help</h2>
                     </div>
                 </a>
             </div>
