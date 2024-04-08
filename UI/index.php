@@ -128,11 +128,6 @@
             <!-- System Devices -->
             <div id="System/Devices" class="tabcontent" style="display: block;">
 
-                <!-- Table Filter Input -->
-                <div class="inputbar">
-                    <input type="text" placeholder="Search Filter..">
-                </div>
-
                 <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%" id="deviceTable">
@@ -172,10 +167,10 @@
                                 echo "<td>Item ID</td>";
                                 echo "<td>Name</td>";
                                 echo "<td>Type of Application/Device</td>";
-                                echo "<td>APPLICATION Version in Place</td>";
+                                echo "<td>Application Version in Place</td>";
                                 echo "<td>Operating System </td>";
                                 echo "<td>OS Version</td>";
-                                echo "<td>AUTOMATIC LOG-OFF FREQUENCY</td>";
+                                echo "<td>Automatic Logoff Frequency(Min)</td>";
                                 echo "<td>Delete</td>";
                             echo "</thead>";
 
@@ -199,8 +194,8 @@
                     <!-- Add device input -->
                     <div class="inputbar">
                         <form action="addDevice.php" method="post">
-                            <input type="submit" value="Add" />
-                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="submit" value="Add" class="margin-top: 15px" />
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Insert Device Name" />
                         </form>
                     </div>
 
@@ -269,6 +264,15 @@
                             button.onclick = function () {
                                 deleteRow(this.parentNode.parentNode.rowIndex);
                             };
+                            button.style.backgroundColor = "red";
+                            button.style.color = "white";
+                            button.style.transition = "background-color 0.3s";
+                            button.addEventListener("mouseenter", function() {
+                                this.style.backgroundColor = "darkred";
+                            });
+                            button.addEventListener("mouseleave", function() {
+                                this.style.backgroundColor = "red";
+                            });
                             cell.appendChild(button);
                         }
                     }
@@ -288,14 +292,9 @@
             <!-- Server Information -->
             <div id="Server" class="tabcontent">
 
-                <!-- Table Filter Input -->
-                <div class="inputbar">
-                        <input type="text" placeholder="Search Filter..">
-                </div>
-
                 <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
-                    <table BORDER=1 width="100%" id="Server">
+                    <table BORDER=1 width="100%" id="serverTable">
                         <?php
                             $CLIENT = "Med INC";
 
@@ -315,7 +314,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT i.item_id, s.name, s.ip_address, l.cloud_prem,
+                            $q = "SELECT i.item_id, i.name, i.type, s.name, s.ip_address, l.cloud_prem,
                                         l.details
                                 FROM Inv_Item as i LEFT JOIN Server as s
                                     ON i.server = s.id
@@ -327,21 +326,25 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($id, $name, $addr, $cp, $details);
+                            $st ->bind_result($id, $name, $type, $servName, $addr, $cp, $details);
 
                             // output result
                             echo "<thead>";
                                 echo "<td>Item ID</td>";
-                                echo "<td>SERVER NAME</td>";
-                                echo "<td>SERVER IP ADDRESS</td>";
-                                echo "<td>Cloud or On Premise?</td>";
+                                echo "<td>Name</td>";
+                                echo "<td>Type of Application/Device</td>";
+                                echo "<td>Server Name</td>";
+                                echo "<td>Server IP Address (Decimal)</td>";
+                                echo "<td>Cloud or On-Premise?</td>";
                                 echo "<td>Location</td>";
                             echo "</thead>";
 
                             while ($st -> fetch()) {
                                 echo "<tr>";    
                                     echo "<td>" . $id . "</td>";
-                                    echo "<td id='Server.name' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='Inv_Item.name.item_id' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='Inv_Item.type.item_id' contenteditable='true'>" . $type . "</td>";
+                                    echo "<td id='Server.name' contenteditable='true'>" . $servName . "</td>";
                                     echo "<td id='Server.ip_address' contenteditable='true'>" . $addr . "</td>";
                                     echo "<td id='Location.cloud_prem' contenteditable='true'>" . $cp . "</td>";
                                     echo "<td id='Location.details' contenteditable='true'>" . $details . "</td>";
@@ -358,7 +361,7 @@
                     <div class="inputbar">
                         <form action="addDevice.php" method="post">
                             <input type="text" name="userDevice" id="userDevice" placeholder="Insert New Device" />
-                            <input type="submit" value="Add" />
+                            <input type="submit" value="Add" class="padding-8" />
                         </form>
                     </div>
 
@@ -367,11 +370,6 @@
 
             <!-- ePHI -->
             <div id="ePHI" class="tabcontent">
-
-                <!-- Table Filter Input -->
-                <div class="inputbar">
-                    <input type="text" placeholder="Search Filter..">
-                </div>
 
                 <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
@@ -395,7 +393,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT i.item_id, i.ephi, i.ephi_encrypted, i.ephi_encr_method, i.ephi_encr_tested, i.interfaces_with
+                            $q = "SELECT i.item_id, i.name, i.type, i.ephi, i.ephi_encrypted, i.ephi_encr_method, i.ephi_encr_tested, i.interfaces_with
                                     FROM Inv_Item as i
                                 WHERE i.client = '$CLIENT';";
 
@@ -404,21 +402,25 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($item_id, $ephi, $encr, $meth, $test, $inter);
+                            $st ->bind_result($item_id, $name, $type, $ephi, $encr, $meth, $test, $inter);
 
                             // output result
                             echo "<thead>";
                                 echo "<td>Item ID</td>";
-                                echo "<td>ePHI YES/NO</td>";
-                                echo "<td>ENCRYPTED? YES/NO</td>";
-                                echo "<td>IF YES, ENCRYPTION METHOD</td>";
-                                echo "<td>IF YES, ENCRYPTION TESTED?</td>";
-                                echo "<td>APPLICATIONS INTERFACED WITH</td>";
+                                echo "<td>Name</td>";
+                                echo "<td>Type of Application/Device</td>";
+                                echo "<td>EPHI? Yes/No</td>";
+                                echo "<td>Encrypted? Yes/No</td>";
+                                echo "<td>If Yes, Encryption Method</td>";
+                                echo "<td>If Yes, Encryption Tested?</td>";
+                                echo "<td>Applications Interfaced With</td>";
                             echo "</thead>";
 
                             while ($st -> fetch()) {
                                 echo "<tr>";
                                     echo "<td>" . $item_id . "</td>";
+                                    echo "<td id='Inv_Item.name.item_id' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='Inv_Item.type.item_id' contenteditable='true'>" . $type . "</td>";
                                     echo "<td id='Inv_Item.ephi'contenteditable='true'>" . $ephi . "</td>";
                                     echo "<td id='Inv_Item.ephi_encrypted'contenteditable='true'>" . $encr . "</td>";
                                     echo "<td id='Inv_Item.ephi_encr_method'contenteditable='true'>" . $meth . "</td>";
@@ -436,7 +438,7 @@
                     <!-- Add device input -->
                     <div class="inputbar">
                         <form action="addDevice.php" method="post">
-                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Insert Device Name" />
                             <input type="submit" value="Add" />
                         </form>
                     </div>
@@ -446,11 +448,6 @@
 
             <!-- Authentication Information -->
             <div id="Authentication" class="tabcontent">
-
-                <!-- Table Filter Input -->
-                <div class="inputbar">
-                    <input type="text" placeholder="Search Filter..">
-                </div>
 
                 <!-- Device table with database connections -->
                 <font size="4" face="Courier New">
@@ -474,7 +471,7 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT i.item_id, i.user_auth_method, i.app_auth_method, i.psw_min_len, i.psw_change_freq
+                            $q = "SELECT i.item_id, i.name, i.type, i.user_auth_method, i.app_auth_method, i.psw_min_len, i.psw_change_freq
                                     FROM Inv_Item as i
                                 WHERE i.client = '$CLIENT';"; 
 
@@ -483,20 +480,24 @@
 
                             // execute the statement and bind the result (to vars)
                             $st ->execute ();
-                            $st ->bind_result($id, $user, $app, $min, $freq);
+                            $st ->bind_result($id, $name, $type, $user, $app, $min, $freq);
 
                             // output result
                             echo "<thead>";
                                 echo "<td>Item ID</td>";
-                                echo "<td>USER AUTHENTICATION METHOD</td>";
-                                echo "<td>APPLICATION AUTHENTICATION METHOD</td>";
-                                echo "<td>Minimum Password Length (as applicable)</td>";
-                                echo "<td>PASSWORD CHANGE FREQUENCY (as applicable)</td>";
+                                echo "<td>Name</td>";
+                                echo "<td>Type of Application/Device</td>";
+                                echo "<td>User Authention Method</td>";
+                                echo "<td>Application Authentication Method</td>";
+                                echo "<td>Minimum Password Length</td>";
+                                echo "<td>Password Change Frequency (days)</td>";
                             echo "</thead>";
 
                             while ($st -> fetch()) {
                                 echo "<tr>";
                                     echo "<td>" . $id . "</td>";
+                                    echo "<td id='Inv_Item.name.item_id' contenteditable='true'>" . $name . "</td>";
+                                    echo "<td id='Inv_Item.type.item_id' contenteditable='true'>" . $type . "</td>";
                                     echo "<td id='Inv_Item.user_auth_method.' contenteditable='true'>" . $user . "</td>";
                                     echo "<td id='Inv_Item.app_auth_method' contenteditable='true'>" . $app . "</td>";
                                     echo "<td id='Inv_Item.psw_min_len' contenteditable='true'>" . $min . "</td>";
@@ -513,7 +514,7 @@
                     <!-- Add device input -->
                     <div class="inputbar">
                         <form action="addDevice.php" method="post">
-                            <input type="text" name="userDevice" id="userDevice" placeholder="Device Name" />
+                            <input type="text" name="userDevice" id="userDevice" placeholder="Insert Device Name" />
                             <input type="submit" value="Add" />
                         </form>
                     </div>
