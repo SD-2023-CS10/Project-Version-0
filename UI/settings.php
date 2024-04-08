@@ -111,7 +111,7 @@
             </div>
 
             <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
-                <a class="cat-item d-block bg-primary rounded p-3" onclick="openTab(event, 'accessibility')">
+                <a class="cat-item d-block bg-primary text-center rounded p-3" onclick="openTab(event, 'accessibility')">
                     <div class="rounded p-4">
                         <h3>Accessibility</h3>
                     </div>
