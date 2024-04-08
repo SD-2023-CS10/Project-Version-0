@@ -167,10 +167,10 @@
                                 echo "<td>Item ID</td>";
                                 echo "<td>Name</td>";
                                 echo "<td>Type of Application/Device</td>";
-                                echo "<td>APPLICATION Version in Place</td>";
+                                echo "<td>Application Version in Place</td>";
                                 echo "<td>Operating System </td>";
                                 echo "<td>OS Version</td>";
-                                echo "<td>AUTOMATIC LOG-OFF FREQUENCY</td>";
+                                echo "<td>Automatic Logoff Frequency(Min)</td>";
                                 echo "<td>Delete</td>";
                             echo "</thead>";
 
@@ -264,6 +264,15 @@
                             button.onclick = function () {
                                 deleteRow(this.parentNode.parentNode.rowIndex);
                             };
+                            button.style.backgroundColor = "red";
+                            button.style.color = "white";
+                            button.style.transition = "background-color 0.3s";
+                            button.addEventListener("mouseenter", function() {
+                                this.style.backgroundColor = "darkred";
+                            });
+                            button.addEventListener("mouseleave", function() {
+                                this.style.backgroundColor = "red";
+                            });
                             cell.appendChild(button);
                         }
                     }
@@ -324,9 +333,9 @@
                                 echo "<td>Item ID</td>";
                                 echo "<td>Name</td>";
                                 echo "<td>Type of Application/Device</td>";
-                                echo "<td>SERVER NAME</td>";
-                                echo "<td>SERVER IP ADDRESS</td>";
-                                echo "<td>Cloud or On Premise?</td>";
+                                echo "<td>Server Name</td>";
+                                echo "<td>Server IP Address (Decimal)</td>";
+                                echo "<td>Cloud or On-Premise?</td>";
                                 echo "<td>Location</td>";
                             echo "</thead>";
 
@@ -400,11 +409,11 @@
                                 echo "<td>Item ID</td>";
                                 echo "<td>Name</td>";
                                 echo "<td>Type of Application/Device</td>";
-                                echo "<td>ePHI YES/NO</td>";
-                                echo "<td>ENCRYPTED? YES/NO</td>";
-                                echo "<td>IF YES, ENCRYPTION METHOD</td>";
-                                echo "<td>IF YES, ENCRYPTION TESTED?</td>";
-                                echo "<td>APPLICATIONS INTERFACED WITH</td>";
+                                echo "<td>EPHI? Yes/No</td>";
+                                echo "<td>Encrypted? Yes/No</td>";
+                                echo "<td>If Yes, Encryption Method</td>";
+                                echo "<td>If Yes, Encryption Tested?</td>";
+                                echo "<td>Applications Interfaced With</td>";
                             echo "</thead>";
 
                             while ($st -> fetch()) {
@@ -478,10 +487,10 @@
                                 echo "<td>Item ID</td>";
                                 echo "<td>Name</td>";
                                 echo "<td>Type of Application/Device</td>";
-                                echo "<td>USER AUTHENTICATION METHOD</td>";
-                                echo "<td>APPLICATION AUTHENTICATION METHOD</td>";
-                                echo "<td>Minimum Password Length (as applicable)</td>";
-                                echo "<td>PASSWORD CHANGE FREQUENCY (as applicable)</td>";
+                                echo "<td>User Authention Method</td>";
+                                echo "<td>Application Authentication Method</td>";
+                                echo "<td>Minimum Password Length</td>";
+                                echo "<td>Password Change Frequency (days)</td>";
                             echo "</thead>";
 
                             while ($st -> fetch()) {

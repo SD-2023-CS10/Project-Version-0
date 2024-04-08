@@ -170,7 +170,7 @@ textarea{
 /* Styling for Add button */
 .inputbar input[type=submit] {
   padding: 8px 16px;
-  background-color: #e73b3b; /* Green */
+  background-color: rgb(1, 168, 1); /* Green */
   color: white;
   border: none;
   cursor: pointer;
@@ -179,7 +179,7 @@ textarea{
 }
 
 .inputbar input[type=submit]:hover {
-  background-color: #e73b3b; /* Darker green */
+  background-color: rgb(2, 103, 2); /* Darker green */
 }
 
 /* Styling for deviceTable */
@@ -191,14 +191,14 @@ textarea{
 #deviceTable th,
 #deviceTable td {
   border: 2px solid white;
-  background-color: #2196F3;
+  background-color: #339ef5;
   font-weight: bold;
   color: white;
   padding: 8px;
 }
 
 #deviceTable td[contenteditable=true] {
-  background-color: #2196F3;
+  background-color: #339ef5;
 }
 
 /* Styling for serverTable */
