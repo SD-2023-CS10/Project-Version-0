@@ -1,0 +1,94 @@
+<!-- * File Name: adminCreate.html
+ * 
+ * Description:
+ * Accessed upon valid credentials from the adminLogin.html page, the admin user will be able to access this page,
+ * where they are able to create new client user accounts (username and password) as well as delete old client 
+ * user accounts.
+ * 
+ * @package MedcurityNetworkScanner
+ * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
+ * @license 
+ * @version 1.0.0
+ * @link 
+ * @since 
+ * 
+ * Usage:
+ * This file should be placed in the root directory of the application. It can be directly
+ * accessed via the URL [Your Application's URL]. No modifications are necessary for basic
+ * operation.
+ * 
+ * Modifications:
+ * [3/13/24] - [Artis Nateephaisan] - Version [1.0.1] - [Added user account deletion functionality]
+ * 
+ * Notes:
+ * - Although the filename is called "adminCreate.html", the admin user is also able to delete users in this page
+ * - 
+ * -
+ * 
+ * TODO:
+ * - List any pending tasks or improvements that are planned for future updates.
+ * There should be confirmation screen upon client user account deletion so that there is a safeguard in 
+ * case of any accidental deletions.
+ */ -->
+
+ <!DOCTYPE html>
+ <head>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta charset="utf-8">
+     <title>Admin Create/Remove Account</title>
+     <!-- <link rel="shortcut icon" href="/assets/favicon.ico"> -->
+     <link rel="stylesheet" href="styling\login-menu.css">
+ </head>
+ <div class="errorcontainer invisible">
+     <strong>Error:</strong> Either an account with these login fields has already been created, or desired account to be deleted does not exist, please try again.
+ </div>
+ <body>
+     <div class="container">
+         <!-- <form class="form" id="login"> -->
+         <form action="adminCreate.php" method="POST">
+             <h1 class="form__title">Create a Client Account</h1>
+             <div class="form__message form__message--error"></div>
+             <div class="form__input-group">
+                 <input type="text" class="form__input" name="username" autofocus placeholder="Set Username" required/>
+                 <div class="form__input-error-message"></div>
+             </div>
+             <div class="form__input-group">
+                 <input type="text" class="form__input" name="oldPassword" autofocus placeholder="Set Password" required/>
+                 <div class="form__input-error-message"></div>
+             </div>
+             <div class="form__input-group">
+                 <input type="text" class="form__input" name="client" autofocus placeholder="Client Company" required/>
+                 <div class="form__input-error-message"></div>
+             </div>
+             <!-- <button class="form__button" type="submit">Sign In</button> -->
+             <!-- Wouldn't go to index -->
+             <!-- <a href="" style="" class="form__button" type="submit">Change Password</a> -->
+             <input type="submit" value="Create Client Account" class="form__button">
+ 
+         </form>
+     </div>
+     <div class="container">
+         <!-- <form class="form" id="login"> -->
+         <form action="adminDelete.php" method="POST">
+             <h1 class="form__title">Delete a Client Account</h1>
+             <div class="form__message form__message--error"></div>
+             <div class="form__input-group">
+                 <input type="text" class="form__input" name="username" autofocus placeholder="Username" required/>
+                 <div class="form__input-error-message"></div>
+             </div>
+             <div class="form__input-group">
+                 <input type="text" class="form__input" name="client" autofocus placeholder="Client Company" required/>
+                 <div class="form__input-error-message"></div>
+             </div>
+             <!-- <div class="form__input-group">
+                 <input type="text" class="form__input" name="old password" autofocus placeholder="Set Password" required>
+                 <div class="form__input-error-message"></div>
+             </div> -->
+             <!-- <button class="form__button" type="submit">Sign In</button> -->
+             <!-- Wouldn't go to index -->
+             <!-- <a href="" style="" class="form__button" type="submit">Change Password</a> -->
+             <input type="submit" value="Delete Client Account" class="form__button">
+ 
+         </form>
+     </div>
+ </body>
