@@ -1,3 +1,26 @@
+ <!-- 
+* File Name: dependency-checks.php
+ * 
+ * Description:
+ * This PHP file downloads and checks for dependencies associated with crawl-device.py requirements.
+ * The file is launched through the user-interface's scan button.
+ * 
+ * @package MedcurityNetworkScanner
+ * @authors Colleen Lemak
+ * @license 
+ * @version 1.0.0
+ * @link 
+ * @since 
+ * 
+ * Usage:
+ * Place this file in the /crawler directory of the application and run the file from the root directory. 
+ * No modifications are necessary for basic operation, but customization can be done by editing the configuration 
+ * settings within.
+ * 
+ * Notes:
+ * - To run: 'php /crawler/dependency-checks.php'
+ * - Remember to update the version number and modification log with each change.
+ -->
 <?php
 
     // Installs missing dependencies as necessary

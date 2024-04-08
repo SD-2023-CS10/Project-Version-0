@@ -1,4 +1,37 @@
-/* Extract from normalize.css by Nicolas Gallagher and Jonathan Neal git.io/normalize */
+/*
+ * File Name: homepage.css
+ * 
+ * Description:
+ * This is the main entry point of the application. It initializes the application
+ * environment, loads the necessary resources, and routes the request to the appropriate
+ * controller. This file also handles basic configuration settings and global declarations.
+ * 
+ * @package MedcurityNetworkScanner
+ * @authors Jack Nealon (jnealon0805@gmail.com)
+ * @license 
+ * @version 1.0.0
+ * @link 
+ * @since 
+ * 
+ * Usage:
+ * This file should be placed in the root directory of the application. It can be directly
+ * accessed via the URL [Your Application's URL]. No modifications are necessary for basic
+ * operation, but customization can be done by editing the configuration settings within.
+ * 
+ * Modifications:
+ * [Date] - [Your Name] - Version [New Version Number] - [Description of Changes]
+ * 
+ * Notes:
+ * - Additional notes or special instructions can be added here.
+ * - Remember to update the version number and modification log with each change.
+ * 
+ * TODO:
+ * - List any pending tasks or improvements that are planned for future updates.
+ * 
+*/
+ 
+
+ /* Extract from normalize.css by Nicolas Gallagher and Jonathan Neal git.io/normalize */
 html{
     -ms-text-size-adjust:100%;
     -webkit-text-size-adjust:100%
@@ -177,45 +210,10 @@ textarea{
 .single-list-topics-content:hover h2>a,.single-list-topics-content:hover p{color: #fff!important;}
 .single-list-topics-content:hover{
   color: #fff;
-  background:#2196F3;
+  background:#1a78c4;
   box-shadow: 0 5px 10px rgba(71,71,71,.4);
 }
 
-/* List Contents */
-.list-topics-content {
-  position: relative;
-}
-.list-topics-content ul li { display: inline-block;}
-
-.single-list-topics-content{
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-  width: 205px;
-  height: 170px;
-  background:#fff;
-  border-radius: 3px;
-  margin-right: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 0px 10px rgba(71,71,71,.2);
-  -webkit-transition: .3s linear; 
-  -moz-transition:.3s linear; 
-  -ms-transition:.3s linear; 
-  -o-transition:.3s linear;
-  transition: .3s linear;
-}
-.single-list-topics-content h2>a { margin: 13px 0;}
-
-.single-list-topics-icon [class^="flaticon-"]:before,.single-list-topics-icon [class*=" flaticon-"]:before,.single-list-topics-icon [class^="flaticon-"]:after,.single-list-topics-icon [class*=" flaticon-"]:after {font-size: 45px;color:#343a3f;}
-.single-list-topics-content:hover .single-list-topics-icon [class^="flaticon-"]:before,.single-list-topics-content:hover .single-list-topics-icon [class*=" flaticon-"]:before,.single-list-topics-content:hover .single-list-topics-icon [class^="flaticon-"]:after,.single-list-topics-content:hover .single-list-topics-icon [class*=" flaticon-"]:after {color:#fff;}
-
-.single-list-topics-content:hover h2>a,.single-list-topics-content:hover p{color: #fff!important;}
-.single-list-topics-content:hover{
-  color: #fff;
-  background:#2196F3;
-  box-shadow: 0 5px 10px rgba(71,71,71,.4);
-}
 
 /* Homepage Tabs */
 /* Style the tab */
@@ -249,6 +247,7 @@ textarea{
 
 /* Style the tab content */
 .tabcontent {
+  float: left;
   display: none;
   padding: 6px 12px;
   border: 1px solid #ccc;
@@ -256,7 +255,36 @@ textarea{
   overflow-y: scroll;
   overflow-x: scroll;
 }
+
+.tabcontent {
+  display: none;
+}
+
+/* Add styles to the active tab */
+.tablinks.active {
+  background-color: #ccc;
+}
 /* Homepage Tab End */
+
+/*** Category ***/
+.cat-item div {
+  background: #FFFFFF;
+  border: 1px rgb(75, 72, 255);
+  transition: .5s;
+}
+
+.cat-item:hover div {
+  background: var(--primary);
+  border-color: #1a78c4;
+}
+
+.cat-item div * {
+  transition: .5s;
+}
+
+.cat-item:hover div * {
+  color: #FFFFFF !important;
+}
 
 
 /* Input Bar */
