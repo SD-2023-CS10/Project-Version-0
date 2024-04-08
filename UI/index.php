@@ -611,6 +611,7 @@
                         $pythonScript = realpath(__DIR__) . $py;
                         $command = "python3 $pythonScript $user";
                         shell_exec($command);
+                        $_POST["DOWNLOAD"] == "False";
                     }
                 ?>
             }

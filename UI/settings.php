@@ -64,6 +64,11 @@
       <a href="index.php" onclick="closeSB()" class="bar-item button padding"><i class="fa fa-solid fa-folder"></i> HOME</a>
       <a href="settings.php" onclick="closeSB()" class="bar-item button padding grey text-black"><i
           class="fa fa-solid fa-gear"></i> SETTINGS</a>
+        <form action="index.php" method="POST">
+            <button href="index.php" name="DOWNLOAD" value="True" onclick="csv_launch()" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> DOWNLOAD</button>
+        </form>
+        <a href="index.php" id="runScanButton" id="scanOutput" class="bar-item button padding"><i class="fa fa-solid fa-download"></i> RUN SCAN</a>
+
     </div>
   </nav>
 
