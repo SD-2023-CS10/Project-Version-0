@@ -6,4 +6,4 @@ crawler/config.py
 *__pycache__
 UI/config.ini
 csv/outfile.csv
-csv/dump.xml
+.DS_Store
