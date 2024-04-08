@@ -1,5 +1,5 @@
 <!--
- * File Name: settings.html
+ * File Name: settings.php
  * 
  * Description:
  * This is the main entry point of the application. It initializes the application
@@ -53,7 +53,7 @@
   <!-- Sidebar/menu -->
   <nav class="sidebar collapse blue animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
     <div class="container">
-      <a href="settings.html" onclick="closeSB()" class="hide-large right jumbo padding hover-grey" title="close menu">
+      <a href="settings.php" onclick="closeSB()" class="hide-large right jumbo padding hover-grey" title="close menu">
         <i class="fa fa-remove"></i>
       </a>
       <img src="resources\logo.png" alt="logo" style="width: 250px;">
