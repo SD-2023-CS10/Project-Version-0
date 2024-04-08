@@ -83,12 +83,13 @@ This table is where all of the current discovered devices along with it's repect
 ---
 ### System Information Content Table
 ![Alt text](/UI/resources/system-content.png)
-
+This is where all of the system information will be stored and shown, of the text fields shown, all but the title cells and the id column can be modified with realtime updates to the database. Each cell is able to be filled with information either through the crawler or through manual input with the changes being reflected in the database. 
 ---
 ### Delete Devices from Inventory
 ![Alt text](/UI/resources/del-btn.png)
-
+Here you are able to delete a device from the system inventory. Before deletion, the page asks a confirmation of deletion before the delete action is taken and applied to the database. These actions cannot be undone and are permanent.
 ---
 ### Add a New Device Manually to Inventory
 ![Alt text](/UI/resources/add-dev.png)
+This input box provides the user with the ability to add a device starting with the devices name. After adding the device by clicking the 'Add' button, the table is reloaded to display the new device and the database is updated with the new device and a respective item id. The cells for that device can then be modified in the table as stated before in the 'System Information Content Table' description. These devices can be removed using the delete button and empty device fields are accepted. 
 
