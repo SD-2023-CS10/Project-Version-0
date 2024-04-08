@@ -244,11 +244,13 @@ textarea{
 #authenticationTable th,
 #authenticationTable td {
   border: 2px solid #2196F3;
+  color: white;
+  font-weight: bold;
   padding: 8px;
 }
 
 #authenticationTable td[contenteditable=true] {
-  background-color: #f1f1f1;
+  background-color: #2196F3;
 }
 
 #progressBar {
