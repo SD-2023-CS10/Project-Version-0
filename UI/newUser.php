@@ -100,6 +100,7 @@ if (password_verify($old_password, $result)) {
     $st ->execute();
 
     // I should echo that new password has been set
+    header("Location: login.html");
 
  } else {
 
