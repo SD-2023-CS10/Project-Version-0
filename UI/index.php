@@ -31,6 +31,40 @@
  -->
 <?php
     session_start();
+
+    // connection params
+    $config = parse_ini_file("./config.ini");
+    $server = $config["servername"];
+    $username = $config["username"];
+    $password = $config["password"];
+    $database = "gu_devices";
+
+    // connect to db
+    $cn = mysqli_connect($server , $username , $password , $database );
+
+    // check connection
+    if (!$cn) {
+        die("Connection failed: " . mysqli_connect_error ());
+    }
+
+    // set up the prepared statement
+    $user = $_SESSION["session_user"];
+    $q = "SELECT client FROM User WHERE user_name = '$user'";
+
+    $st = $cn ->stmt_init ();
+    $st ->prepare($q);
+
+    // execute the statement and bind the result (to vars)
+    $st ->execute ();
+    $st ->bind_result($cl);
+
+    $st->fetch();
+
+    $CLIENT = $cl;
+
+    // clean up
+    $st ->close ();
+    $cn ->close ();
 ?>
 
 <!DOCTYPE html>
@@ -106,7 +140,7 @@
             <span class="button hide-large xxlarge hover-text-grey" onclick="openSB()"><i class="fa fa-bars"></i></span>
             <div class="container">
                 <h1>
-                    <b>Med INC System Inventory</b>
+                    <?php echo "<b>" . $CLIENT . " System Inventory</b>"; ?>
                 </h1>
         <!-- Left open to give rest of page indentation off sidebar -->
 
@@ -132,8 +166,6 @@
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%" id="deviceTable">
                         <?php
-                            $CLIENT = "Med INC";
-
                             // connection params
                             $config = parse_ini_file("./config.ini");
                             $server = $config["servername"];
@@ -150,9 +182,15 @@
                             }
 
                             // set up the prepared statement
-                            $q = "SELECT Inv_Item.item_id, Inv_Item.name, Inv_Item.type, Inv_Item.version,
-                                        Inv_Item.os, Inv_Item.os_version, Inv_Item.auto_log_off_freq
-                                FROM Inv_Item WHERE Inv_Item.client =  '$CLIENT'";
+                            if (!($CLIENT == "admin")) {
+                                $q = "SELECT Inv_Item.item_id, Inv_Item.name, Inv_Item.type, Inv_Item.version,
+                                            Inv_Item.os, Inv_Item.os_version, Inv_Item.auto_log_off_freq
+                                    FROM Inv_Item WHERE Inv_Item.client =  '$CLIENT'"; }
+                            else {
+                                $q = "SELECT Inv_Item.item_id, Inv_Item.name, Inv_Item.type, Inv_Item.version,
+                                    Inv_Item.os, Inv_Item.os_version, Inv_Item.auto_log_off_freq
+                                    FROM Inv_Item";
+                            }
 
                             $st = $cn ->stmt_init ();
                             $st ->prepare($q);
@@ -296,7 +334,6 @@
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%" id="serverTable">
                         <?php
-                            $CLIENT = "Med INC";
 
                             // connection params
                             $config = parse_ini_file("./config.ini");
@@ -314,12 +351,21 @@
                             }
 
                             // set up the prepared statement
+                            if (!($CLIENT == "admin")) {
                             $q = "SELECT i.item_id, i.name, i.type, s.name, s.ip_address, l.cloud_prem,
                                         l.details
                                 FROM Inv_Item as i LEFT JOIN Server as s
                                     ON i.server = s.id
                                     LEFT JOIN Location as l ON l.id = s.location_id
                                 WHERE i.client = '$CLIENT';";
+                            }
+                            else {
+                                $q = "SELECT i.item_id, i.name, i.type, s.name, s.ip_address, l.cloud_prem,
+                                        l.details
+                                FROM Inv_Item as i LEFT JOIN Server as s
+                                    ON i.server = s.id
+                                    LEFT JOIN Location as l ON l.id = s.location_id;";
+                            }
 
                             $st = $cn ->stmt_init ();
                             $st ->prepare($q);
@@ -375,7 +421,6 @@
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%" id="ephiTable">
                         <?php
-                            $CLIENT = "Med INC";
 
                             // connection params
                             $config = parse_ini_file("./config.ini");
@@ -393,9 +438,15 @@
                             }
 
                             // set up the prepared statement
+                            if (!($CLIENT == "admin")) {
                             $q = "SELECT i.item_id, i.name, i.type, i.ephi, i.ephi_encrypted, i.ephi_encr_method, i.ephi_encr_tested, i.interfaces_with
                                     FROM Inv_Item as i
                                 WHERE i.client = '$CLIENT';";
+                            }
+                            else {
+                                $q = "SELECT i.item_id, i.name, i.type, i.ephi, i.ephi_encrypted, i.ephi_encr_method, i.ephi_encr_tested, i.interfaces_with
+                                    FROM Inv_Item as i";
+                            }
 
                             $st = $cn ->stmt_init ();
                             $st ->prepare($q);
@@ -453,7 +504,6 @@
                 <font size="4" face="Courier New">
                     <table BORDER=1 width="100%" id="authenticationTable">
                         <?php
-                            $CLIENT = "Med INC";
 
                             // connection params
                             $config = parse_ini_file("./config.ini");
@@ -471,9 +521,14 @@
                             }
 
                             // set up the prepared statement
+                            if (!($CLIENT == "admin")) {
                             $q = "SELECT i.item_id, i.name, i.type, i.user_auth_method, i.app_auth_method, i.psw_min_len, i.psw_change_freq
                                     FROM Inv_Item as i
-                                WHERE i.client = '$CLIENT';"; 
+                                WHERE i.client = '$CLIENT';"; }
+                            else {
+                                $q = "SELECT i.item_id, i.name, i.type, i.user_auth_method, i.app_auth_method, i.psw_min_len, i.psw_change_freq
+                                    FROM Inv_Item as i"; 
+                            }
 
                             $st = $cn ->stmt_init ();
                             $st ->prepare($q);
@@ -572,8 +627,7 @@
                 <?php
                     if (isset($_POST["DOWNLOAD"]) && $_POST["DOWNLOAD"] == "True")
                     {
-                        // $user = $_SESSION["username"];
-                        $user = "testadmin";
+                        $user = $_SESSION["session_user"];
 
                         // connection params
                         $config = parse_ini_file("./config.ini");
@@ -601,7 +655,6 @@
                         $st ->bind_result($c);
 
                         $st -> fetch();
-                        // if ($c == "Medcurity") {
                         if ($c == "admin") {
                             $py = '/../csv/admin-export.py';
                         }
