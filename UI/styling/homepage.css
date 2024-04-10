@@ -190,15 +190,13 @@ textarea{
 
 #deviceTable th,
 #deviceTable td {
-  border: 2px solid white;
-  background-color: #339ef5;
-  font-weight: bold;
-  color: white;
+  border: 2px solid #2196F3;
+  background-color: #f1f1f1;
   padding: 8px;
 }
 
 #deviceTable td[contenteditable=true] {
-  background-color: #339ef5;
+  background-color: #f1f1f1;
 }
 
 /* Styling for serverTable */
@@ -209,7 +207,7 @@ textarea{
 
 #serverTable th,
 #serverTable td {
-  border:none;
+  border: 2px solid #2196F3;
   background-color: #f1f1f1;
   padding: 8px;
 }
@@ -244,13 +242,12 @@ textarea{
 #authenticationTable th,
 #authenticationTable td {
   border: 2px solid #2196F3;
-  color: white;
-  font-weight: bold;
+  background-color: #f1f1f1;
   padding: 8px;
 }
 
 #authenticationTable td[contenteditable=true] {
-  background-color: #2196F3;
+  background-color: #f1f1f1;
 }
 
 #progressBar {

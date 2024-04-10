@@ -260,7 +260,7 @@
                         for (var i = 1; i < rows.length; i++) {
                             var cell = rows[i].insertCell(-1);
                             var button = document.createElement("button");
-                            button.innerHTML = "Delete";
+                            button.innerHTML = "&#128465;";
                             button.onclick = function () {
                                 deleteRow(this.parentNode.parentNode.rowIndex);
                             };
@@ -273,6 +273,9 @@
                             button.addEventListener("mouseleave", function() {
                                 this.style.backgroundColor = "red";
                             });
+                            button.style.display = "block";
+                            button.style.margin = "auto";
+                            cell.style.textAlign = "center";
                             cell.appendChild(button);
                         }
                     }
