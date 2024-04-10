@@ -33,7 +33,7 @@
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // $username = $_SESSION["username"];
-            $username = "clemak";
+            $username = "testuser";
             echo $username;
             $cwd = getcwd(); 
 
