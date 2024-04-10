@@ -117,7 +117,7 @@ else
 
         // execute statement 
         $st ->execute();
-
+        
     } 
     else {
         // need an if to check if client is in the DB, if it is, continue with normal query, if it isn't add the 
