@@ -30,6 +30,7 @@
  * 
  -->
 <?php
+    session_start();
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $userDevice = $_POST["userDevice"];
 
@@ -48,6 +49,17 @@
         if (!$cn) {
             die("Connection failed: " . mysqli_connect_error());
         }
+
+        // get client from user
+        $user = $_SESSION["session_user"];
+        $q = "SELECT client FROM User WHERE user_name = '$user'";
+        $st = $cn ->stmt_init ();
+        $st ->prepare($q);
+        $st ->execute ();
+        $st ->bind_result($cl);
+        $st->fetch();
+        $CLIENT = $cl;
+        $st->close();
 
         // Create query and send
         $insertQuery = "INSERT INTO Inv_Item (name, client) VALUES (?, ?)";
