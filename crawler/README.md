@@ -66,7 +66,7 @@ Integration of the crawler Python file with other components posed several chall
 
 2. `index.php` is then launched, showing the user the Network Inventory Tool's homepage. The left panel contains various buttons with functionality, including a `RUN SCAN` button. 
 
-3. Clicking this button triggers the helper script, `runScan.php`, which is configured to run relavent commands for data collection and connection.  The script runs the `dependency-checks.php` file located in `/crawler`, and subsequently also runs `crawl-device.py` autonomously.  
+3. Clicking this button triggers the helper script, `runScan.php`, which is configured to run relavent commands for data collection and connection.  The script runs the `dependency-checks.php` file located in `/crawler`, and subsequently also runs `crawl-device.py` autonomously. (Note: `RUN SCAN` takes a substantial amount of time--in the realm of over five minutes for around five devices on a network. You can see the program running with the loading wheel in your internet browser tab.)
 
 *In theory,* clients using the Network Inventory Tool should only have to interact with the user-interface, rather than running the crawler script itself with `python3 crawl-device.py`.
 
