@@ -1,22 +1,18 @@
 /*
- * File Name: index.php
+ * File Name: login-menu.css
  * 
  * Description:
- * This is the main entry point of the application. It initializes the application
- * environment, loads the necessary resources, and routes the request to the appropriate
- * controller. This file also handles basic configuration settings and global declarations.
+ * CSS styling file for all the HTML login pages.
  * 
  * @package MedcurityNetworkScanner
- * @authors Jack Nealon (jnealon0805@gmail.com)
+ * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
  * @license 
  * @version 1.0.0
  * @link 
  * @since 
  * 
  * Usage:
- * This file should be placed in the root directory of the application. It can be directly
- * accessed via the URL [Your Application's URL]. No modifications are necessary for basic
- * operation, but customization can be done by editing the configuration settings within.
+ * Used solely for the purpose of html styling for the login HTML pages.
  * 
  * Modifications:
  * [Date] - [Your Name] - Version [New Version Number] - [Description of Changes]
@@ -27,7 +23,7 @@
  * 
  * TODO:
  * - List any pending tasks or improvements that are planned for future updates.
- * 
+ * Please feel free to edit the styling of the pages to suit Medcurity's design language in the future.
  */
 
 body {
@@ -44,7 +40,6 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  /* Need to add logo for our background, right now it's super low quality if I add the screenshots*/
   background: url();
   background-size: cover;
 }
@@ -57,6 +52,18 @@ body {
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
   border-radius: var(--border-radius);
   background: #ffffff;
+}
+
+.container__forgot {
+  width: 800px;
+  max-width: 800px;
+  margin: 1rem;
+  padding: 3rem;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+  /* border-radius: var(--border-radius); */
+  background: #ffffff;
+  border: 2px blue;
+  border-radius: 5px;
 }
 
 .container,
@@ -152,6 +159,17 @@ body {
   text-align: center;
 }
 
+.form__forgot_text {
+  text-align: left;
+}
+
+.form__links {
+  display: inline;
+  margin-right: 50px;
+  text-align:center;
+  align-items: center;
+}
+
 .form__link {
   color: var(--color-secondary);
   text-decoration: none;
@@ -167,12 +185,10 @@ body {
   flex-direction: row;
   /* gap: 15px; */
 }
-/* / need to make two child / */
 #container #main {
   flex-grow: 0;
   flex-shrink: 1;
   flex-basis: 70%;
-  /* / flex: 0 1 70%; / */
 }
 
 .errorcontainer {
