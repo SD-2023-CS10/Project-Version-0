@@ -164,8 +164,11 @@ body {
 }
 
 .form__links {
+  color: var(--color-secondary);
+  text-decoration: none;
+  cursor: pointer;
   display: inline;
-  margin-right: 50px;
+  margin-right: 55px;
   text-align:center;
   align-items: center;
 }
@@ -174,9 +177,29 @@ body {
   color: var(--color-secondary);
   text-decoration: none;
   cursor: pointer;
+  margin-left: 55px;
+}
+
+.admin__form__link {
+  color: var(--color-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  display: inline;
+  /* margin-right: 55px; */
+  text-align:center;
+  align-items: center;
 }
 
 .form__link:hover {
+  text-decoration: underline;
+}
+
+
+.form__links:hover {
+  text-decoration: underline;
+}
+
+.admin__form__link:hover {
   text-decoration: underline;
 }
 
