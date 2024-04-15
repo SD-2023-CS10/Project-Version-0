@@ -30,36 +30,48 @@
  * 
  -->
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $userDevice = $_POST["userDevice"];
+    session_start();
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $userDevice = $_POST["userDevice"];
 
-    $CLIENT = "Med INC";
+        $CLIENT = "Med INC";
 
-    // Add database connection and insertion logic here
-    $config = parse_ini_file("./config.ini");
-    $server = $config["servername"];
-    $username = $config["username"];
-    $password = $config["password"];
-    $database = "gu_devices";
+        // Add database connection and insertion logic here
+        $config = parse_ini_file("./config.ini");
+        $server = $config["servername"];
+        $username = $config["username"];
+        $password = $config["password"];
+        $database = "gu_devices";
 
-    $cn = mysqli_connect($server, $username, $password, $database);
+        $cn = mysqli_connect($server, $username, $password, $database);
 
-    // Connection error check
-    if (!$cn) {
-        die("Connection failed: " . mysqli_connect_error());
+        // Connection error check
+        if (!$cn) {
+            die("Connection failed: " . mysqli_connect_error());
+        }
+
+        // get client from user
+        $user = $_SESSION["session_user"];
+        $q = "SELECT client FROM User WHERE user_name = '$user'";
+        $st = $cn ->stmt_init ();
+        $st ->prepare($q);
+        $st ->execute ();
+        $st ->bind_result($cl);
+        $st->fetch();
+        $CLIENT = $cl;
+        $st->close();
+
+        // Create query and send
+        $insertQuery = "INSERT INTO Inv_Item (name, client) VALUES (?, ?)";
+        $st = $cn->prepare($insertQuery);
+        $st->bind_param("ss", $userDevice, $CLIENT);
+        $st->execute();
+
+        $st->close();
+        $cn->close();
+        
+        // Redirect back to the main page after adding the device
+        header("Location: index.php");
+        exit();
     }
-
-    // Create query and send
-    $insertQuery = "INSERT INTO Inv_Item (name, client) VALUES (?, ?)";
-    $st = $cn->prepare($insertQuery);
-    $st->bind_param("ss", $userDevice, $CLIENT);
-    $st->execute();
-
-    $st->close();
-    $cn->close();
-    
-    // Redirect back to the main page after adding the device
-    header("Location: index.php");
-    exit();
-}
 ?>
