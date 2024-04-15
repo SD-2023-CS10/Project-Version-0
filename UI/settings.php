@@ -185,7 +185,7 @@
         <div id="network" class="tab-content row-padding padding-16" style="display: none;">
             <!-- Network Content -->
             <h2>Network Settings</h2>
-            <p>In Development</p>
+            <p>Out Of Scope</p>
         </div>
         <div id="accessibility" class="tab-content row-padding padding-16" style="display: none;">
             <!-- Accessibility Content -->
@@ -195,10 +195,11 @@
         <div id="contact" class="tab-content row-padding padding-16" style="display: none;">
             <!-- Contact Content -->
             <h2>Help Menu</h2>
-            <p>Medcurity Contact Representitive: (###)-###-####</p>
-            <p>About Application: Link in Development</p>
-            <p>Help Manuals: <?php include 'README.md';?></p>
-            <p>Troubleshooting Guide: In Developemnt</p>
+            <p>Medcurity Phone Contact:  (509) - 867 - 3645</p>
+            <p>Medcurity Email Contact:  support@medcurity.com </p>
+            <p>About Application: INSERT LINK HERE (Almost done) </p>
+            <!-- <p>Help Manuals: <?php include 'README.md';?></p> -->
+            <p>Help Manual: LINK TO HELP MANUAL</p>
         </div>
     </div>
 </div>
