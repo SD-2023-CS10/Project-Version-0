@@ -151,31 +151,28 @@
                         }
 
                         // set up the prepared statement
-                        $q = "SELECT `Vender`.`email`,
-                        `Vender`.`poc`,
-                        `Vender`.`client`
-                        FROM `gu_devices`.`Vender` 
-                        WHERE `Vender`.`client` = '$CLIENT'";
+                        $q = "SELECT `User`.`client`,
+                        `User`.`user_name`
+                        FROM `gu_devices`.`User` 
+                        WHERE `User`.`client` = '$CLIENT'";
 
                         $st = $cn ->stmt_init ();
                         $st ->prepare($q);
 
                         // execute the statement and bind the result (to vars)
                         $st ->execute ();
-                        $st ->bind_result($email, $poc, $client);
+                        $st ->bind_result($client, $username);
 
                         // output result
                         echo "<thead>";
-                            echo "<td>Name</td>";
-                            echo "<td>Email</td>";
+                            echo "<td>Username</td>";
                             echo "<td>Client</td>";
                         echo "</thead>";
 
                         while ($st -> fetch()) {
                         echo "<tr>";
-                            echo "<td id='Vender.poc'>" . $poc . "</td>";
-                            echo "<td id='Vender.email'>" . $email . "</td>";
-                            echo "<td id='Vender.client'>" . $client . "</td>";
+                            echo "<td id='User.user_name'>" . $username . "</td>";
+                            echo "<td id='User.client'>" . $client . "</td>";
                         echo "</tr>";
                         }
                         // clean up
