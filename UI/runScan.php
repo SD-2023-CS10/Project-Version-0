@@ -32,8 +32,8 @@
 <?php
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            // $username = $_SESSION["username"];
-            $username = "testuser";
+            $username = $_SESSION["session_user"];
+            // $username = "testuser";
             echo $username;
             $cwd = getcwd(); 
 
