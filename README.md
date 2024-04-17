@@ -41,9 +41,9 @@ To improve the user experience, the following future development ideas have been
 5. Add status messages and a progress bar based on crawl-status
 6. Allow user to enter a range of IPs to scan in interface
 7. Implement settings-accessibility functional page
-8. Allow admin to add and set their client through the interface
-9. Allow admin to run scan for a set client through the interface
-10. Create a script to execute the tool and all components
+8. Allow admin to set client for viewing through the interface
+9. Allow admin to run scan and add devices for a set client through the interface
+10. Packaging and live deployment
 
 ## Professional Developers
 
