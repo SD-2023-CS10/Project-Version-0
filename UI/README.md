@@ -6,32 +6,35 @@ It should support users directly from Medcurity as well as their clients, the in
 while maintaining access to all relevant features of the Inventory Tool. 
 
 ## Anticipated Users
-The user interface is designed to support two group of users: administrative users from Medcurity, who can create new client users, and Medcurity clients, who can view their network data from their respective company.
+The user interface is designed to support two group of users: administrative users from Medcurity and Medcurity's client users. Administrative users from Medcurity are able to create new users and delete pre-existing users, as well as view all data from every client. Client users are able to log in to their account and see data from their respective client network. They are also able to change their password as frequently as needed.
 
 ## Design Overview
-Upon access of the application, the login page is the first interface the user will encounter. Here there are three options: inputting valid username and password credentials and logging in, going to the change password and new user page, 
-and going to the administrator login page. 
+Upon access of the application, the login page is the first interface the user will encounter. Here there are four options: inputting valid username and password credentials and logging in, going to the "Change Password" section, going to the "Forgot Password" section, and going to the admin login page. 
 
-Upon successful login with valid credentials, the client user will be brought to the home page, where they can access the Medcurity Inventory Tool and view, scan, and edit their respective company's network information. 
+With a successful login with valid credentials, the client user will be brought to the home page, where they can access the Medcurity Inventory Tool and view, scan, and edit their respective company's network information. 
 
-The "change password or new user" page allows user to change their password.
+The "Change Password" page allows user to change their password using their "Old Password" provided by Medcurity and changing it to a "New Password". It is important to note that upon password change, Medcurity has no access to the client users' passwords, since they are stored in the database as a salted and hashed value.
 
-The "administrator login" page is similar to the normal login page, but it is meant for admin access. Upon successful login with valid credentials, the admin will be able to create new user accounts for clients, allowing them to set up a 
-username and password, where their clients can then change the password information.
+The "Admin Login" page is similar to the normal login page, but it is meant for admin access. Upon successful login with valid credentials, the admin will be able to create new user accounts for clients, allowing them to set up a 
+username and password, where their clients can then change the password information in the "Change Password" page. They are also able to delete pre-existing clients for reasons such as the user leaving the client company.
 
 
 ## Login for Administrators
 
 In the main login menu one of the options "administrator login" allows for Medcurity admins to login with their credentials. After they login, they have access to the "Create Client Account" page, where they can add new client accounts into the database.
-The purpose of this is to set up a default username and password for their clients, which will be sent to their clients (through any secure means) where the client will be prompted to change their Medcurity-provided password to one they desire so that 
-Medcurity does not know their client's password, maxizing the safety and security of their clients. Please note that usernames must be unique for each user and upon account creation they cannot be changed.
+
+The purpose of this is to set up a default username and password for their clients, which will be sent to their clients (through any secure means) where the client will be prompted to change their Medcurity-provided password to one they desire so that Medcurity does not know their client's password, maxizing the safety and security of their clients. Since Medcurity does not have access to the user's new password, they cannot change the password should the user forget it. 
+
+Please note that usernames must be unique for each user and upon account creation they cannot be changed. 
 
 ## Login for Clients
 
 In the login menu, client users are prompted for a username and password. Once the user provides valid credentials, they will be able taken to the Medcurity Inventory Tool application, where they will have access to all of its features. 
-The other option in the login menu for intended primarily for client users is the "change password or new user" page. Since Medcurity admins provide the clients with default login information, it is recommended that they change their password
-immediately through this page to ensure Medcurity does not know their password. This page also allows for clients to change their password as frequently as desired, preventing constant access should the login information be breached and also prevents 
-the use of saved password. Overall, it is good practice to change the account password regularly.
+
+The "Forgot Password" option in the login menu takes the user to a page that contains Medcurity's contact information, which includes their support email and phone number. This allows the user to contact them should they face any issues with logging in. While Medcurity cannot send the user their password since they do not have access to it, they could delete the old user account from the database entirely and create a new account with the same old username and a default password, sending that information to the client user so they have access to their old username and can reset their password.
+
+Another option in the login menu intended primarily for client users is the "Change Password" page. Since Medcurity admins provide the clients with default login information, it is recommended that they change their password
+immediately through this page to ensure Medcurity does not know their password. This page also allows for clients to change their password as frequently as desired, preventing constant access from attackers should the login information be breached and also prevents the use of saved password. Overall, it is a good security practice to change the account password regularly.
 
 ## Development Set-Up
 
@@ -90,7 +93,7 @@ This page provides organized sections of information, search functionality, inte
 ## Settings Page
 
 ### Profile
-This page displays the current information associated with their account including their Name, email, client, date, and baa. This information is unable to be edited by anyone other than a Medcurity representative or developer. 
+This page displays the current information associated with their account including their Name, client, date, and baa. This information is unable to be edited by anyone other than a Medcurity representative or developer. 
 
 ### Accessibility
 In Development
