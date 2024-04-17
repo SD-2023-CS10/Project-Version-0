@@ -31,6 +31,19 @@ For instructions on further aspects of the project, such as user log-in and crea
 - A final release of the Network Inventory Tool repository will be released to Medcurity for future maintenance and implementation.
 - Contributions are welcome! Feel free to submit bug reports, feature requests, or pull requests to help improve the tool for everyone.
 
+## Future Development
+
+To improve the user experience, the following future development ideas have been discussed:
+1. Each client has a manager for user-account management
+2. Afford editable cells on the user-interface's Server page
+3. Implement user-interface filtering
+4. Add a confguration network page to the user-interface
+5. Add status messages and a progress bar based on crawl-status
+6. Allow user to enter a range of IPs to scan in interface
+7. Implement settings-accessibility functional page
+8. Allow admin to set client for viewing through the interface
+9. Allow admin to run scan and add devices for a set client through the interface
+10. Packaging and live deployment
 
 ## Professional Developers
 
