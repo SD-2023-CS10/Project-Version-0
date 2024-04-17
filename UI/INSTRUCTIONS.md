@@ -40,7 +40,7 @@ Displays the client's name and title of the page.
 ### System Information Navigation
 ![Alt text](/UI/resources/tabs-nav.png)
 
-This table is where all of the current discovered devices along with it's repective information. Each tab's information can be viewed as followed:
+This table is where all of the current discovered devices along with its respective information. Each tab's information can be viewed as followed:
 
 * System/Devices
     * Item ID
