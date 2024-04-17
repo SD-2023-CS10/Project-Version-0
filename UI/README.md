@@ -57,7 +57,7 @@ Below the logo and title, there are buttons for navigating around the website.
 Each button has an icon and text indicating where it will take you.
 When you click these buttons, the sidebar will close automatically.
 There's also a button for downloading client data into a csv document in the csv project folder.
-Lastly, there's a button labeled "Run Scan" which starts up the crawler to scan a network and record the resulting devices
+Lastly, there's a button labeled "Run Scan" which starts up the crawler to scan a network and record the resulting devices. (Note: "Run Scan" takes a substantial amount of time--in the realm of over five minutes for around five devices on a network. You can see the program running with the loading wheel in your internet browser tab.)
 
 
 ## Main Homepage
