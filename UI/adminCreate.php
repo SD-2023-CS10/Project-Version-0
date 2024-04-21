@@ -30,7 +30,10 @@
  */ -->
 <?php
 
-if($_SERVER["REQUEST_METHOD"] == "POST") {
+session_start();
+ob_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // retrieve form data
     $username = $_POST["username"];
@@ -54,55 +57,51 @@ $dbpassword = $config["password"];
 $database = "gu_devices";
 
 // connect to db
-$cn = mysqli_connect($server , $dbusername , $dbpassword , $database);
+$cn = mysqli_connect($server, $dbusername, $dbpassword, $database);
 
 // check connection
 if (!$cn) {
-    die("Connection failed: " . mysqli_connect_error ());
+    die("Connection failed: " . mysqli_connect_error());
 }
 
-// // set up the query
-// $query = "SELECT user_name, psw_hash_salted FROM User WHERE user_name = ? AND psw_hash_salted = ?;";
+// initialize variables for sign in error from adminActions.php
+$_SESSION['create_error'] = null;
+$_SESSIONS['create_success'] = null;
+$_SESSIONS['duplicate_account'] = null;
 
 // set up the query
 $query = "SELECT user_name FROM User WHERE user_name = ?;";
 
 // set up the prepared statement
-$st = $cn ->stmt_init();
-$st ->prepare($query);
-$st ->bind_param("s", $username);
+$st = $cn->stmt_init();
+$st->prepare($query);
+$st->bind_param("s", $username);
 
 // execute statement and store result in $result
-$st ->execute();
-$st ->bind_result($result);
+$st->execute();
+$st->bind_result($result);
 // this would be null because if the admin is inputting a new user, then the $username param would have a new
-// user not found in the DB and the DB won't recognize it, so the lines after line 87 would not run
-$st ->fetch();
-// $st->store_result();
+$st->fetch();
 
-// $result = $cn->query($query);
 
 if ($result == $username) {
     // this would mean there is already a username in the DB
-    // this needs to be fixed
-    // $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
-    header("Location: adminCreate.html");
+    $_SESSION['duplicate_account'] = "A client user account with that username already exists!";
+    header("Location: adminActions.php");
     exit();
-} 
-else 
-{
+} else {
     $query = "SELECT name FROM Client WHERE name = ?;";
 
     // set up the prepared statement
-    $st = $cn ->stmt_init();
-    $st ->prepare($query);
+    $st = $cn->stmt_init();
+    $st->prepare($query);
 
-    $st ->bind_param("s", $client);
+    $st->bind_param("s", $client);
 
     // execute statement and store result in $result
-    $st ->execute();
-    $st ->bind_result($result);
-    $st ->fetch();
+    $st->execute();
+    $st->bind_result($result);
+    $st->fetch();
 
     if ($result == $client) {
 
@@ -110,44 +109,47 @@ else
         $query = "INSERT INTO User (client, user_name, psw_hash_salted) VALUES (?, ?, ?);";
 
         // set up the prepared statement
-        $st = $cn ->stmt_init();
+        $st = $cn->stmt_init();
 
-        $st ->prepare($query);
-        $st ->bind_param("sss", $client, $username, $old_psw_hash_salt);
+        $st->prepare($query);
+        $st->bind_param("sss", $client, $username, $old_psw_hash_salt);
 
         // execute statement 
-        $st ->execute();
-        
-    } 
-    else {
-        // need an if to check if client is in the DB, if it is, continue with normal query, if it isn't add the 
+        $st->execute();
+
+        $_SESSION['create_success'] = "Client user account created!";
+        header("Location: adminActions.php");
+    } else {
+        // need to check if client is in the DB, if it is, continue with normal query, if it isn't add the 
         // client in the table
         $query = "INSERT INTO Client (name) VALUES (?);";
 
         // set up the prepared statement
-        $st = $cn ->stmt_init();
+        $st = $cn->stmt_init();
 
-        $st ->prepare($query);
-        $st ->bind_param("s", $client);
+        $st->prepare($query);
+        $st->bind_param("s", $client);
 
         // execute statement 
-        $st ->execute();
+        $st->execute();
 
         // insert the username into the User table under user_name column
         $query = "INSERT INTO User (client, user_name, psw_hash_salted) VALUES (?, ?, ?);";
 
         // set up the prepared statement
-        $st = $cn ->stmt_init();
+        $st = $cn->stmt_init();
 
-        $st ->prepare($query);
-        $st ->bind_param("sss", $client, $username, $old_psw_hash_salt);
+        $st->prepare($query);
+        $st->bind_param("sss", $client, $username, $old_psw_hash_salt);
 
         // execute statement 
-        $st ->execute();
+        $st->execute();
+        $_SESSION['create_success'] = "Client user account created!";
+        header("Location: adminActions.php");
     }
 }
 
- $st->close();
- $cn->close();
+$st->close();
+$cn->close();
 
 ?>

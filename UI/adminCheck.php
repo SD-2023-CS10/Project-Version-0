@@ -30,7 +30,10 @@
  */ -->
 <?php
 
-if($_SERVER["REQUEST_METHOD"] == "POST") {
+session_start();
+ob_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // retrieve form data
     $username = $_POST["username"];
@@ -39,7 +42,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // $psw_hash_salt = password_hash($password, PASSWORD_DEFAULT, array('cost' => 9));
 } else {
-    header("Location: adminLogin.html");
+    // header("Location: adminLogin.php");
     exit();
 }
 
@@ -50,13 +53,14 @@ $dbusername = $config["username"];
 $dbpassword = $config["password"];
 $database = "gu_devices";
 
-$cn = mysqli_connect($server , $dbusername , $dbpassword , $database);
+$cn = mysqli_connect($server, $dbusername, $dbpassword, $database);
 
 // check connection
 if (!$cn) {
-    die("Connection failed: " . mysqli_connect_error ());
+    die("Connection failed: " . mysqli_connect_error());
 }
-
+// initialize variable for sign in error from login.php
+$_SESSION['login_error'] = null;
 
 // // set up the query to check DB for correct login credentials. This query is different from loginCheck.php
 // // because it uses the client attribute to check if the user is an "admin" client.
@@ -65,35 +69,30 @@ if (!$cn) {
 $query = "SELECT psw_hash_salted FROM User WHERE user_name = ? AND client = 'admin';";
 
 // set up the prepared statement
-$st = $cn ->stmt_init();
-$st ->prepare($query);
-$st ->bind_param("s", $username);
+$st = $cn->stmt_init();
+$st->prepare($query);
+$st->bind_param("s", $username);
 
 // execute statement and store result in $result
-$st ->execute();
+$st->execute();
 
-$st ->bind_result($result);
+$st->bind_result($result);
 
-$st ->fetch();
+$st->fetch();
 
 // check for if admin login was successful
 if (password_verify($password, $result)) {
     // login was successful
 
-
-    header("Location: adminCreate.html");
+    header("Location: adminActions.php");
     exit();
-} 
-else {
+} else {
     // login was unsuccessful
-    header("Location: adminLogin.html");
-    // $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
+    $_SESSION['login_error'] = "Invalid login parameters, please try again.";
+    header("Location: adminLogin.php");
     exit();
-
-    // if possible, display popup that login info was wrong, otherwise, can redirect back to login page
 }
 
-// probably because the if else statement would take the user to a different page. The st and cn would have to be closed there instead of at the end of the file
 $st->close();
 $cn->close();
 

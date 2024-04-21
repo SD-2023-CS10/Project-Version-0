@@ -28,78 +28,69 @@
  * - List any pending tasks or improvements that are planned for future updates.
  * 
  */ -->
- <?php
-    
-    session_start();
-    ob_start();
+<?php
 
-    if($_SERVER["REQUEST_METHOD"] == "POST") {
+session_start();
+ob_start();
 
-        // retrieve form data
-        $username = $_POST["username"];
-        $password = $_POST["password"];
-    } else {
-        header("Location: login.html");
-        exit();
-    }
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+    // retrieve form data
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+} else {
+    header("Location: login.php");
+    exit();
+}
 
-    // DB connection
-    $config = parse_ini_file("./config.ini");
-    $server = $config["servername"];
-    $dbusername = $config["username"];
-    $dbpassword = $config["password"];
-    $database = "gu_devices";
+// DB connection
+$config = parse_ini_file("./config.ini");
+$server = $config["servername"];
+$dbusername = $config["username"];
+$dbpassword = $config["password"];
+$database = "gu_devices";
 
-    $cn = mysqli_connect($server , $dbusername , $dbpassword , $database);
+$cn = mysqli_connect($server, $dbusername, $dbpassword, $database);
 
-    // check connection
-    if (!$cn) {
-        die("Connection failed: " . mysqli_connect_error ());
-    }
+// check connection
+if (!$cn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
-    // set up the query
-    $query = "SELECT psw_hash_salted FROM User WHERE user_name = ?";
+// initialize variable for sign in error from login.php
+$_SESSION['login_error'] = null;
 
-    // set up the prepared statement
-    $st = $cn ->stmt_init();
+// set up the query
+$query = "SELECT psw_hash_salted FROM User WHERE user_name = ?";
 
-    $st ->prepare($query);
-    $st ->bind_param("s", $username);
+// set up the prepared statement
+$st = $cn->stmt_init();
 
-    // execute statement and store the psw_hash_salted in $result variable
-    $st ->execute();
+$st->prepare($query);
+$st->bind_param("s", $username);
 
-    $st ->bind_result($result);
+// execute statement and store the psw_hash_salted in $result variable
+$st->execute();
 
-    $st ->fetch();
+$st->bind_result($result);
 
-    // $result = $cn->query($query);
-    // $st->store_result();
+$st->fetch();
 
-    // use password_verify to compare the password from the post with the hashed psw from the DB
-    if (password_verify($password, $result)) {
-        // Use Sessions to transfer username to different PHP pages
-        $_SESSION["session_user"] = $username;
+// use password_verify to compare the password from the post with the hashed psw from the DB
+if (password_verify($password, $result)) {
+    // Use Sessions to transfer username to different PHP pages
+    $_SESSION["session_user"] = $username;
 
-        // TODO: will have to change to index.php, since that's the new version of the file
-        header("Location: index.php");
-        echo("test22");
-        echo($result);
-        // TODO: 2/20/24 add session_start() in index.php file and add this line: 
-        // $username = $_SESSION["session_user"];
-        exit();
-    } else {
-        // password is incorrect
-        // $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
-        // I don't think this will work because login.html will just load in without the regex
-        header("Location: login.html");
-        echo("test11");
-        // $st->close();
-        // $cn->close();
-        exit();
-    }
-        
-    $st->close();
-    $cn->close();
+    header("Location: index.php");
+
+    exit();
+} else {
+    // password is incorrect
+    $_SESSION['login_error'] = "Invalid login parameters, please try again.";
+    header("Location: login.php");
+    exit();
+}
+
+$st->close();
+$cn->close();
 ?>

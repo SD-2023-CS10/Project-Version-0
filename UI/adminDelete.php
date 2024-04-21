@@ -28,8 +28,10 @@
  * - List any pending tasks or improvements that are planned for future updates.
  * 
  */ -->
- <?php
+<?php
 
+session_start();
+ob_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -56,32 +58,33 @@ $dbpassword = $config["password"];
 $database = "gu_devices";
 
 // connect to db
-$cn = mysqli_connect($server , $dbusername , $dbpassword , $database);
+$cn = mysqli_connect($server, $dbusername, $dbpassword, $database);
 
 // check connection
 if (!$cn) {
-    die("Connection failed: " . mysqli_connect_error ());
+    die("Connection failed: " . mysqli_connect_error());
 }
 
-// // set up the query
-// $query = "SELECT user_name, psw_hash_salted FROM User WHERE user_name = ?;";
+// initialize variable for sign in error from login.php
+$_SESSION['delete_error'] = null;
+$_SESSION['delete_success'] = null;
 
 // set up the query
 $query = "SELECT user_name FROM User WHERE user_name = ?;";
 
 // set up the prepared statement
-$st = $cn ->stmt_init();
-$st ->prepare($query);
+$st = $cn->stmt_init();
+$st->prepare($query);
 
-// Does this work? While the old_password could be an inject, it should get hashed and salted, so the injection shouldnt work.
-$st ->bind_param("s", $username);
+$st->bind_param("s", $username);
 
 // execute statement and store result in $result
-$st ->execute();
-$st ->bind_result($result);
-$st ->fetch();
-// $st->store_result();
-// $result = $cn->query($query);
+$st->execute();
+
+$st->bind_result($result);
+
+$st->fetch();
+
 
 // check for if the exact same username/password params have already been in the database
 if ($result == $username) {
@@ -90,22 +93,22 @@ if ($result == $username) {
     $query = "DELETE FROM User WHERE user_name = ? AND client = ?;";
 
     // set up the prepared statement
-    $st = $cn ->stmt_init();
-    $st ->prepare($query);
+    $st = $cn->stmt_init();
+    $st->prepare($query);
 
-    $st ->bind_param("ss", $username, $client);
+    $st->bind_param("ss", $username, $client);
 
-    // execute statement and store result in $result
-    $st ->execute();
-    // $st ->bind_result($result);
- } else {
+    $st->execute();
+
+    $_SESSION['delete_success'] = "Client user account successfully deleted!";
+    header("Location: adminActions.php");
+} else {
     // if there is no client with that username, error message
-    // $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
-    header("Location: adminCreate.html");
-    exit();
- }
+    $_SESSION['delete_error'] = "There are no instances of a username associated with that client.";
+    header("Location: adminActions.php");
+}
 
- $st->close();
- $cn->close();
+$st->close();
+$cn->close();
 
 ?>
