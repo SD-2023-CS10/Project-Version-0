@@ -79,6 +79,8 @@ $st->execute();
 
 $st->bind_result($result);
 
+$st->fetch();
+
 // $st->store_result();
 
 // check for it user login was successful
