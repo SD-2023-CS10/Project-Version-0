@@ -130,7 +130,7 @@
         <div id="profile" class="tab-content row-padding padding-16" style="display: none;">
             <!-- Profile Content -->
             <h2>Profile Settings</h2>
-            <font size="4" face="Courier New">
+            <font size="4" face="sans-serif">
                 <table BORDER=1 width="100%" id="deviceTable">
                     <?php
                         $CLIENT = "Med INC";
