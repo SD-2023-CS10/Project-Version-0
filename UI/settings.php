@@ -197,9 +197,9 @@
             <h2>Help Menu</h2>
             <p>Medcurity Phone Contact:  (509) - 867 - 3645</p>
             <p>Medcurity Email Contact:  support@medcurity.com </p>
-            <p>About Application: INSERT LINK HERE (Almost done) </p>
+            <p>About Application: <a href="/UI/INSTRUCTIONS.md">INSTRUCTIONS.md</a></p>
             <!-- <p>Help Manuals: <?php include 'README.md';?></p> -->
-            <p>Help Manual: LINK TO HELP MANUAL</p>
+            <p>Help Manual: <a href="/UI/README.md">README.md</a></p>
         </div>
     </div>
 </div>
