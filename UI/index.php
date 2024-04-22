@@ -91,7 +91,7 @@
         h4, 
         h5,
         h6 {
-            font-family: "Raleway", sans-serif
+            font-family: sans-serif
         }
     </style>
 </head>
@@ -163,7 +163,7 @@
             <div id="System/Devices" class="tabcontent" style="display: block;">
 
                 <!-- Device table with database connections -->
-                <font size="4" face="Courier New">
+                <font size="4" face="sans-serif">
                     <table BORDER=1 width="100%" id="deviceTable">
                         <?php
                             // connection params
@@ -334,7 +334,7 @@
             <div id="Server" class="tabcontent">
 
                 <!-- Device table with database connections -->
-                <font size="4" face="Courier New">
+                <font size="4" face="sans-serif">
                     <table BORDER=1 width="100%" id="serverTable">
                         <?php
 
@@ -421,7 +421,7 @@
             <div id="ePHI" class="tabcontent">
 
                 <!-- Device table with database connections -->
-                <font size="4" face="Courier New">
+                <font size="4" face="sans-serif">
                     <table BORDER=1 width="100%" id="ephiTable">
                         <?php
 
@@ -504,7 +504,7 @@
             <div id="Authentication" class="tabcontent">
 
                 <!-- Device table with database connections -->
-                <font size="4" face="Courier New">
+                <font size="4" face="sans-serif">
                     <table BORDER=1 width="100%" id="authenticationTable">
                         <?php
 
