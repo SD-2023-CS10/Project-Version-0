@@ -1,14 +1,14 @@
 <!-- * File Name: adminCheck.php
  * 
  * Description:
- * The "back end" side of the adminLogin.html page. The adminCheck.php file checks if the admin-entered credentials
- * are found in the database. If not, an error screen indicating that the login was invalid pops up, otherwise,
- * the admin is able to proceed to the adminCreate.html page.
+ * The "back end" side of the adminLogin.php page. The adminCheck.php file checks if the admin-entered credentials
+ * are found in the database. If not, an error message indicating that the login was invalid pops up, otherwise,
+ * the admin is able to proceed to the adminCreate.php page.
  * 
  * @package MedcurityNetworkScanner
  * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
  * @license 
- * @version 1.0.0
+ * @version 1.0.3
  * @link 
  * @since 
  * 
@@ -18,11 +18,10 @@
  * operation.
  * 
  * Modifications:
- * [Date] - [Artis Nateephaisan] - Version [New Version Number] - [Description of Changes]
+ * [4/20/24] - [Artis Nateephaisan] - Version [1.0.2] - [Added error message functionality]
+ * [4/22/24] - [Artis Nateephaisan] - Version [1.0.3] - [Fixed unreachable code bug]
  * 
  * Notes:
- * - Additional notes or special instructions can be added here.
- * - Remember to update the version number and modification log with each change.
  * 
  * TODO:
  * - List any pending tasks or improvements that are planned for future updates.
@@ -30,16 +29,16 @@
  */ -->
 <?php
 
-if($_SERVER["REQUEST_METHOD"] == "POST") {
+session_start();
+ob_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // retrieve form data
     $username = $_POST["username"];
     $password = $_POST["password"];
-
-
-    // $psw_hash_salt = password_hash($password, PASSWORD_DEFAULT, array('cost' => 9));
 } else {
-    header("Location: adminLogin.html");
+    header("Location: adminLogin.php");
     exit();
 }
 
@@ -50,50 +49,48 @@ $dbusername = $config["username"];
 $dbpassword = $config["password"];
 $database = "gu_devices";
 
-$cn = mysqli_connect($server , $dbusername , $dbpassword , $database);
+$cn = mysqli_connect($server, $dbusername, $dbpassword, $database);
 
 // check connection
 if (!$cn) {
-    die("Connection failed: " . mysqli_connect_error ());
+    die("Connection failed: " . mysqli_connect_error());
 }
+// initialize variable for sign in error from login.php
+$_SESSION['login_error'] = null;
 
-
-// // set up the query to check DB for correct login credentials. This query is different from loginCheck.php
-// // because it uses the client attribute to check if the user is an "admin" client.
-// $query = "SELECT user_name, psw_hash_salted FROM User WHERE user_name='?' AND psw_hash_salted = '?' AND client='admin';";
+// set up the query to check DB for correct login credentials. This query is different from loginCheck.php
+// because it uses the client attribute to check if the user is an "admin" client.
 
 $query = "SELECT psw_hash_salted FROM User WHERE user_name = ? AND client = 'admin';";
 
 // set up the prepared statement
-$st = $cn ->stmt_init();
-$st ->prepare($query);
-$st ->bind_param("s", $username);
+$st = $cn->stmt_init();
+$st->prepare($query);
+$st->bind_param("s", $username);
 
 // execute statement and store result in $result
-$st ->execute();
+$st->execute();
 
-$st ->bind_result($result);
+$st->bind_result($result);
 
-$st ->fetch();
+$st->fetch();
 
 // check for if admin login was successful
 if (password_verify($password, $result)) {
     // login was successful
 
-
-    header("Location: adminCreate.html");
-    exit();
-} 
-else {
+    // no success message needed, they will simply be grantedaccess the adminActions.php page
+    header("Location: adminActions.php");
+} else {
     // login was unsuccessful
-    header("Location: adminLogin.html");
-    // $html = preg_replace('#<div class="invisible">(.*?)</h3>#', '', $html);
-    exit();
 
-    // if possible, display popup that login info was wrong, otherwise, can redirect back to login page
+    // automatically reloads the page and display error message indicating invalid login parameters
+    $_SESSION['login_error'] = "Invalid login parameters, please try again.";
+    header("Location: adminLogin.php");
+
+    exit();
 }
 
-// probably because the if else statement would take the user to a different page. The st and cn would have to be closed there instead of at the end of the file
 $st->close();
 $cn->close();
 

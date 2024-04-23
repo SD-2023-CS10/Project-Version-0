@@ -2,12 +2,12 @@
  * File Name: login-menu.css
  * 
  * Description:
- * CSS styling file for all the HTML login pages.
+ * CSS styling file for all the front-end log in pages.
  * 
  * @package MedcurityNetworkScanner
  * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
  * @license 
- * @version 1.0.0
+ * @version 1.0.1
  * @link 
  * @since 
  * 
@@ -15,7 +15,8 @@
  * Used solely for the purpose of html styling for the login HTML pages.
  * 
  * Modifications:
- * [Date] - [Your Name] - Version [New Version Number] - [Description of Changes]
+ * 4/20 - Artis Nateephaisan - V 1.0.1 - Removed comments, changed message for link to newUser.html, added
+ * support for success messages
  * 
  * Notes:
  * - Additional notes or special instructions can be added here.
@@ -76,11 +77,11 @@ body {
   display: none;
 }
 
-.form > *:first-child {
+.form>*:first-child {
   margin-top: 0;
 }
 
-.form > *:last-child {
+.form>*:last-child {
   margin-bottom: 0;
 }
 
@@ -134,6 +135,12 @@ body {
   color: red;
 }
 
+.form__input-success-message {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: green;
+}
+
 .form__button {
   width: 100%;
   padding: 1rem 2rem;
@@ -169,7 +176,7 @@ body {
   cursor: pointer;
   display: inline;
   margin-right: 55px;
-  text-align:center;
+  text-align: center;
   align-items: center;
 }
 
@@ -186,7 +193,7 @@ body {
   cursor: pointer;
   display: inline;
   /* margin-right: 55px; */
-  text-align:center;
+  text-align: center;
   align-items: center;
 }
 
@@ -208,6 +215,7 @@ body {
   flex-direction: row;
   /* gap: 15px; */
 }
+
 #container #main {
   flex-grow: 0;
   flex-shrink: 1;
@@ -215,13 +223,14 @@ body {
 }
 
 .errorcontainer {
-  position:absolute;
+  position: absolute;
   margin-top: -600px;
   color: red;
   border-width: 4px;
   padding: 10px;
-  border-style:solid;
+  border-style: solid;
   border-color: red;
+  display: none;
 }
 
 .invisible {
