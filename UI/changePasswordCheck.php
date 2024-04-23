@@ -1,14 +1,15 @@
 <!-- * File Name: changePasswordCheck.php
  * 
  * Description:
- * The "back end" side of the newUser.html page. The newUser.php file checks if the user-entered credentials
- * are found in the database. If not, an error screen indicating that the login was invalid pops up, otherwise,
- * the user is able to set their password to something else.
+ * The "back end" side of the changePassword.php page. The changePassword.php file checks if the user-entered 
+ * credentials are found in the database. If not, an error message indicating that the username and old password
+ * were invalid pops up, otherwise, the user is able to set their default password given by Medcurity 
+ * to something private to them.
  * 
  * @package MedcurityNetworkScanner
  * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
  * @license 
- * @version 1.0.0
+ * @version 1.0.3
  * @link 
  * @since 
  * 
@@ -18,7 +19,8 @@
  * operation, but customization can be done by editing the configuration settings within.
  * 
  * Modifications:
- * [Date] - [Artis Nateephaisan] - Version [New Version Number] - [Description of Changes]
+ * [4/20/24] - [Artis Nateephaisan] - Version [1.0.2] - [Added error message functionality]
+ * [4/22/24] - [Artis Nateephaisan] - Version [1.0.3] - [Fixed unreachable code bug]
  * 
  * Notes:
  * - Additional notes or special instructions can be added here.
@@ -81,8 +83,6 @@ $st->bind_result($result);
 
 $st->fetch();
 
-// $st->store_result();
-
 // check for it user login was successful
 if (password_verify($old_password, $result)) {
     // login was successful
@@ -91,6 +91,7 @@ if (password_verify($old_password, $result)) {
 
     // set up the prepared statement
     $st = $cn->stmt_init();
+
     $st->prepare($query);
 
     $st->bind_param("ss", $new_psw_hash_salt, $username);
@@ -101,10 +102,12 @@ if (password_verify($old_password, $result)) {
     // once the password has been changed, go back to login page
     header("Location: login.php");
 } else {
+    // login was unsuccessful
 
     // if username and old password params don't match, provide error message
     $_SESSION['null_user_error'] = "No existing user account with matching \"Username\" and \"Old Password\" parameters, please try again.";
     header("Location: changePassword.php");
+
     exit();
 }
 

@@ -1,14 +1,14 @@
 <!-- * File Name: adminCheck.php
  * 
  * Description:
- * The "back end" side of the adminLogin.html page. The adminCheck.php file checks if the admin-entered credentials
- * are found in the database. If not, an error screen indicating that the login was invalid pops up, otherwise,
- * the admin is able to proceed to the adminCreate.html page.
+ * The "back end" side of the adminLogin.php page. The adminCheck.php file checks if the admin-entered credentials
+ * are found in the database. If not, an error message indicating that the login was invalid pops up, otherwise,
+ * the admin is able to proceed to the adminCreate.php page.
  * 
  * @package MedcurityNetworkScanner
  * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
  * @license 
- * @version 1.0.0
+ * @version 1.0.3
  * @link 
  * @since 
  * 
@@ -18,11 +18,10 @@
  * operation.
  * 
  * Modifications:
- * [Date] - [Artis Nateephaisan] - Version [New Version Number] - [Description of Changes]
+ * [4/20/24] - [Artis Nateephaisan] - Version [1.0.2] - [Added error message functionality]
+ * [4/22/24] - [Artis Nateephaisan] - Version [1.0.3] - [Fixed unreachable code bug]
  * 
  * Notes:
- * - Additional notes or special instructions can be added here.
- * - Remember to update the version number and modification log with each change.
  * 
  * TODO:
  * - List any pending tasks or improvements that are planned for future updates.
@@ -38,11 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // retrieve form data
     $username = $_POST["username"];
     $password = $_POST["password"];
-
-
-    // $psw_hash_salt = password_hash($password, PASSWORD_DEFAULT, array('cost' => 9));
 } else {
-    // header("Location: adminLogin.php");
+    header("Location: adminLogin.php");
     exit();
 }
 
@@ -62,9 +58,8 @@ if (!$cn) {
 // initialize variable for sign in error from login.php
 $_SESSION['login_error'] = null;
 
-// // set up the query to check DB for correct login credentials. This query is different from loginCheck.php
-// // because it uses the client attribute to check if the user is an "admin" client.
-// $query = "SELECT user_name, psw_hash_salted FROM User WHERE user_name='?' AND psw_hash_salted = '?' AND client='admin';";
+// set up the query to check DB for correct login credentials. This query is different from loginCheck.php
+// because it uses the client attribute to check if the user is an "admin" client.
 
 $query = "SELECT psw_hash_salted FROM User WHERE user_name = ? AND client = 'admin';";
 
@@ -84,12 +79,15 @@ $st->fetch();
 if (password_verify($password, $result)) {
     // login was successful
 
+    // no success message needed, they will simply be grantedaccess the adminActions.php page
     header("Location: adminActions.php");
-    exit();
 } else {
     // login was unsuccessful
+
+    // automatically reloads the page and display error message indicating invalid login parameters
     $_SESSION['login_error'] = "Invalid login parameters, please try again.";
     header("Location: adminLogin.php");
+
     exit();
 }
 

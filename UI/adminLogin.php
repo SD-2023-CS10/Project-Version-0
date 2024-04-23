@@ -1,13 +1,15 @@
 <!-- * File Name: adminLogin.html
  * 
  * Description:
- * Accessed from the main login.html page, this page allows a user admin to login to their account. Similar to the
- * main login page, admins must log in with valid credentials to gain access to the adminCreate.html page.
+ * Accessed from the main login.php page, this page allows a user admin to login to their account. Similar to the
+ * main login page, admins must log in with valid credentials to gain access to the adminCreate.html page. If their
+ * login information is invalid, an error message pops up indicating so, otherwise, they are granted access to the
+ * adminActions.php page.
  * 
  * @package MedcurityNetworkScanner
  * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
  * @license 
- * @version 1.0.0
+ * @version 1.0.1
  * @link 
  * @since 
  * 
@@ -17,7 +19,7 @@
  * operation.
  * 
  * Modifications:
- * [Date] - [Artis Nateephaisan] - Version [New Version Number] - [Description of Changes]
+ * [4/20/24] - [Artis Nateephaisan] - Version [1.0.1] - [Added error message functionality]
  * 
  * Notes:
  * - Additional notes or special instructions can be added here.
@@ -37,7 +39,6 @@
     <title>User Login</title>
     <link rel="stylesheet" href="styling\login-menu.css">
 
-    <!--  -->
 </head>
 
 <body>

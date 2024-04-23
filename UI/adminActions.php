@@ -1,14 +1,15 @@
 <!-- * File Name: adminActions.php
  * 
  * Description:
- * Accessed upon valid credentials from the adminLogin.html page, the admin user will be able to access this page,
+ * Accessed upon valid credentials from the adminLogin.php page, the admin user will be able to access this page,
  * where they are able to create new client user accounts (username and password) as well as delete old client 
- * user accounts.
+ * user accounts. This is the front-end of this page, where the adminCreate.php and adminDelete.php files perform
+ * the backend functionality of actually creating and deleting the client user accounts.
  * 
  * @package MedcurityNetworkScanner
  * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
  * @license 
- * @version 1.0.0
+ * @version 1.0.2
  * @link 
  * @since 
  * 
@@ -19,16 +20,18 @@
  * 
  * Modifications:
  * [3/13/24] - [Artis Nateephaisan] - Version [1.0.1] - [Added user account deletion functionality]
+ * [4/20/24] - [Artis Nateephaisan] - Version [1.0.2] - [Converted html file to php for error message functionality]
  * 
  * Notes:
- *  * - IMPORTANT: Right now, if the client knows the name of the file "adminActions.php", they can 
- * - change the URL to access this page and have admin perms. For future development, there needs to be a way to
- * - circumvent this.
+ * IMPORTANT: Right now, if the client knows the name of the file "adminActions.php", they can 
+ * change the URL to access this page and have admin perms. For future development, there needs to be a way to
+ * circumvent this.
  * 
  * TODO:
  * - List any pending tasks or improvements that are planned for future updates.
  * There should be confirmation screen upon client user account deletion so that there is a safeguard in 
  * case of any accidental deletions.
+ * Find a way to safeguard normal user access to adminActions.php functionality should they know the url name.
  */ -->
 
 <!DOCTYPE html>
@@ -42,7 +45,6 @@
 
 <body>
     <div class="container">
-        <!-- <form class="form" id="login"> -->
         <form action="adminCreate.php" method="POST">
             <h1 class="form__title">Create a Client Account</h1>
             <div class="form__input-group">
@@ -94,7 +96,6 @@
         </form>
     </div>
     <div class="container">
-        <!-- <form class="form" id="login"> -->
         <form action="adminDelete.php" method="POST">
             <h1 class="form__title">Delete a Client Account</h1>
             <div class="form__input-group">

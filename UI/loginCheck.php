@@ -1,14 +1,14 @@
 <!-- * File Name: loginCheck.php
  * 
  * Description:
- * The "back end" side of the login.html page. The loginCheck.php file checks if the user-entered credentials
- * are found in the database. If not, an error screen indicating that the login was invalid pops up, otherwise,
+ * The "back end" side of the login.php page. The loginCheck.php file checks if the user-entered credentials
+ * are found in the database. If not, an error message indicating that the login was invalid pops up, otherwise,
  * the user is able to proceed to the index.php page.
  * 
  * @package MedcurityNetworkScanner
  * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
  * @license 
- * @version 1.0.0
+ * @version 1.0.1
  * @link 
  * @since 
  * 
@@ -18,8 +18,7 @@
  * operation.
  * 
  * Modifications:
- * [Date] - [Artis Nateephaisan] - Version [New Version Number] - [Description of Changes]
- * 
+ * [4/20/24] - [Artis Nateephaisan] - Version [1.0.2] - [Added support for error message functionality] 
  * Notes:
  * - Additional notes or special instructions can be added here.
  * - Remember to update the version number and modification log with each change.
@@ -78,16 +77,20 @@ $st->fetch();
 
 // use password_verify to compare the password from the post with the hashed psw from the DB
 if (password_verify($password, $result)) {
+    // login successful
+
     // Use Sessions to transfer username to different PHP pages
     $_SESSION["session_user"] = $username;
 
+    // grant user access to index.php, which contain core app functionality
     header("Location: index.php");
-
-    exit();
 } else {
-    // password is incorrect
+    // login unsuccessful
+
+    // reload page and display error message indiacting invalid login credentials
     $_SESSION['login_error'] = "Invalid login parameters, please try again.";
     header("Location: login.php");
+
     exit();
 }
 

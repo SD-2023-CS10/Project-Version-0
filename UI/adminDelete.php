@@ -1,14 +1,15 @@
 <!-- * File Name: adminDelete.php
  * 
  * Description:
- * The "back end" side of the adminCreate.html page. The adminDelete.php file checks if the admin-entered credentials
- * are found in the database. If not, an error screen indicating that the login was invalid pops up, otherwise,
- * the admin is able to create new user accounts, setting their usernames and passwords.
+ * One half of the "back end" side of the adminActions.php page. The adminDelete.php file checks 
+ * if the admin-entered credentials are found in the database. If not, an error screen indicating 
+ * that the login was invalid pops up, otherwise, the admin is able to create new user accounts, 
+ * setting their usernames and passwords, and a success message will pop up
  * 
  * @package MedcurityNetworkScanner
  * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
  * @license 
- * @version 1.0.0
+ * @version 1.0.3
  * @link 
  * @since 
  * 
@@ -18,7 +19,8 @@
  * operation.
  * 
  * Modifications:
- * [Date] - [Artis Nateephaisan] - Version [New Version Number] - [Description of Changes]
+ * [4/20/24] - [Artis Nateephaisan] - Version [1.0.2] - [Added error message functionality]
+ * [4/22/24] - [Artis Nateephaisan] - Version [1.0.3] - [Fixed bug regarding deleting user that did not match client]
  * 
  * Notes:
  * - Additional notes or special instructions can be added here.
@@ -37,15 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // retrieve form data
     $username = $_POST["username"];
-    // $old_password = $_POST["old password"];
     $client = $_POST["client"];
-
-    // here the password would have to be salted and hashed upon retrieval from the post form
-    // PASSWORD_DEFAULT is the default hashing algorithm for PHP that is updated with new PHP releases
-    // array('cost') param takes the salt in form cost factor
-
-    // note that this cannot be tested right now because the password stored in the DB are not hashed and salted
-    // $old_psw_hash_salt = password_hash($old_password, PASSWORD_DEFAULT, array('cost' => 9));
 } else {
     header("Location: adminCreate.html");
     exit();
@@ -69,7 +63,7 @@ if (!$cn) {
 $_SESSION['delete_error'] = null;
 $_SESSION['delete_success'] = null;
 
-// set up the query
+// set up the query to select for username
 $query = "SELECT user_name FROM User WHERE user_name = ?;";
 
 // set up the prepared statement
@@ -78,18 +72,33 @@ $st->prepare($query);
 
 $st->bind_param("s", $username);
 
-// execute statement and store result in $result
+// execute statement and store result in $result1 for first param
 $st->execute();
 
-$st->bind_result($result);
+$st->bind_result($result1);
 
 $st->fetch();
 
+// set up the query to select client from username
+$query = "SELECT client FROM User WHERE user_name = ?;";
 
-// check for if the exact same username/password params have already been in the database
-if ($result == $username) {
+// set up the prepared statement
+$st = $cn->stmt_init();
+$st->prepare($query);
 
-    // insert the username into the User table under user_name column
+$st->bind_param("s", $username);
+
+// execute statement and store result in $result2 for second param
+$st->execute();
+
+$st->bind_result($result2);
+
+$st->fetch();
+
+// check for both the username and the client to ensure the username is tied with the client before deletion
+if ($result1 == $username && $result2 == $client) {
+
+    // delete the username on match of user_name and client info
     $query = "DELETE FROM User WHERE user_name = ? AND client = ?;";
 
     // set up the prepared statement

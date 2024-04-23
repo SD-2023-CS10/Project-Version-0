@@ -3,9 +3,10 @@
  * Description:
  * The initial page the user sees upon loading the page. Here, the user is prompted to enter their credentials.
  * Upon valid credentials, they will be taken to the index.php page, which contains the core functionality of the 
- * Network Inventory Tool. In this login.html page, the user is also able to click the "Change Password or New User"
- * button, which will take them to the newUser.html page, or the "Admin Login" button, which will take them to the 
- * adminLogin.html page.
+ * Network Inventory Tool. In this login.php page, the user is also able to click the "Change Password"
+ * button, which will take them to the changePassword.php page, or the "Admin Login" button, which will 
+ * take them to the adminLogin.php page. There is also a "Forgot Password" button, which takes the user to a page
+ * that details Medcurity support's contact information (phone number and email).
  * 
  * @package MedcurityNetworkScanner
  * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
@@ -20,8 +21,9 @@
  * operation.
  * 
  * Modifications: 
- * 4/10 - Artis Nateephaisan - V 1.0.1 - Removed comments, changed message for link to newUser.html
- * 4/10 - Artis Nateephaisan - V 1.0.2 - Changed file to html
+ * [4/8/24] - [Artis Nateephaisan] - Version [1.0.1] - [Removed comments, changed message for link to newUser.html]
+ * [4/20/24] - [Artis Nateephaisan] - Version [1.0.2] - [Changed file to php, added support for error
+ *  message functionality]
  */ -->
 
 <!DOCTYPE html>

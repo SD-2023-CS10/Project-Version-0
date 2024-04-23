@@ -18,7 +18,8 @@
  * operation.
  * 
  * Modifications:
- *  4/20 - Artis Nateephaisan - V 1.0.2 - Removed comments, changed message for link to newUser.html
+ * [4/8/24] - [Artis Nateephaisan] - Version [1.0.1] - [Removed comments, changed message for link to newUser.html]
+ * [4/20/24] - [Artis Nateephaisan] - Version [1.0.2] - [Added support for error message functionality]
  * 
  * Notes:
  * - Additional notes or special instructions can be added here.

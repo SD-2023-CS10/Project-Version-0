@@ -2,12 +2,12 @@
  * File Name: login-menu.css
  * 
  * Description:
- * CSS styling file for all the HTML login pages.
+ * CSS styling file for all the front-end log in pages.
  * 
  * @package MedcurityNetworkScanner
  * @authors Artis Nateephaisan (anateephaisan@zagmail.gonzaga.edu)
  * @license 
- * @version 1.0.0
+ * @version 1.0.1
  * @link 
  * @since 
  * 
@@ -15,7 +15,8 @@
  * Used solely for the purpose of html styling for the login HTML pages.
  * 
  * Modifications:
- * 4/10 - Artis Nateephaisan - V 1.0.1 - Removed comments, changed message for link to newUser.html
+ * 4/20 - Artis Nateephaisan - V 1.0.1 - Removed comments, changed message for link to newUser.html, added
+ * support for success messages
  * 
  * Notes:
  * - Additional notes or special instructions can be added here.
