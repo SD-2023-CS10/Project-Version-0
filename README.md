@@ -37,7 +37,7 @@ To improve the user experience, the following future development ideas have been
 1. Each client has a manager for user-account management
 2. Afford editable cells on the user-interface's Server page
 3. Implement user-interface filtering
-4. Add a confguration network page to the user-interface
+4. Add a configuration network page to the user-interface
 5. Add status messages and a progress bar based on crawl-status
 6. Allow user to enter a range of IPs to scan in interface
 7. Implement settings-accessibility functional page
