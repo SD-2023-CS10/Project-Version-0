@@ -44,7 +44,6 @@ CREATE TABLE User (
 );
 
 CREATE TABLE Vender (
-    -- id INT UNSIGNED AUTO NOT NULL,
     email VARCHAR(255) NOT NULL,
     poc VARCHAR(255),
     baa BOOL,
@@ -72,7 +71,6 @@ CREATE TABLE Server (
     FOREIGN KEY (location_id) REFERENCES Location(id)
 );
 
--- break into smaller tables?
 CREATE TABLE Inv_Item (
     item_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     client VARCHAR(255) NOT NULL,
@@ -98,7 +96,7 @@ CREATE TABLE Inv_Item (
     ephi_encrypted BOOL,
     ephi_encr_method VARCHAR(255),
     ephi_encr_tested BOOL,
-    interfaces_with MEDIUMTEXT, -- collection? references other Inv_Item entries? or varchar/MEDIUMTEXT text field?
+    interfaces_with MEDIUMTEXT,
 
     user_auth_method VARCHAR(255),
     app_auth_method VARCHAR(255),
@@ -110,7 +108,7 @@ CREATE TABLE Inv_Item (
     date_last_ordered DATE,
     purchase_price DECIMAL(13, 4), -- GAAP guideline
     warranty_expires DATE,
-    item_condition VARCHAR(255), -- larger? enum?
+    item_condition VARCHAR(255),
     quantity INT UNSIGNED,
     assset_value DECIMAL(13, 4),
     model_num VARCHAR(255),
