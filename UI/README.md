@@ -18,6 +18,7 @@ The "Change Password" page allows user to change their password using their "Old
 The "Admin Login" page is similar to the normal login page, but it is meant for admin access. Upon successful login with valid credentials, the admin will be able to create new user accounts for clients, allowing them to set up a 
 username and password, where their clients can then change the password information in the "Change Password" page. They are also able to delete pre-existing clients for reasons such as the user leaving the client company.
 
+The "Forgot Password" page shows the contact information for Medcurity, including a phone number and email.
 
 ## Login for Administrators
 
