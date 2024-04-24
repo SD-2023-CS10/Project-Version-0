@@ -130,7 +130,7 @@
         <div id="profile" class="tab-content row-padding padding-16" style="display: none;">
             <!-- Profile Content -->
             <h2>Profile Settings</h2>
-            <font size="4" face="Courier New">
+            <font size="4" face="sans-serif">
                 <table BORDER=1 width="100%" id="deviceTable">
                     <?php
                         $CLIENT = "Med INC";
@@ -151,31 +151,28 @@
                         }
 
                         // set up the prepared statement
-                        $q = "SELECT `Vender`.`email`,
-                        `Vender`.`poc`,
-                        `Vender`.`client`
-                        FROM `gu_devices`.`Vender` 
-                        WHERE `Vender`.`client` = '$CLIENT'";
+                        $q = "SELECT `User`.`client`,
+                        `User`.`user_name`
+                        FROM `gu_devices`.`User` 
+                        WHERE `User`.`client` = '$CLIENT'";
 
                         $st = $cn ->stmt_init ();
                         $st ->prepare($q);
 
                         // execute the statement and bind the result (to vars)
                         $st ->execute ();
-                        $st ->bind_result($email, $poc, $client);
+                        $st ->bind_result($client, $username);
 
                         // output result
                         echo "<thead>";
-                            echo "<td>Name</td>";
-                            echo "<td>Email</td>";
+                            echo "<td>Username</td>";
                             echo "<td>Client</td>";
                         echo "</thead>";
 
                         while ($st -> fetch()) {
                         echo "<tr>";
-                            echo "<td id='Vender.poc'>" . $poc . "</td>";
-                            echo "<td id='Vender.email'>" . $email . "</td>";
-                            echo "<td id='Vender.client'>" . $client . "</td>";
+                            echo "<td id='User.user_name'>" . $username . "</td>";
+                            echo "<td id='User.client'>" . $client . "</td>";
                         echo "</tr>";
                         }
                         // clean up
@@ -188,7 +185,7 @@
         <div id="network" class="tab-content row-padding padding-16" style="display: none;">
             <!-- Network Content -->
             <h2>Network Settings</h2>
-            <p>In Development</p>
+            <p>Out Of Scope</p>
         </div>
         <div id="accessibility" class="tab-content row-padding padding-16" style="display: none;">
             <!-- Accessibility Content -->
@@ -198,10 +195,11 @@
         <div id="contact" class="tab-content row-padding padding-16" style="display: none;">
             <!-- Contact Content -->
             <h2>Help Menu</h2>
-            <p>Medcurity Contact Representitive: (###)-###-####</p>
-            <p>About Application: Link in Development</p>
-            <p>Help Manuals: <?php include 'README.md';?></p>
-            <p>Troubleshooting Guide: In Developemnt</p>
+            <p>Medcurity Phone Contact:  (509) - 867 - 3645</p>
+            <p>Medcurity Email Contact:  support@medcurity.com </p>
+            <p>About Application: <a href="/UI/INSTRUCTIONS.md">INSTRUCTIONS.md</a></p>
+            <!-- <p>Help Manuals: <?php include 'README.md';?></p> -->
+            <p>Help Manual: <a href="/UI/README.md">README.md</a></p>
         </div>
     </div>
 </div>
