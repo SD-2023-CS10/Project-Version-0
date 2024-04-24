@@ -255,7 +255,7 @@ class DBAPI:
                     self.close()
                     raise err
 
-            # Creates an item and returns its ID (Primary Key identifier)
+            # Creates an item and returns its ID
             def create_item(self):
                 query = "INSERT INTO Inv_Item (client) VALUES (%s);"
                 try:
@@ -278,7 +278,7 @@ class DBAPI:
 
                 return item_id
 
-            # Creates an server and returns its ID (Primary Key identifier)
+            # Creates an server and returns its ID
             def create_server(self, name=None, ip_addr=None, ip_v=None, lid=None):
 
                 name = self._validate_varchar(name) if name is not None else None
@@ -449,7 +449,7 @@ class DBAPI:
                     self.close()
                     raise err
 
-            # Creates an location and returns its ID (Primary Key identifier)
+            # Creates an location and returns its ID
             def create_locataion(self, cloud=None, details=None, protection=None):
                 cloud = self._validate_cloud_prem(cloud) if cloud is not None else None
                 details = self._validate_varchar(details) if details is not None else None
@@ -1269,7 +1269,7 @@ class DBAPI:
                 
                 try:
                     self.rs.execute(query, (self.client,))
-                    ret = [m for m in self.rs] # could change to generator w/ yield but then opens data integrity errors for returned resultsSE
+                    ret = [m for m in self.rs]
                 except mysql_connector_Error as err:
                     self.close()
                     raise err
@@ -1277,7 +1277,6 @@ class DBAPI:
                 return ret
 
             def admin_export(self):
-                # if self.client != "Medcurity":
                 if self.client != "admin":
                     raise RuntimeError("User isn't admin")
                 
@@ -1310,7 +1309,7 @@ class DBAPI:
                             WHERE i.client = %s;"
                     try:
                         self.rs.execute(query, (c,))
-                        ret.extend([(c,) + m for m in self.rs]) # could change to generator w/ yield but then opens data integrity errors for returned resultsSE
+                        ret.extend([(c,) + m for m in self.rs])
                     except mysql_connector_Error as err:
                         self.close()
                         raise err
